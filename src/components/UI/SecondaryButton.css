@@ -1,0 +1,55 @@
+/* Botón secundario: sólido con gradiente y esquinas redondeadas */
+.btnSecondarySolid {
+  border: 0;
+  /* radio más “rectangular redondeado” que el pill del primario */
+  border-radius: 14px;
+
+  /* tamaño y layout */
+  padding: 14px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* tipografía */
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+
+  /* gradiente según mock (naranja → rosa) */
+  background: linear-gradient(90deg, #ff7a5f 0%, #ff6fb3 100%);
+
+  /* feedback */
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+  box-shadow: 0 4px 14px rgba(255, 111, 179, 0.28);
+}
+
+.btnSecondarySolid:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(255, 111, 179, 0.34);
+}
+
+.btnSecondarySolid:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(255, 111, 179, 0.26);
+}
+
+.btnSecondarySolid:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.btnSecondarySolid:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnSecondaryLabel {
+  white-space: nowrap;
+  text-align: center;
+}
+
+.btnFull {
+  width: 100%;
+}

@@ -1,0 +1,44 @@
+/* Botón terciario: sólido gris oscuro, pill, texto blanco */
+.btnTertiary {
+  border: 0;
+  border-radius: 9999px;     /* pill */
+  background: #3a3a3a;       /* tono gris del mock */
+  color: #ffffff;
+
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1;
+  padding: 10px 16px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: background 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.btnTertiary:hover {
+  background: #474747;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.22);
+}
+
+.btnTertiary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.btnTertiary:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.btnTertiary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnTertiaryLabel { white-space: nowrap; }
+.btnFull { width: 100%; }

@@ -1,0 +1,43 @@
+.btnPrimary {
+  border: 0;
+  border-radius: 9999px;          /* pill */
+  padding: 12px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1;
+
+  background: linear-gradient(90deg, #ff7a7a 0%, #ff4d6d 100%);
+  box-shadow: 0 6px 16px rgba(255, 77, 109, 0.35);
+
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+}
+
+.btnPrimary:hover {
+  box-shadow: 0 8px 20px rgba(255, 77, 109, 0.45);
+  transform: translateY(-1px);
+}
+
+.btnPrimary:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(255, 77, 109, 0.35);
+}
+
+.btnPrimary:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnIcon { color: #ffffff; }
+.btnLabel { white-space: nowrap; }
+.btnFull { width: 100%; justify-content: center; }
