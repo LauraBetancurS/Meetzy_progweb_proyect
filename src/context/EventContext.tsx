@@ -12,3 +12,16 @@ type Action =
   | { type: "set"; payload: { events: EventModel[] } };
 
 type State = { events: EventModel[] };
+
+function loadInitial(): EventModel[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as EventModel[];
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch {
+    // ignore parse errors and fall back to mocks
+  }
+  return mockEvents;
+}
