@@ -1,11 +1,9 @@
-import { DevNavButtons } from './DevNavButtons'
+import Sidebar from '../components/dashboard/sidebar/sidebar';
 
 export default function Dashboard() {
   return (
-    <section>
-      <h1>Dashboard</h1>
-      <p>Bienvenida a Meetzy 🚀</p>
-      <DevNavButtons />
-    </section>
+    <div>
+      <Sidebar />
+    </div>
   )
 }
