@@ -1,0 +1,59 @@
+/* ===== Página (convive con tu Sidebar) ===== */
+.eventsPage {
+  background: #161616;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: auto 1fr; /* sidebar + contenido */
+}
+
+/* Contenedor del contenido */
+.eventsPage__content {
+  padding: 28px;
+  display: flex;
+  justify-content: center; /* centra el wrapper */
+}
+
+/* Wrapper centrado con ancho máximo (como la referencia) */
+.eventsPage__wrap {
+  width: 100%;
+  max-width: 1240px; /* 1200–1280 aprox. como el mock */
+}
+
+/* Título */
+.eventsPage__title {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 18px 6px;
+}
+
+/* ===== GRID de tarjetas =====
+   Dos columnas grandes en desktop, 1 columna en móvil */
+.eventsGrid {
+  display: grid;
+  gap: 22px;                          /* gutter vertical y horizontal */
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Asegura que la tarjeta ocupe todo el ancho de su celda */
+.eventsGrid > * {
+  width: 100%;
+}
+
+/* ===== Breakpoints ===== */
+@media (max-width: 1100px) {
+  .eventsPage__wrap { max-width: 1040px; }
+}
+
+@media (max-width: 900px) {
+  .eventsGrid {
+    grid-template-columns: 1fr;       /* 1 columna en tablet/móvil */
+    gap: 18px;
+  }
+  .eventsPage__title { font-size: 1.7rem; }
+}
+
+/* (Opcional) espaciar un poco del borde del viewport en móviles */
+@media (max-width: 520px) {
+  .eventsPage__content { padding: 18px; }
+}
