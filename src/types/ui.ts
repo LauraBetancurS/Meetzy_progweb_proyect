@@ -1,4 +1,3 @@
-// src/types/ui.ts
 import type { ReactNode, ButtonHTMLAttributes } from "react";
 
 /** Variantes disponibles por si las necesitas en props más adelante */
@@ -8,10 +7,9 @@ export type ButtonVariant = "primary" | "secondary" | "tertiary";
 export interface BaseButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  fullWidth?: boolean; // ancho completo opcional
+  fullWidth?: boolean;
 }
 
-/** Props específicas por botón (por claridad y para evitar "props fantasma") */
 export interface PrimaryButtonProps extends BaseButtonProps {
   showPlusIcon?: boolean;
 }
@@ -19,3 +17,37 @@ export interface PrimaryButtonProps extends BaseButtonProps {
 export interface SecondaryButtonProps extends BaseButtonProps {}
 
 export interface TertiaryButtonProps extends BaseButtonProps {}
+
+export type FieldType = "text" | "email" | "password" | "textarea";
+
+export interface Field {
+  name: string;
+  label: string;
+  type?: FieldType;
+  placeholder?: string;
+  required?: boolean;
+}
+
+export interface FormProps {
+  title?: string;
+  subtitle?: string;
+  fields: Field[];
+  initialValues: Record<string, string>;
+  onSubmit: (values: Record<string, string>) => void;
+  submitLabel?: string;
+
+  // Botón secundario (opcional)
+  secondaryLabel?: string;
+  onSecondary?: () => void;
+
+  // Panel derecho (imagen opcional)
+  rightImageUrl?: string;
+
+  // NUEVO: logo arriba del formulario
+  logoUrl?: string;
+
+  // NUEVO: texto y enlace inferior ("You have an account? Login")
+  bottomText?: string;        // ejemplo: "You have an account?"
+  bottomLinkLabel?: string;   // ejemplo: "Login"
+  onBottomLink?: () => void;  // acción al hacer click en el enlace
+}
