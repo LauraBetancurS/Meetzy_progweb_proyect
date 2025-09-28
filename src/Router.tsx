@@ -39,8 +39,7 @@ export function Router() {
       >
         <Route index element={<Dashboard />} />
         <Route path="comunidades" element={<Comunidades />} />
-        <Route path="unirte-comunidad" element={<UnirteComunidad />} />
-        <Route path="crear-comunidad" element={<CrearComunidad />} />
+  
         <Route path="perfil" element={<Perfil />} />
         <Route path="cuestionario-mood" element={<CuestionarioMood />} />
 
