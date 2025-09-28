@@ -2,34 +2,37 @@ import React from "react";
 import { useEvents } from "../context/EventContext";
 import { EventCard } from "../components/EventCard";
 import Sidebar from "../components/dashboard/sidebar/sidebar";
-
+import "./Events.css";
 const EventsPage: React.FC = () => {
   const { events, updateEvent, deleteEvent } = useEvents();
 
-  if (events.length === 0) {
-    return (
-      <div>
-        <h1>Events</h1>
-        <p>No events yet. Create one in the "Create Event" page.</p>
-      </div>
-    );
-  }
-
   return (
-    <>
+    <div className="eventsPage">
       <Sidebar />
-      <div style={{ display: "grid", gap: 12 }}>
-        <h1>Events</h1>
-        {events.map((ev) => (
-          <EventCard
-            key={ev.id}
-            event={ev}
-            onUpdate={updateEvent}
-            onDelete={deleteEvent}
-          />
-        ))}
+
+      <div className="eventsPage__content">
+        <div className="eventsPage__wrap">
+          <h1 className="eventsPage__title">Eventos</h1>
+
+          {events.length === 0 ? (
+            <p style={{ color: "#cfcfcf", marginLeft: 6 }}>
+              No hay eventos aún. Crea uno en la página “Create Event”.
+            </p>
+          ) : (
+            <div className="eventsGrid">
+              {events.map((ev) => (
+                <EventCard
+                  key={ev.id}
+                  event={ev}
+                  onUpdate={updateEvent}
+                  onDelete={deleteEvent}
+                />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 
