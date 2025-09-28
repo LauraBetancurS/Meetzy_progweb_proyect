@@ -1,0 +1,83 @@
+/* Panel lateral */
+.sb {
+  width: 280px;
+  min-height: 100vh;
+  background: #161616;               /* fondo oscuro */
+  border-right: 1px solid #262626;   /* borde tenue */
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border-radius: 14px;               /* esquinas redondeadas como la ref */
+}
+
+/* Logo imagen */
+.sb__logo {
+  width: 130px;
+  height: auto;
+  display: block;
+  margin: 4px 0 8px 2px;
+}
+
+/* Lista de navegación */
+.sb__nav {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Separadores entre items (líneas grises) */
+.sb__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 10px;
+  color: #dcdcdc;                    /* texto e icono base */
+  text-decoration: none;
+  border-radius: 12px;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.sb__link + .sb__link {
+  margin-top: 12px;                  /* espacio entre items */
+}
+
+.sb__link + .sb__link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -8px;                         /* coloca la línea entre los bloques */
+  height: 1px;
+  background: #2a2a2a;               /* gris del separador */
+  border-radius: 1px;
+}
+
+/* Hover */
+.sb__link:hover {
+  background: #1d1d1d;
+  color: #ffffff;
+}
+
+/* Activo (rosa) */
+.sb__link.active {
+  background: transparent;           /* sin pill de fondo, como la ref */
+  color: #ff6b8a;                    /* rosa activo */
+}
+
+/* Icono (el SVG debe usar stroke: currentColor) */
+.sb__icon {
+  width: 24px;
+  min-width: 24px;
+  text-align: center;
+  line-height: 0;
+}
+
+/* Zona de acciones (botones rosados) */
+.sb__actions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 10px;
+}
