@@ -3,7 +3,7 @@ import "./CreateEvent.css";
 import { EventForm } from "../components/EventForm/EventForm";
 import { useEvents } from "../context/EventContext";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/dashboard/sidebar/sidebar";
+
 
 const CreateEventPage: React.FC = () => {
   const { addEvent } = useEvents();
@@ -11,7 +11,6 @@ const CreateEventPage: React.FC = () => {
 
   return (
     <>
-      <Sidebar />
       <div className="createEvent__wrap">
         {/* LEFT: mock image (static for now) */}
         <section className="createEvent__imageCard">
