@@ -1,9 +1,14 @@
-import Sidebar from '../components/dashboard/sidebar/sidebar';
+import SearchBar from '../components/dashboard/search/SearchBar' // si la usas
 
 export default function Dashboard() {
+  function handleSearch(q: string) {
+    console.log('Buscar:', q)
+  }
+
   return (
     <div>
-      <Sidebar />
+      <SearchBar onSearch={handleSearch} />
+      {/* aquí el resto del contenido central */}
     </div>
   )
 }
