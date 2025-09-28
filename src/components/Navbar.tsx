@@ -6,11 +6,13 @@ export default function Navbar() {
     { to: '/comunidades', label: 'Comunidades' },
     { to: '/unirte-comunidad', label: 'Unirte' },
     { to: '/crear-comunidad', label: 'Crear comunidad' },
-    { to: '/eventos', label: 'Eventos' },
-    { to: '/crear-evento', label: 'Crear evento' },
+    // ✅ updated to match Router.tsx
+    { to: '/events', label: 'Eventos' },
+    { to: '/events/new', label: 'Crear evento' },
     { to: '/cuestionario-mood', label: 'Mood' },
     { to: '/perfil', label: 'Perfil' },
   ]
+
   return (
     <nav className="devbar">
       {items.map(({ to, label, end }) => (
@@ -18,7 +20,7 @@ export default function Navbar() {
           key={to}
           to={to}
           end={end as any}
-          className={({ isActive }) => isActive ? 'active' : ''}
+          className={({ isActive }) => (isActive ? 'active' : '')}
         >
           {label}
         </NavLink>
