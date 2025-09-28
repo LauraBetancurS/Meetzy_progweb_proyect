@@ -7,7 +7,7 @@ import { AppProvider } from './context/AppContext'
 import { AuthProvider } from './context/AuthContext'
 
 // NEW
-import { EventsProvider } from './context/EventsContext'
+import { EventsProvider } from './context/EventContext'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
