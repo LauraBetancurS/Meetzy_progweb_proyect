@@ -17,3 +17,8 @@ export default function Eventos() {
     </section>
   )
 }
+import { EditEventForm } from '../components/events/EditEventForm'
+import { NewEventForm } from '../components/events/NewEventForm'
+import { useEvents } from '../context/EventContext'
+import { DevNavButtons } from './DevNavButtons'
+import { useState, type FormEvent } from 'react'
