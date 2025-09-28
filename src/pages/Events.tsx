@@ -1,6 +1,7 @@
 import React from "react";
 import { useEvents } from "../context/EventContext";
 import { EventCard } from "../components/EventCard";
+import Sidebar from "../components/dashboard/sidebar/sidebar";
 
 const EventsPage: React.FC = () => {
   const { events, updateEvent, deleteEvent } = useEvents();
@@ -15,12 +16,20 @@ const EventsPage: React.FC = () => {
   }
 
   return (
-    <div style={{ display: "grid", gap: 12 }}>
-      <h1>Events</h1>
-      {events.map((ev) => (
-        <EventCard key={ev.id} event={ev} onUpdate={updateEvent} onDelete={deleteEvent} />
-      ))}
-    </div>
+    <>
+      <Sidebar />
+      <div style={{ display: "grid", gap: 12 }}>
+        <h1>Events</h1>
+        {events.map((ev) => (
+          <EventCard
+            key={ev.id}
+            event={ev}
+            onUpdate={updateEvent}
+            onDelete={deleteEvent}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 

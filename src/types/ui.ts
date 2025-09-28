@@ -51,3 +51,13 @@ export interface FormProps {
   bottomLinkLabel?: string;   // ejemplo: "Login"
   onBottomLink?: () => void;  // acción al hacer click en el enlace
 }
+
+// ---- Sidebar ----
+export interface SidebarItemProps {
+  to: string;           // ruta a donde navega
+  label: string;        // texto visible
+  icon: React.ReactNode;// icono (un <svg> o componente)
+  onClick?: () => void; // opcional
+  className?: string;   // opcional
+    end?: boolean           // <--- NUEVO
+}
