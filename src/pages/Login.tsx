@@ -1,27 +1,35 @@
-import { useAuth } from "../context/AuthContext"
-import type { FormEvent } from "react"
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import RegisterForm from '../components/auth/RegisterForm'
+import type { Field } from '../types/ui'
 
 export function Login() {
+  const navigate = useNavigate()
+  const { login } = useAuth()
 
-    const { login } = useAuth()
+  const fields: Field[] = [
+    { name: 'userName', label: 'Username', placeholder: 'Enter your username', required: true },
+    { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter your password', required: true },
+  ]
 
-    const handleLogin = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+  const initialValues = { userName: '', password: '' }
 
-        const form = e.target as HTMLFormElement
-        const formData = new FormData(form)
+  function handleSubmit(values: Record<string, string>) {
+    login(values.userName, values.password)
+  }
 
-        const userName = formData.get("userName") as string
-        const password = formData.get("password") as string
-
-        login(userName, password)        
-    }
-
-    return (
-        <form onSubmit={handleLogin}>
-            <input type="text" placeholder="userName" name="userName" />
-            <input type="password" placeholder="password" name="password" />
-            <button type="submit">Login</button>
-        </form>
-    )
+  return (
+    <RegisterForm
+      title="Login"
+      fields={fields}
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
+      submitLabel="Login"
+      rightImageUrl="https://jzlxkxxstoryjoifaeak.supabase.co/storage/v1/object/public/AUTH%20IMG/loginImg.jpg"
+      logoUrl="https://jzlxkxxstoryjoifaeak.supabase.co/storage/v1/object/public/AUTH%20IMG/MeetzyLogo.png"
+      bottomText="Don't have an account?"
+      bottomLinkLabel="Register"
+      onBottomLink={() => navigate('/register')}
+    />
+  )
 }
