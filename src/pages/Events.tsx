@@ -1,7 +1,7 @@
 import React from "react";
 import { useEvents } from "../context/EventContext";
 import { EventCard } from "../components/EventCard";
-import Sidebar from "../components/dashboard/sidebar/sidebar";
+
 
 const EventsPage: React.FC = () => {
   const { events, updateEvent, deleteEvent } = useEvents();
@@ -17,7 +17,6 @@ const EventsPage: React.FC = () => {
 
   return (
     <>
-      <Sidebar />
       <div style={{ display: "grid", gap: 12 }}>
         <h1>Events</h1>
         {events.map((ev) => (
