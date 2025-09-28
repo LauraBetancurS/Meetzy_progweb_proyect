@@ -1,0 +1,134 @@
+/* Fondo general de la página (negro/gris) */
+.createEventPage {
+  min-height: 100dvh;
+  background: #131518; /* gris/negro */
+  padding: 12px;
+}
+
+/* Contenedor centrado */
+.createEvent__wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1.05fr 1.35fr; /* imagen | form */
+  gap: 28px;
+}
+
+/* ---- IZQUIERDA: Imagen mock ---- */
+.createEvent__imageCard {
+  padding: 8px;
+}
+
+.mockImage__frame {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0d0f13;
+  box-shadow: 0 6px 24px rgba(0,0,0,.45);
+  aspect-ratio: 1 / 1; /* cuadrada */
+  display: grid;
+  place-items: center;
+}
+
+.mockImage__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mockImage__badge {
+  position: absolute;
+  left: 14%;
+  top: 12%;
+  background: #e4504e;         /* rojo coral */
+  color: #fff;
+  font-weight: 800;
+  line-height: 1.05;
+  border-radius: 10px;
+  padding: 10px 12px;
+  transform: rotate(-6deg);
+  text-transform: lowercase;
+  font-size: clamp(18px, 2.6vw, 32px);
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+}
+
+.mockImage__camera {
+  position: absolute;
+  right: 14px;
+  bottom: 12px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #1f232a;
+  color: #fff;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+}
+
+/* ---- DERECHA: Card del formulario ---- */
+.createEvent__formCard {
+  border-radius: 16px;
+  background: #0f1216; /* panel oscuro */
+  padding: 22px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.createEvent__formCard h1 {
+  margin: 0 0 14px;
+  font-size: 24px;
+  font-weight: 800;
+  color: #f28ea7; /* rosado del título */
+}
+
+/* Overrides del formulario cuando vive dentro del card oscuro */
+.createEvent__formCard .form {
+  background: transparent;
+  border: none;
+  padding: 0;
+  gap: 14px;
+}
+
+.createEvent__formCard .form h2 { display: none; }
+
+.createEvent__formCard .form label {
+  color: #d3d7de; /* textos claros */
+}
+
+.createEvent__formCard .form input,
+.createEvent__formCard .form textarea {
+  background: #1c2128;           /* campos oscuros */
+  color: #e6eaf1;
+  border: 1px solid #2a313a;
+  border-radius: 12px;
+}
+
+.createEvent__formCard .form input::placeholder,
+.createEvent__formCard .form textarea::placeholder {
+  color: #9aa3ae;
+}
+
+/* fila de fecha/hora */
+.createEvent__formCard .form .row {
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* botón gradiente */
+.createEvent__formCard .form .primary {
+  background: linear-gradient(90deg, #ff7a8a 0%, #ffb36b 100%);
+  color: #111318;
+  font-weight: 800;
+  border: none;
+  border-radius: 14px;
+  height: 44px;
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+  .createEvent__wrap { grid-template-columns: 1fr; }
+  .mockImage__badge { left: 10%; top: 10%; }
+}
