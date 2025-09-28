@@ -1,4 +1,6 @@
+// src/components/auth/RegisterForm.tsx
 import React, { useState } from 'react'
+import PrimaryButton from '../UI/PrimaryButton'
 import SecondaryButton from '../UI/SecondaryButton'
 import type { Field, FormProps } from '../../types/ui'
 import './RegisterForm.css'
@@ -11,7 +13,7 @@ function RegisterForm(props: FormProps) {
     initialValues,
     onSubmit,
     submitLabel = 'Register',
-    secondaryLabel = 'Login',
+    secondaryLabel = 'Cancel',
     onSecondary,
     rightImageUrl,
     logoUrl,
@@ -34,6 +36,7 @@ function RegisterForm(props: FormProps) {
 
   return (
     <div className="form-wrapper">
+      {/* Izquierda */}
       <div className="form-left">
         <div className="form-left-inner">
           {logoUrl && <img src={logoUrl} alt="Meetzy" className="form-logo" />}
@@ -70,10 +73,11 @@ function RegisterForm(props: FormProps) {
               </div>
             ))}
 
+            {/* Acciones: Primary (submit) y, opcionalmente, Secondary */}
             <div className="form-actions">
-              <button type="submit" className="form-submit">
+              <PrimaryButton type="submit" fullWidth>
                 {submitLabel}
-              </button>
+              </PrimaryButton>
 
               {onSecondary && (
                 <SecondaryButton onClick={onSecondary}>
@@ -99,6 +103,7 @@ function RegisterForm(props: FormProps) {
         </div>
       </div>
 
+      {/* Derecha */}
       {rightImageUrl && (
         <div className="form-right">
           <img src={rightImageUrl} alt="Form side" />
