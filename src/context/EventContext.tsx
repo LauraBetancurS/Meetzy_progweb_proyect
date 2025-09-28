@@ -25,3 +25,29 @@ function loadInitial(): EventModel[] {
   }
   return mockEvents;
 }
+
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case "set":
+      return { events: action.payload.events };
+
+    case "add":
+      return { events: [action.payload.event, ...state.events] };
+
+    case "update": {
+      const { id, changes } = action.payload;
+      return {
+        events: state.events.map((ev) =>
+          ev.id === id ? { ...ev, ...changes, updatedAtMs: Date.now() } : ev
+        ),
+      };
+    }
+
+    case "remove":
+      return { events: state.events.filter((e) => e.id !== action.payload.id) };
+
+    default:
+      return state;
+  }
+}
