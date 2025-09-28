@@ -61,3 +61,11 @@ export interface SidebarItemProps {
   className?: string;   // opcional
     end?: boolean           // <--- NUEVO
 }
+
+// ---- SearchBar ----
+export interface SearchBarProps {
+  placeholder?: string
+  defaultValue?: string
+  onSearch: (query: string) => void
+  className?: string
+}
