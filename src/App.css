@@ -4,7 +4,24 @@
   padding: 2rem;
   text-align: center;
   font-family: "Outfit", sans-serif;
+   --bg: #1E1E1E;
+  --header-h: 64px;
+  --gap: 24px;
+  --sidebar-w: 280px;   /* ancho col. izquierda */
+  --right-w: 360px;  
 }
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg); /* Fondo global en TODA la app */
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
 
 .logo {
   height: 6em;
@@ -18,6 +35,20 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg); /* Fondo global en TODA la app */
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+
 
 @keyframes logo-spin {
   from {
