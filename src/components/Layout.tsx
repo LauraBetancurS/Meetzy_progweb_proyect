@@ -1,11 +1,12 @@
-import { Outlet } from 'react-router-dom'
-import { useApp } from '../context/AppContext'
-import Navbar from './Navbar'
+import { Outlet } from "react-router-dom";
+import { useApp } from "../context/AppContext";
+import "./Layout.css";
 
 export default function Layout() {
-  const { user, logout } = useApp()
+  const { user, logout } = useApp();
+
   return (
-    <div>
+    <div className="layout">
       <header>
         <div className="brand">Meetzy (dev)</div>
         <div>
@@ -14,13 +15,15 @@ export default function Layout() {
               <span style={{ marginRight: 8 }}>Hola, {user.name}</span>
               <button onClick={logout}>Salir</button>
             </>
-          ) : <span>Invitado</span>}
+          ) : (
+            <span>Invitado</span>
+          )}
         </div>
       </header>
-      <Navbar />
-      <main className="container">
+
+      <main>
         <Outlet />
       </main>
     </div>
-  )
+  );
 }
