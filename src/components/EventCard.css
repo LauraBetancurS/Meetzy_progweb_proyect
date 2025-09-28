@@ -14,7 +14,7 @@
 .eventCard__media {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;           /* alto consistente */
+  aspect-ratio: 16 / 8;        /* alto consistente */
   background: #0f0f0f;
   overflow: hidden;
 }
