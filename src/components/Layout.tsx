@@ -1,7 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Sidebar from '../components/dashboard/sidebar/sidebar'
-import RightColumn from './dashboard/right/RightColumn'  // ← derecha
 import './Layout.css'
 
 export default function Layout() {
@@ -9,6 +8,7 @@ export default function Layout() {
 
   return (
     <div className="app">
+      {/* Header fijo */}
       <header className="app-header">
         <div className="app-header__left">
           <img
@@ -23,19 +23,16 @@ export default function Layout() {
         </div>
       </header>
 
-      <div className="app-shell">
-        <aside className="shell-left">
+      {/* Body general: SOLO Sidebar + Outlet (contenido de cada página) */}
+      <div className="app-body">
+        <aside className="app-sidebar">
           <Sidebar />
         </aside>
 
-        <main className="shell-main">
-          <Outlet />   {/* ← la página (Dashboard) renderiza aquí */}
+        <main className="app-outlet">
+          <Outlet />
         </main>
-
-        <aside className="shell-right">
-          <RightColumn />  {/* ← calendario + banner a la derecha */}
-        </aside>
       </div>
     </div>
-  );
+  )
 }
