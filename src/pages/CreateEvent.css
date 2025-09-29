@@ -3,7 +3,7 @@
   display: grid;
   grid-template-columns: auto 1fr; /* Sidebar + contenido */
   min-height: 100vh;
-  background: #161616;
+  background: none;
 }
 
 .createEventPage__content {
