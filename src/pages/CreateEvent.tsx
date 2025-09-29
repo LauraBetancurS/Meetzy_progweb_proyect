@@ -4,7 +4,6 @@ import "./CreateEvent.css";
 import { EventForm } from "../components/EventForm/EventForm";
 import { useEvents } from "../context/EventContext";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/dashboard/sidebar/sidebar";
 
 const FALLBACK_IMG =
   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop";
@@ -15,8 +14,6 @@ const CreateEventPage: React.FC = () => {
 
   return (
     <div className="createEventPage">
-      {/* Sidebar on the left */}
-      <Sidebar />
 
       {/* Main content */}
       <div className="createEventPage__content" role="main">
