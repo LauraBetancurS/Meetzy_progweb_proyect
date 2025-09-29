@@ -107,3 +107,17 @@ export interface PromoBannerProps {
   subtitle?: string;
   className?: string;
 }
+
+// --- Composer (dashboard) ---
+export interface CommunityOption {
+  id: string;
+  name: string;
+}
+
+export interface ComposerProps {
+  /** Lista de comunidades a elegir (si no envías, el componente usa un default) */
+  communities?: CommunityOption[];
+  /** Callback cuando el usuario postea */
+  onPost: (payload: { text: string; communityId: string }) => void;
+  className?: string;
+}
