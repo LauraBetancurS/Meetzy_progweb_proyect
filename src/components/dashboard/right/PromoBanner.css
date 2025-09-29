@@ -1,0 +1,14 @@
+.promo--vertical .promo__img {
+  height: 480px;          /* alto tipo poster */
+  width: 100%;
+  object-fit: cover;
+  object-position: center; /* centra rostros/texto */
+}
+
+/* Ajustes responsivos (pantallas medianas/pequeñas) */
+@media (max-width: 1200px) {
+  .promo--vertical .promo__img { height: 360px; }
+}
+@media (max-width: 768px) {
+  .promo--vertical .promo__img { height: 300px; }
+}
