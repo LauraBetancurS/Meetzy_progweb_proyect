@@ -1,0 +1,43 @@
+/* Oculto en desktop */
+@media (min-width: 769px) {
+  .mnav__bottombar {
+    display: none !important;
+  }
+}
+
+/* Barra fija abajo */
+.mnav__bottombar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: #161616;
+  border-top: 1px solid #2a2a2a;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+}
+
+/* Botón */
+.mnav__btn {
+  flex: 1;
+  text-align: center;
+  color: #cfcfcf;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mnav__btn svg {
+  stroke: currentColor;
+  width: 26px;
+  height: 26px;
+}
+
+/* Activo */
+.mnav__btn.is-active {
+  color: #ff6b81;
+}
