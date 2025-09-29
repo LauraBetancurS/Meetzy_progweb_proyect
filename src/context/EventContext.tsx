@@ -59,7 +59,7 @@ function genId(): EventId {
    Provider
 ========================= */
 export const EventsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // ✅ Initialize directly from localStorage (or mock if empty)
+  // Initialize directly from localStorage (or mock if empty)
   const initializer = (): State => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -74,7 +74,7 @@ export const EventsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const [state, dispatch] = useReducer(reducer, { events: [] }, initializer);
 
-  // ✅ Persist every time events change
+  //  Persist every time events change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.events));
   }, [state.events]);

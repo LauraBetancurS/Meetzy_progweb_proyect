@@ -7,7 +7,7 @@ export interface EventsSectionProps {
   events: EventModel[];
   onCreate?: () => void;
   className?: string;
-  // callbacks opcionales para las cards públicas
+
   onJoin?: (event: EventModel) => void;
   onAbout?: (event: EventModel) => void;
 }
@@ -19,7 +19,7 @@ export default function EventsSection({
   onJoin,
   onAbout,
 }: EventsSectionProps) {
-  // callbacks seguros por defecto
+  
   const handleJoin = onJoin ?? (() => {});
   const handleAbout = onAbout ?? (() => {});
 

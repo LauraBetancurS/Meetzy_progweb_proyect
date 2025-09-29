@@ -1,4 +1,3 @@
-// src/components/auth/RegisterForm.tsx
 import React, { useState } from 'react'
 import PrimaryButton from '../UI/PrimaryButton'
 import SecondaryButton from '../UI/SecondaryButton'

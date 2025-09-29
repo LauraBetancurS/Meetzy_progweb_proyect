@@ -39,7 +39,7 @@ export default function Dashboard() {
     console.log("Post enviado:", { text, communityId });
   }
 
-  // 👇 Redirección al crear evento
+  // Redirección al crear evento
   function goCreateEvent() {
     navigate("/events/new");
   }
