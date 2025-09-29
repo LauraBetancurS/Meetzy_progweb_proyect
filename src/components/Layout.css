@@ -4,6 +4,9 @@
   --gap: 24px;
   --sidebar-w: 280px;
   --right-w: 360px; /* lo usa Dashboard, no el layout */
+
+  /* alto de la bottom navbar móvil (coincide con MobileNavbar.css) */
+  --mnav-h: 60px;
 }
 
 html, body, #root { height: 100%; }
@@ -33,7 +36,7 @@ body { margin: 0; background: var(--bg); color: #fff; }
 }
 .app-header__logout:hover{ background:#333; }
 
-/* ===== Body del layout: SOLO 2 columnas (Sidebar | Contenido página) ===== */
+/* ===== Body del layout: 2 columnas (Sidebar | Contenido) ===== */
 .app-body{
   min-height: calc(100vh - var(--header-h));
   display: grid;
@@ -43,9 +46,27 @@ body { margin: 0; background: var(--bg); color: #fff; }
 }
 
 .app-sidebar{ padding: 0 6px; }
-.app-outlet{ min-width: 0; }
+.app-outlet{ 
+  min-width: 0;
+  /* en desktop no necesitamos espacio extra abajo */
+  padding-bottom: 0;
+}
 
-/* Responsive: sidebar arriba y contenido abajo */
+/* ===== Responsive (≤768px) ===== */
 @media (max-width: 768px){
-  .app-body{ grid-template-columns: 1fr; }
+  /* 1 sola columna: ocultamos sidebar */
+  .app-body{ 
+    grid-template-columns: 1fr; 
+    gap: 16px;                      /* un poco menos de separación en mobile */
+    padding: 16px;                  /* menos padding lateral en mobile */
+  }
+  .app-sidebar{
+    display: none !important;       /* ocultar sidebar en mobile */
+  }
+
+  /* Dejar espacio para la bottom navbar móvil (fija) */
+  .app-outlet{
+    /* Altura de la bottom bar + un margen de respiro + safe-area-bottom si existe */
+    padding-bottom: calc(var(--mnav-h) + 16px + env(safe-area-inset-bottom));
+  }
 }
