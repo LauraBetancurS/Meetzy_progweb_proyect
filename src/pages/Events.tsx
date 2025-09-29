@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { useEvents } from "../context/EventContext";
 import { useSubscriptions } from "../context/SubscriptionsContext";
-import EventCard from "../components/EventCard"; // 👈 default import
-import PublicEventCard from "../components/PublicEventCard/PublicEventCard"; // 👈 default import
-import { SubscribedEventCard } from "../components/SubscribedEventCard/SubscribedEventCard";
+import EventCard from "../components/EventCard"; // default import
+import PublicEventCard from "../components/PublicEventCard/PublicEventCard"; // default import
+import SubscribedEventCard from "../components/SubscribedEventCard/SubscribedEventCard"; // default import
 import { PUBLIC_EVENTS } from "../mocks/publicEvents.mock";
 import "./Events.css";
 
@@ -22,6 +22,7 @@ export default function EventsPage() {
     <div className="eventsPage">
       <div className="eventsPage__content">
         <div className="eventsPage__wrap">
+          {/* Barra superior en móvil */}
           <div className="eventsPage__mobileBar">
             <h1>Eventos</h1>
             <Link to="/events/new" className="eventsPage__createBtnMobile" aria-label="Crear evento">
