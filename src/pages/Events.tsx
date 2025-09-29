@@ -28,7 +28,7 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="eventsPage">
-      <Sidebar />
+     
 
       <div className="eventsPage__content">
         <div className="eventsPage__wrap">
