@@ -1,4 +1,4 @@
-import SearchBar from '../components/dashboard/search/SearchBar' // si la usas
+import SearchBar from '../components/dashboard/search/SearchBar'
 
 export default function Dashboard() {
   function handleSearch(q: string) {
@@ -6,9 +6,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <SearchBar onSearch={handleSearch} />
-      {/* aquí el resto del contenido central */}
+      {/* aquí luego: “Dive in! Melanie”, composer, Events, etc. */}
     </div>
   )
 }
