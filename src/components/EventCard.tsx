@@ -104,8 +104,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onUpdate, onDelete 
               {event.description || "No description"}
             </p>
             <p className="eventCard__meta">
-              <strong>Fecha:</strong> {event.date}
-            </p>
+  <strong>Fecha:</strong> {event.date} ·{" "}
+  <strong>Hora:</strong> {event.startTime}
+</p>
+
 
             <div className="eventCard__footer">
               <button
