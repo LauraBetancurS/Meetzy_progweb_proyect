@@ -1,6 +1,12 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+html, body, #root { height: 100%; }
+
+/* ❗ Quita el “contenedor” centrado del template de Vite */
+#root {
+  width: 100%;
+  max-width: none;   /* <-- elimina el límite de 1280px */
+  margin: 0;         /* <-- quita margen auto */
+  padding: 0;        /* <-- quita padding */
+  text-align: initial;
 }
 * {
   box-sizing: border-box;
