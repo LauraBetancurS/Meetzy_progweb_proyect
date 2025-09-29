@@ -1,27 +1,27 @@
-import React from "react";
 import TertiaryButton from "../../UI/TertiaryButton";
-import EventCard from "../../EventCard";
+import PublicEventCard from "../../PublicEventCard/PublicEventCard";
+import type { EventModel } from "../../../types/Event";
 import "./EventsSection.css";
 
 export interface EventsSectionProps {
-  events: any[];
-  onCreate?: () => void;
-  // si quieres manejar edición/borrado desde arriba:
-  onUpdate?: (id: string, changes: Partial<any>) => void;
-  onDelete?: (id: string) => void;
+  events: EventModel[];
+  onCreate: () => void;
   className?: string;
+
+  // NUEVO: callbacks opcionales para propagar a la card
+  onJoin?: (event: EventModel) => void;
+  onAbout?: (event: EventModel) => void;
 }
 
 export default function EventsSection({
   events,
   onCreate,
-  onUpdate,
-  onDelete,
   className = "",
+  onJoin,
+  onAbout,
 }: EventsSectionProps) {
-  // no-ops por si no mandan handlers
-  const noopUpdate = React.useCallback(() => {}, []);
-  const noopDelete = React.useCallback(() => {}, []);
+  // no-op por defecto para cumplir con el tipado del hijo si lo exige
+  const noop = () => {};
 
   return (
     <section className={`dash-events ${className}`}>
@@ -33,12 +33,13 @@ export default function EventsSection({
       </div>
 
       <div className="dash-events__grid">
-        {(events || []).filter(Boolean).map((ev: any, idx: number) => (
-          <EventCard
-            key={ev?.id ?? idx}
-            event={ev}                         
-            onUpdate={onUpdate ?? noopUpdate}  
-            onDelete={onDelete ?? noopDelete}
+        {events.map((ev) => (
+          <PublicEventCard
+            key={ev.id}
+            event={ev}
+            // si el hijo requiere onJoin / onAbout, siempre enviamos algo
+            onJoin={onJoin ?? noop}
+            onAbout={onAbout ?? noop}
           />
         ))}
       </div>
