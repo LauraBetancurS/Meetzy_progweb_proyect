@@ -16,7 +16,7 @@
 /* Wrapper más ancho para cards grandes */
 .eventsPage__wrap {
   width: 100%;
-  max-width: 1500px; /* más ancho → cards más anchas */
+  max-width: 1600px; /* was 1500px → makes each card wider */
 }
 
 /* Título */
@@ -31,9 +31,10 @@
 .eventsGrid {
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(3, minmax(360px, 1fr)); /* más ancho */
+  grid-template-columns: repeat(3, minmax(420px, 1fr)); /* was 360px → wider */
   align-items: start;
 }
+
 
 /* Cada hijo ocupa todo el ancho */
 .eventsGrid > * {
@@ -41,19 +42,15 @@
 }
 
 /* ===== Breakpoints ===== */
-@media (max-width: 1280px) {
-  .eventsPage__wrap { max-width: 1280px; }
-  .eventsGrid { grid-template-columns: repeat(2, minmax(360px, 1fr)); }
+@media (max-width: 1400px) {
+  .eventsPage__wrap { max-width: 1400px; }
+  .eventsGrid { grid-template-columns: repeat(2, minmax(420px, 1fr)); }
 }
 
 @media (max-width: 900px) {
   .eventsGrid {
-    grid-template-columns: 1fr; /* 1 columna en móvil */
+    grid-template-columns: 1fr;
     gap: 18px;
   }
   .eventsPage__title { font-size: 1.7rem; }
-}
-
-@media (max-width: 520px) {
-  .eventsPage__content { padding: 18px; }
 }
