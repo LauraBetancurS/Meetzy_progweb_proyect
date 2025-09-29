@@ -1,0 +1,54 @@
+/* Global reset for layout wrapper */
+.layout {
+  background-color: #161616; /* dark background everywhere */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background-color: #161616; /* same dark background */
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #2a2a2a; /* subtle divider line */
+}
+
+/* Brand title */
+header .brand {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ff6b81; /* accent color */
+}
+
+/* User section (Hola, User / Logout button) */
+header span {
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+header button {
+  background: linear-gradient(90deg, #ff6b81, #ff4757);
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  color: #ffffff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+header button:hover {
+  opacity: 0.9;
+}
+
+/* Main content */
+main {
+  flex: 1;
+  padding: 2rem;
+  background-color: #161616; /* continue dark background */
+  color: #ffffff;
+}

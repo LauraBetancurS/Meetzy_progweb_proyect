@@ -30,7 +30,7 @@ export const EventForm: React.FC<EventFormProps> = ({ onCreate }) => {
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      <h2>Create Event</h2>
+     
 
       <label>
         Name

@@ -1,40 +1,39 @@
-import React, { createContext, useContext, useEffect, useMemo, useReducer } from "react";
+// src/context/EventContext.tsx
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+} from "react";
 import type { EventModel, EventId, NewEvent } from "../types/Event";
-import { mockEvents } from "../mocks/events.mock";
+// Si tienes un mock inicial opcional, mantenlo; si no, quita esta línea.
+import { mockEvents } from "../mocks/events.mock"; // <- si no existe quítalo o crea el archivo
 
 const STORAGE_KEY = "events:v1";
 
-// Actions & State
+/* =========================
+   Actions & State
+========================= */
+type State = {
+  events: EventModel[];
+};
+
 type Action =
+  | { type: "hydrate"; payload: { events: EventModel[] } }
   | { type: "add"; payload: { event: EventModel } }
-  | { type: "update"; payload: { id: EventId; changes: Partial<Omit<EventModel, "id" | "createdAtMs">> } }
-  | { type: "remove"; payload: { id: EventId } }
-  | { type: "set"; payload: { events: EventModel[] } };
-
-type State = { events: EventModel[] };
-
-// Lee desde localStorage si hay datos; si no, usa mocks.
-function loadInitial(): EventModel[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as EventModel[];
-      if (Array.isArray(parsed)) return parsed;
+  | {
+      type: "update";
+      payload: { id: EventId; changes: Partial<Omit<EventModel, "id" | "createdAtMs">> };
     }
-  } catch {
-    // ignore parse errors and fall back to mocks
-  }
-  return mockEvents;
-}
+  | { type: "delete"; payload: { id: EventId } };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
-    case "set":
+    case "hydrate":
       return { events: action.payload.events };
-
     case "add":
       return { events: [action.payload.event, ...state.events] };
-
     case "update": {
       const { id, changes } = action.payload;
       return {
@@ -43,37 +42,60 @@ function reducer(state: State, action: Action): State {
         ),
       };
     }
-
-    case "remove":
-      return { events: state.events.filter((e) => e.id !== action.payload.id) };
-
+    case "delete":
+      return { events: state.events.filter((ev) => ev.id !== action.payload.id) };
     default:
       return state;
   }
 }
 
-// Context
+/* =========================
+   Context API
+========================= */
 type EventsContextValue = {
   events: EventModel[];
   addEvent: (data: NewEvent) => EventModel;
-  updateEvent: (id: EventId, changes: Partial<Omit<EventModel, "id" | "createdAtMs">>) => void;
+  updateEvent: (
+    id: EventId,
+    changes: Partial<Omit<EventModel, "id" | "createdAtMs">>
+  ) => void;
   deleteEvent: (id: EventId) => void;
-  // opcional: helper para resetear a mocks si lo necesitas en algún admin
-  resetToMocks?: () => void;
 };
 
-const EventsContext = createContext<EventsContextValue | undefined>(undefined);
+const EventsContext = createContext<EventsContextValue | null>(null);
 
-// ID generator
+/* =========================
+   Provider
+========================= */
 function genId(): EventId {
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  return Math.random().toString(36).slice(2, 10);
 }
 
-export const EventsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Estado inicial desde localStorage o mocks
-  const [state, dispatch] = useReducer(reducer, { events: loadInitial() });
+const initialState: State = {
+  // Si no tienes mockEvents, arranca vacío: events: []
+  events: typeof mockEvents !== "undefined" ? mockEvents : [],
+};
 
-  // Persiste cada cambio (crear/editar/eliminar)
+export const EventsProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  // Hydrate desde localStorage al montar
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as EventModel[];
+        dispatch({ type: "hydrate", payload: { events: parsed } });
+      }
+    } catch {
+      // ignore
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persistir cambios
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state.events));
   }, [state.events]);
@@ -87,7 +109,7 @@ export const EventsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       ...data,
     };
     dispatch({ type: "add", payload: { event } });
-    return event;
+    return event; // útil para navegar con highlightId
   };
 
   const updateEvent: EventsContextValue["updateEvent"] = (id, changes) => {
@@ -95,23 +117,29 @@ export const EventsProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const deleteEvent: EventsContextValue["deleteEvent"] = (id) => {
-    dispatch({ type: "remove", payload: { id } });
-  };
-
-  const resetToMocks = () => {
-    dispatch({ type: "set", payload: { events: mockEvents } });
+    dispatch({ type: "delete", payload: { id } });
   };
 
   const value = useMemo<EventsContextValue>(
-    () => ({ events: state.events, addEvent, updateEvent, deleteEvent, resetToMocks }),
+    () => ({
+      events: state.events,
+      addEvent,
+      updateEvent,
+      deleteEvent,
+    }),
     [state.events]
   );
 
-  return <EventsContext.Provider value={value}>{children}</EventsContext.Provider>;
+  return (
+    <EventsContext.Provider value={value}>{children}</EventsContext.Provider>
+  );
 };
 
-export function useEvents() {
+/* =========================
+   Hook
+========================= */
+export const useEvents = (): EventsContextValue => {
   const ctx = useContext(EventsContext);
-  if (!ctx) throw new Error("useEvents must be used within <EventsProvider>");
+  if (!ctx) throw new Error("useEvents must be used within EventsProvider");
   return ctx;
-}
+};

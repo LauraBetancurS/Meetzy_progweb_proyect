@@ -1,0 +1,49 @@
+.promo {
+  position: relative;
+  border-radius: 16px;     /* ← radio 16px */
+  overflow: hidden;        /* ← recorta todo fuera de la tarjeta */
+  background: #111;
+  border: 1px solid #2a2a2a;
+}
+
+.promo__img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  object-position: center; /* valor base */
+  display: block;
+  filter: saturate(105%);
+}
+
+.promo__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.05));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+  gap: 6px;
+}
+
+.promo__title { font-size: 28px; font-weight: 700; }
+.promo__subtitle { font-size: 14px; color: #eaeaea; }
+
+/* ---- Ajustes para banner vertical y mostrar la parte superior del arte ---- */
+.promo--vertical .promo__img {
+  height: 480px;                 /* poster alto */
+  object-position: center 18%;   /* ↓ “baja” un poco la imagen para ver el texto superior */
+}
+
+/* Sin overlay (usamos el texto dentro de la imagen) */
+.promo--nooverlay .promo__overlay {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .promo--vertical .promo__img { height: 360px; object-position: center 15%; }
+}
+@media (max-width: 768px) {
+  .promo--vertical .promo__img { height: 300px; object-position: center 12%; }
+}
