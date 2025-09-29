@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Sidebar from '../components/dashboard/sidebar/sidebar'
+import RightColumn from './dashboard/right/RightColumn'  // ← derecha
 import './Layout.css'
 
 export default function Layout() {
@@ -28,10 +29,12 @@ export default function Layout() {
         </aside>
 
         <main className="shell-main">
-          <Outlet />
+          <Outlet />   {/* ← la página (Dashboard) renderiza aquí */}
         </main>
 
-        <aside className="shell-right">{/* paso 4 */}</aside>
+        <aside className="shell-right">
+          <RightColumn />  {/* ← calendario + banner a la derecha */}
+        </aside>
       </div>
     </div>
   )
