@@ -138,10 +138,11 @@
   transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 
-.eventCard__cancelBtn:hover {
+.eventCard__editBtn:hover {
+   background: linear-gradient(180deg, #9b5de5 0%, #6a0dad 100%); /* morado degradado *//* naranja degradado */
   transform: translateY(-1px);
-  background: #141414;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+   box-shadow: 0 10px 28px rgba(155, 93, 229, 0.55); /* glow morado *//* glow naranja */
+  filter: brightness(1.05);
 }
 
 /* ====== EDIT GRID (inputs) ====== */
