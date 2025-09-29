@@ -5,10 +5,9 @@ import "./EventsSection.css";
 
 export interface EventsSectionProps {
   events: EventModel[];
-  onCreate: () => void;
+  onCreate?: () => void;
   className?: string;
-
-  // NUEVO: callbacks opcionales para propagar a la card
+  // callbacks opcionales para las cards públicas
   onJoin?: (event: EventModel) => void;
   onAbout?: (event: EventModel) => void;
 }
@@ -20,29 +19,41 @@ export default function EventsSection({
   onJoin,
   onAbout,
 }: EventsSectionProps) {
-  // no-op por defecto para cumplir con el tipado del hijo si lo exige
-  const noop = () => {};
+  // callbacks seguros por defecto
+  const handleJoin = onJoin ?? (() => {});
+  const handleAbout = onAbout ?? (() => {});
 
   return (
     <section className={`dash-events ${className}`}>
       <div className="dash-events__head">
         <h2 className="dash-events__title">Events</h2>
-        <TertiaryButton onClick={onCreate} className="dash-events__createBtn">
+
+        <TertiaryButton
+          type="button"
+          onClick={onCreate}
+          className="dash-events__createBtn"
+          aria-label="Create a new event"
+        >
           Create event
         </TertiaryButton>
       </div>
 
-      <div className="dash-events__grid">
-        {events.map((ev) => (
-          <PublicEventCard
-            key={ev.id}
-            event={ev}
-            // si el hijo requiere onJoin / onAbout, siempre enviamos algo
-            onJoin={onJoin ?? noop}
-            onAbout={onAbout ?? noop}
-          />
-        ))}
-      </div>
+      {events?.length ? (
+        <div className="dash-events__grid">
+          {events.map((ev) => (
+            <PublicEventCard
+              key={ev.id}
+              event={ev}
+              onJoin={handleJoin}
+              onAbout={handleAbout}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="dash-events__empty">
+          <p>No public events yet.</p>
+        </div>
+      )}
     </section>
   );
 }
