@@ -27,7 +27,7 @@ export function EventsProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) return JSON.parse(raw) as EventModel[];
     } catch {
-      /* ignore parse errors */
+  
     }
     return mockEvents;
   });

@@ -2,17 +2,16 @@
 import { useNavigate } from "react-router-dom";
 import { useEvents } from "../context/EventContext";
 import { EventForm } from "../components/EventForm/EventForm";
+import type { NewEvent } from "../types/Event";
 import "./CreateEvent.css";
-
-
 
 export default function CreateEventPage() {
   const { addEvent } = useEvents();
   const navigate = useNavigate();
 
-  function handleCreate(data: Parameters<typeof addEvent>[0]) {
-    const created = addEvent(data);
-    navigate("/events", { state: { highlightId: created.id } });
+  function handleCreate(data: NewEvent) {
+    addEvent(data);           // crea y persiste en contexto + localStorage
+    navigate("/events");      // redirige a la lista de eventos
   }
 
   return (
