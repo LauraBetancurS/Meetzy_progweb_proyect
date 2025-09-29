@@ -1,65 +1,89 @@
-import React, { useState } from "react";
-
+import { useState } from "react";
 import type { NewEvent } from "../../types/Event";
-import "./EventForm.css"; 
+import "./EventForm.css";
 
-export type EventFormProps = { onCreate: (data: NewEvent) => void };
+export type EventFormProps = {
+  onCreate: (data: NewEvent) => void;
+};
 
-export const EventForm: React.FC<EventFormProps> = ({ onCreate }) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [place, setPlace] = useState("");
-  const [date, setDate] = useState("");           // YYYY-MM-DD
-  const [startTime, setStartTime] = useState(""); // HH:MM
+export function EventForm({ onCreate }: EventFormProps) {
+  const [form, setForm] = useState<NewEvent>({
+    name: "",
+    description: "",
+    place: "",
+    date: "",
+    startTime: "",
+  });
 
-  const canSubmit = name.trim() && place.trim() && date && startTime;
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  }
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!form.name.trim() || !form.place.trim() || !form.date || !form.startTime) return;
+
     onCreate({
-      name: name.trim(),
-      description: description.trim(),
-      place: place.trim(),
-      date,
-      startTime,
+      ...form,
+      name: form.name.trim(),
+      description: form.description.trim(),
+      place: form.place.trim(),
     });
+
     // reset
-    setName(""); setDescription(""); setPlace(""); setDate(""); setStartTime("");
-  };
+    setForm({ name: "", description: "", place: "", date: "", startTime: "" });
+  }
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-     
-
       <label>
-        Name
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Event name" required />
+        Nombre
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          placeholder="Nombre del evento"
+          required
+        />
       </label>
 
       <label>
-        Description
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What is it about?" />
+        Descripción
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          placeholder="¿De qué se trata?"
+        />
       </label>
 
       <label>
-        Place
-        <input value={place} onChange={(e) => setPlace(e.target.value)} placeholder="Where" required />
+        Lugar
+        <input
+          name="place"
+          value={form.place}
+          onChange={handleChange}
+          placeholder="Dónde será"
+          required
+        />
       </label>
 
       <div className="row">
         <label>
-          Date
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+          Fecha
+          <input type="date" name="date" value={form.date} onChange={handleChange} required />
         </label>
 
         <label>
-          Start time
-          <input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} required />
+          Hora
+          <input type="time" name="startTime" value={form.startTime} onChange={handleChange} required />
         </label>
       </div>
 
-      <button className="primary" type="submit" disabled={!canSubmit}>Create Event</button>
+      <button className="primary" type="submit">
+        Crear evento
+      </button>
     </form>
   );
-};
+}
