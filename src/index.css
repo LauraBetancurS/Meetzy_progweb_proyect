@@ -1,79 +1,14 @@
-html, body, #root { height: 100%; }
+html, body, #root { 
+  height: 100%; 
+}
 
-/* ❗ Quita el “contenedor” centrado del template de Vite */
 #root {
   width: 100%;
-  max-width: none;   /* <-- elimina el límite de 1280px */
-  margin: 0;         /* <-- quita margen auto */
-  padding: 0;        /* <-- quita padding */
+  max-width: none;   /* elimina límite de 1280px */
+  margin: 0;         
+  padding: 0;        
   text-align: initial;
-}
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-}
-a {
-  text-decoration: none;
-}
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #e5e5e5;
-}
-.brand {
-  font-weight: 800;
-  letter-spacing: 0.2px;
-}
-.container {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-nav.devbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: #fafafa;
-  border-bottom: 1px solid #eee;
-}
-nav.devbar a {
-  padding: 0.35rem 0.6rem;
-  border-radius: 0.5rem;
-  border: 1px solid #e5e5e5;
-}
-nav.devbar a.active {
-  background: #efefef;
-}
-.btns {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0.75rem 0 0;
-}
-button,
-.btn-link {
-  padding: 0.5rem 0.7rem;
-  border-radius: 0.5rem;
-  border: 1px solid #ddd;
-  background: #fff;
-  cursor: pointer;
-}
-button:hover,
-.btn-link:hover {
-  background: #f6f6f6;
-}
 
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  font-family: "Outfit", sans-serif;
   --bg: #1e1e1e;
   --header-h: 64px;
   --gap: 24px;
@@ -83,29 +18,26 @@ button:hover,
 
 * {
   box-sizing: border-box;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
-html,
-body,
-#root {
-  height: 100%;
-}
+
 body {
   margin: 0;
   background: var(--bg); /* Fondo global en TODA la app */
   color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI", Roboto,
-    Arial, sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 img {
   display: block;
   max-width: 100%;
 }
-a {
-  color: inherit;
-  text-decoration: none;
-}
 
+/* ===== Animaciones / estilos existentes ===== */
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -119,38 +51,9 @@ a {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-* {
-  box-sizing: border-box;
-}
-html,
-body,
-#root {
-  height: 100%;
-}
-body {
-  margin: 0;
-  background: var(--bg); /* Fondo global en TODA la app */
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Segoe UI", Roboto,
-    Arial, sans-serif;
-}
-
-img {
-  display: block;
-  max-width: 100%;
-}
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
 @keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
