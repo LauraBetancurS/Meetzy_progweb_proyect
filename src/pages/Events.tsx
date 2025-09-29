@@ -6,7 +6,6 @@ import { EventCard } from "../components/EventCard";
 import { PublicEventCard } from "../components/PublicEventCard/PublicEventCard";
 import { SubscribedEventCard } from "../components/SubscribedEventCard/SubscribedEventCard";
 import { PUBLIC_EVENTS } from "../mocks/publicEvents.mock";
-import Sidebar from "../components/dashboard/sidebar/sidebar";
 import "./Events.css";
 
 const EventsPage: React.FC = () => {
@@ -28,7 +27,6 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="eventsPage">
-      <Sidebar />
 
       <div className="eventsPage__content">
         <div className="eventsPage__wrap">
