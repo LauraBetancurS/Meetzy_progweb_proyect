@@ -19,7 +19,7 @@ function genId(): EventId {
   return Math.random().toString(36).slice(2, 10);
 }
 
-/** --------- Provider (sin React.FC) ---------- */
+/** --------- Provider ---------- */
 export function EventsProvider({ children }: { children: React.ReactNode }) {
   // Lazy init: intenta cargar de localStorage, si no, usa mocks
   const [events, setEvents] = useState<EventModel[]>(() => {
@@ -27,7 +27,6 @@ export function EventsProvider({ children }: { children: React.ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) return JSON.parse(raw) as EventModel[];
     } catch {
-  
     }
     return mockEvents;
   });
@@ -37,25 +36,20 @@ export function EventsProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
   }, [events]);
 
-  // Crear
+
   function addEvent(data: NewEvent): EventModel {
-    const now = Date.now();
     const created: EventModel = {
       id: genId(),
-      createdAtMs: now,
-      updatedAtMs: now,
       ...data,
     };
     setEvents((prev) => [created, ...prev]);
     return created;
   }
 
-  // Actualizar
+
   function updateEvent(id: EventId, changes: Partial<EventModel>) {
     setEvents((prev) =>
-      prev.map((ev) =>
-        ev.id === id ? { ...ev, ...changes, updatedAtMs: Date.now() } : ev
-      )
+      prev.map((ev) => (ev.id === id ? { ...ev, ...changes } : ev))
     );
   }
 

@@ -10,10 +10,8 @@ export type EventModel = {
   place: string;
   date: string;        // YYYY-MM-DD
   startTime: string;   // HH:MM
-  createdAtMs: number;
-  updatedAtMs: number;
   imageUrl?: string;   // opcional, para cards públicas/suscritas
 };
 
-// Datos para crear un evento (sin id ni timestamps)
-export type NewEvent = Omit<EventModel, "id" | "createdAtMs" | "updatedAtMs">;
+// Datos para crear un evento (sin id)
+export type NewEvent = Omit<EventModel, "id">;
