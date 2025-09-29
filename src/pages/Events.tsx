@@ -1,10 +1,8 @@
-// src/pages/Events.tsx
-import React, { useMemo } from "react";
-import { Link } from "react-router-dom"; // 👈 nuevo
+import { Link } from "react-router-dom";
 import { useEvents } from "../context/EventContext";
 import { useSubscriptions } from "../context/SubscriptionsContext";
-import { EventCard } from "../components/EventCard";
-import { PublicEventCard } from "../components/PublicEventCard/PublicEventCard";
+import EventCard from "../components/EventCard"; // 👈 default import
+import PublicEventCard from "../components/PublicEventCard/PublicEventCard"; // 👈 default import
 import { SubscribedEventCard } from "../components/SubscribedEventCard/SubscribedEventCard";
 import { PUBLIC_EVENTS } from "../mocks/publicEvents.mock";
 import "./Events.css";
@@ -13,33 +11,28 @@ export default function EventsPage() {
   const { events, updateEvent, deleteEvent } = useEvents();
   const { subscribed, join, leave } = useSubscriptions();
 
-  const handleAbout = (ev: { name: string }) => {
-    alert(`About: ${ev.name}`);
-  };
+  function handleAbout(ev: { name: string }) {
+    alert(`Acerca de: ${ev.name}`);
+  }
 
-  const availablePublic = useMemo(
-    () => PUBLIC_EVENTS.filter((pub) => !subscribed.some((s) => s.id === pub.id)),
-    [subscribed]
-  );
+  const subscribedIds = new Set(subscribed.map((s) => s.id));
+  const availablePublic = PUBLIC_EVENTS.filter((pub) => !subscribedIds.has(pub.id));
 
   return (
     <div className="eventsPage">
       <div className="eventsPage__content">
         <div className="eventsPage__wrap">
-          {/* === Mobile-only top bar === */}
           <div className="eventsPage__mobileBar">
-            <h1>Events</h1>
-            <Link to="/events/new" className="eventsPage__createBtnMobile" aria-label="Create event">
+            <h1>Eventos</h1>
+            <Link to="/events/new" className="eventsPage__createBtnMobile" aria-label="Crear evento">
               Crear evento
             </Link>
           </div>
 
-          {/* 1) My events */}
-          <h1 className="eventsPage__title">My events</h1>
+          {/* Mis eventos */}
+          <h1 className="eventsPage__title">Mis eventos</h1>
           {events.length === 0 ? (
-            <p style={{ color: "#cfcfcf", margin: "0 0 16px 6px" }}>
-              You haven't created events yet. Go to “Create Event”.
-            </p>
+            <p className="eventsPage__empty">Aún no has creado eventos. Ve a “Crear evento”.</p>
           ) : (
             <div className="eventsGrid">
               {events.map((ev) => (
@@ -48,14 +41,12 @@ export default function EventsPage() {
             </div>
           )}
 
-          {/* 2) Subscribed events */}
+          {/* Suscripciones */}
           <h2 className="eventsPage__title" style={{ marginTop: 28 }}>
-            Subscribed events
+            Eventos suscritos
           </h2>
           {subscribed.length === 0 ? (
-            <p style={{ color: "#cfcfcf", margin: "0 0 16px 6px" }}>
-              You haven't joined any events yet.
-            </p>
+            <p className="eventsPage__empty">No te has unido a ningún evento.</p>
           ) : (
             <div className="eventsGrid">
               {subscribed.map((ev) => (
@@ -64,14 +55,12 @@ export default function EventsPage() {
             </div>
           )}
 
-          {/* 3) Public / existing events (filtered) */}
+          {/* Públicos */}
           <h2 className="eventsPage__title" style={{ marginTop: 28 }}>
-            Events
+            Eventos disponibles
           </h2>
           {availablePublic.length === 0 ? (
-            <p style={{ color: "#cfcfcf", margin: "0 0 16px 6px" }}>
-              All caught up! You’ve joined every available event.
-            </p>
+            <p className="eventsPage__empty">¡Ya te uniste a todos los eventos!</p>
           ) : (
             <div className="eventsGrid">
               {availablePublic.map((ev) => (

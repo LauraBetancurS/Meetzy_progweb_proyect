@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-
+import { useState } from "react";
 import type { EventModel } from "../types/Event";
-import "./EventCard.css"; 
+import "./EventCard.css";
 
 export type EventCardProps = {
   event: EventModel;
@@ -9,13 +8,10 @@ export type EventCardProps = {
   onDelete: (id: string) => void;
 };
 
-// Imagen por defecto (pon un archivo en public/img/default-event.jpg)
-// O usa esta URL temporal:
 const DEFAULT_IMG =
-  "https://media.istockphoto.com/id/1330424071/es/foto/gran-grupo-de-personas-en-una-fiesta-de-concierto.jpg?s=612x612&w=0&k=20&c=D-c2OQ-qk7g7CXHDWXz_qLWLffiJYSYb6lj1hYGQxGw="; // ejemplo local: coloca una imagen en public/img/default-event.jpg
-  // "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop";
+  "https://media.istockphoto.com/id/1330424071/es/foto/gran-grupo-de-personas-en-una-fiesta-de-concierto.jpg?s=612x612&w=0&k=20&c=D-c2OQ-qk7g7CXHDWXz_qLWLffiJYSYb6lj1hYGQxGw=";
 
-export const EventCard: React.FC<EventCardProps> = ({ event, onUpdate, onDelete }) => {
+export default function EventCard({ event, onUpdate, onDelete }: EventCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState({
     name: event.name,
@@ -25,12 +21,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onUpdate, onDelete 
     startTime: event.startTime,
   });
 
-  const save = () => {
+  function save() {
     onUpdate(event.id, draft);
     setIsEditing(false);
-  };
+  }
 
-  const cancel = () => {
+  function cancel() {
     setDraft({
       name: event.name,
       description: event.description,
@@ -39,45 +35,36 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onUpdate, onDelete 
       startTime: event.startTime,
     });
     setIsEditing(false);
-  };
+  }
 
   return (
     <div className="eventCard">
-      {/* MEDIA superior (solo en vista normal) */}
       {!isEditing && (
         <div className="eventCard__media">
-          <img
-            className="eventCard__img"
-            src={DEFAULT_IMG}
-            alt={event.name}
-          />
-          <button
-            className="eventCard__delete"
-            onClick={() => onDelete(event.id)}
-          >
-            Delete
+          <img className="eventCard__img" src={DEFAULT_IMG} alt={event.name} />
+          <button className="eventCard__delete" onClick={() => onDelete(event.id)}>
+            Eliminar
           </button>
         </div>
       )}
 
-      {/* BODY */}
       <div className="eventCard__body">
         {isEditing ? (
           <div className="eventCard__editGrid">
             <input
               value={draft.name}
               onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-              placeholder="Event name"
+              placeholder="Nombre del evento"
             />
             <textarea
               value={draft.description}
               onChange={(e) => setDraft({ ...draft, description: e.target.value })}
-              placeholder="Description"
+              placeholder="Descripción"
             />
             <input
               value={draft.place}
               onChange={(e) => setDraft({ ...draft, place: e.target.value })}
-              placeholder="Place"
+              placeholder="Lugar"
             />
             <div className="eventCard__row">
               <input
@@ -93,28 +80,27 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onUpdate, onDelete 
             </div>
 
             <div className="eventCard__footer">
-              <button className="eventCard__editBtn" onClick={save}>Save</button>
-              <button className="eventCard__cancelBtn" onClick={cancel}>Cancel</button>
+              <button className="eventCard__editBtn" onClick={save}>
+                Guardar
+              </button>
+              <button className="eventCard__cancelBtn" onClick={cancel}>
+                Cancelar
+              </button>
             </div>
           </div>
         ) : (
           <>
             <h3 className="eventCard__title">{event.name}</h3>
-            <p className="eventCard__description">
-              {event.description || "No description"}
-            </p>
+            <p className="eventCard__description">{event.description || "Sin descripción"}</p>
             <p className="eventCard__meta">
-  <strong>Fecha:</strong> {event.date} ·{" "}
-  <strong>Hora:</strong> {event.startTime}
-</p>
-
+              <strong>Lugar:</strong> {event.place || "—"} ·{" "}
+              <strong>Fecha:</strong> {event.date} ·{" "}
+              <strong>Hora:</strong> {event.startTime}
+            </p>
 
             <div className="eventCard__footer">
-              <button
-                className="eventCard__editBtn"
-                onClick={() => setIsEditing(true)}
-              >
-                Edit event
+              <button className="eventCard__editBtn" onClick={() => setIsEditing(true)}>
+                Editar evento
               </button>
             </div>
           </>
@@ -122,6 +108,4 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onUpdate, onDelete 
       </div>
     </div>
   );
-};
-
-export default EventCard;
+}
