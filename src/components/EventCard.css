@@ -14,7 +14,8 @@
 .eventCard__media {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 8;        /* alto consistente */
+  /* más bajita que 16/8 → reduce altura de la card */
+  aspect-ratio: 21 / 7;           /* ~3:1 */
   background: #0f0f0f;
   overflow: hidden;
 }
@@ -56,29 +57,36 @@
 
 /* ====== BODY ====== */
 .eventCard__body {
-  padding: 18px 20px 16px;
-  background: #2a2a2a;            /* separa visualmente de la imagen como en mock */
+  /* menos padding → reduce altura total */
+  padding: 14px 16px;
+  background: #2a2a2a;
 }
 
 /* Título / descripción / meta */
 .eventCard__title {
-  margin: 0 0 6px 0;
-  font-size: 1.6rem;
+  margin: 2px 0 6px 0;
+  font-size: 1.45rem;             /* was 1.6rem */
   font-weight: 800;
   letter-spacing: 0.2px;
   color: #ffffff;
 }
 
+/* 2 líneas como máximo para que no crezca */
 .eventCard__description {
-  margin: 0 0 12px 0;
-  font-size: 1rem;
-  line-height: 1.5;
+  margin: 0 0 10px 0;             /* was 12px */
+  font-size: 0.97rem;             /* was 1rem */
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;          /* clamp to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 3.0em;              /* fallback */
   color: #bdbdbd;
 }
 
 .eventCard__meta {
-  margin: 0 0 14px 0;
-  font-size: 0.98rem;
+  margin: 0 0 10px 0;             /* was 14px */
+  font-size: 0.94rem;             /* was 0.98rem */
   color: #cfcfcf;
 }
 
@@ -92,7 +100,7 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding-top: 4px;
+  padding-top: 2px;               /* was 4px */
 }
 
 /* Botón rosa como el mock */
@@ -172,8 +180,8 @@
 
 /* ====== MODO RESPONSIVE ====== */
 @media (max-width: 520px) {
-  .eventCard__title { font-size: 1.35rem; }
-  .eventCard__description { font-size: 0.95rem; }
+  .eventCard__title { font-size: 1.3rem; }
+  .eventCard__description { font-size: 0.94rem; }
   .eventCard__delete { padding: 8px 14px; font-size: 0.9rem; }
   .eventCard__row { grid-template-columns: 1fr; }
 }
