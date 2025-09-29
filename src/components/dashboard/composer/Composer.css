@@ -1,0 +1,103 @@
+/* Card del composer */
+.composer {
+  background: #222222;              /* <-- solicitado */
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---- Encabezado ---- */
+.composer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.composer__label {
+  font-size: 14px;
+  color: #d7d7d7;
+}
+
+/* Selector (look de botón rosa, pero simple por ahora) */
+.composer__select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.composer__select select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: linear-gradient(90deg, #ff7a7a, #ff4f85);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 28px 8px 10px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+.composer__select select:hover {
+  background: linear-gradient(90deg, #e86c6c, #e04477);
+}
+.composer__caret {
+  position: absolute;
+  right: 10px;
+  pointer-events: none;
+  font-size: 12px;
+}
+
+/* ---- Cuerpo ---- */
+.composer__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.composer__input {
+  width: 100%;
+  min-height: 68px;
+  resize: vertical;
+  background: transparent;
+  color: #fff;
+  border: 2px solid #2e2e2e;
+  border-radius: 10px;
+  padding: 12px 14px;
+  outline: none;
+}
+.composer__input:focus {
+  border-color: #ff6b8a;
+}
+
+/* ---- Acciones ---- */
+.composer__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Botón de icono: coherente con la UI (oscuro, borde tenue) */
+.composer__iconBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+  background: #161616;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.composer__iconBtn:hover {
+  background: #1d1d1d;
+}
+
+/* Botón terciario (se apoya en tu componente) */
+.composer__postBtn {
+  min-width: 110px;
+}
