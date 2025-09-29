@@ -123,3 +123,5 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onUpdate, onDelete 
     </div>
   );
 };
+
+export default EventCard;
