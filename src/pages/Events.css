@@ -1,0 +1,56 @@
+/* ===== Página (convive con tu Sidebar) ===== */
+.eventsPage {
+  background: #161616;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: auto 1fr; /* sidebar | contenido */
+}
+
+/* Contenedor del contenido */
+.eventsPage__content {
+  padding: 28px;
+  display: flex;
+  justify-content: center; /* centra el wrapper */
+}
+
+/* Wrapper más ancho para cards grandes */
+.eventsPage__wrap {
+  width: 100%;
+  max-width: 1600px; /* was 1500px → makes each card wider */
+}
+
+/* Título */
+.eventsPage__title {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 18px 6px;
+}
+
+/* ===== GRID de tarjetas ===== */
+.eventsGrid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(3, minmax(420px, 1fr)); /* was 360px → wider */
+  align-items: start;
+}
+
+
+/* Cada hijo ocupa todo el ancho */
+.eventsGrid > * {
+  width: 100%;
+}
+
+/* ===== Breakpoints ===== */
+@media (max-width: 1400px) {
+  .eventsPage__wrap { max-width: 1400px; }
+  .eventsGrid { grid-template-columns: repeat(2, minmax(420px, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .eventsGrid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .eventsPage__title { font-size: 1.7rem; }
+}

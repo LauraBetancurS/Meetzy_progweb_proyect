@@ -84,3 +84,26 @@ export interface PromoBannerProps {
   subtitle?: string;
   className?: string;
 }
+
+// ---- SearchBar ----
+export interface SearchBarProps {
+  placeholder?: string
+  defaultValue?: string
+  onSearch: (query: string) => void
+  className?: string
+}
+
+// ---- Right column ----
+export interface CalendarProps {
+  value?: Date | null;
+  onChange?: (date: Date) => void;
+  startOnMonday?: boolean; // default: true
+  className?: string;
+}
+
+export interface PromoBannerProps {
+  imageUrl: string;
+  title?: string;
+  subtitle?: string;
+  className?: string;
+}

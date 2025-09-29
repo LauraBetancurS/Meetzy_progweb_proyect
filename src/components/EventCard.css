@@ -1,0 +1,187 @@
+/* ====== CARD WRAPPER ====== */
+.eventCard {
+  background: #1f1f1f;            /* contraste sutil sobre #161616 */
+  color: #f2f2f2;
+  border-radius: 22px;
+  overflow: hidden;                /* para que imagen y botones respeten el radio */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ====== MEDIA (IMAGEN) ====== */
+.eventCard__media {
+  position: relative;
+  width: 100%;
+  /* más bajita que 16/8 → reduce altura de la card */
+  aspect-ratio: 21 / 7;           /* ~3:1 */
+  background: #0f0f0f;
+  overflow: hidden;
+}
+
+.eventCard__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ====== BOTÓN DELETE (FLOTANTE) ====== */
+.eventCard__delete {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #0e0e0e;
+  color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
+}
+
+.eventCard__delete:hover {
+  transform: translateY(-1px);
+  background: #141414;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+}
+
+.eventCard__delete:active {
+  transform: translateY(0);
+}
+
+/* ====== BODY ====== */
+.eventCard__body {
+  /* menos padding → reduce altura total */
+  padding: 14px 16px;
+  background: #2a2a2a;
+}
+
+/* Título / descripción / meta */
+.eventCard__title {
+  margin: 2px 0 6px 0;
+  font-size: 1.45rem;             /* was 1.6rem */
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #ffffff;
+}
+
+/* 2 líneas como máximo para que no crezca */
+.eventCard__description {
+  margin: 0 0 10px 0;             /* was 12px */
+  font-size: 0.97rem;             /* was 1rem */
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;          /* clamp to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 3.0em;              /* fallback */
+  color: #bdbdbd;
+}
+
+.eventCard__meta {
+  margin: 0 0 10px 0;             /* was 14px */
+  font-size: 0.94rem;             /* was 0.98rem */
+  color: #cfcfcf;
+}
+
+.eventCard__meta strong {
+  font-weight: 700;
+  color: #e5e5e5;
+}
+
+/* ====== FOOTER / ACCIONES ====== */
+.eventCard__footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding-top: 2px;               /* was 4px */
+}
+
+/* Botón rosa como el mock */
+.eventCard__editBtn {
+  border: none;
+  outline: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  background: linear-gradient(180deg, #ff7a8d 0%, #ff6b81 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(255, 107, 129, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.eventCard__editBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(255, 107, 129, 0.45);
+  filter: brightness(1.03);
+}
+
+/* Botón cancelar (modo edición) */
+.eventCard__cancelBtn {
+  margin-left: 10px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: #0e0e0e;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.eventCard__cancelBtn:hover {
+  transform: translateY(-1px);
+  background: #141414;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.5);
+}
+
+/* ====== EDIT GRID (inputs) ====== */
+.eventCard__editGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.eventCard__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.eventCard input,
+.eventCard textarea {
+  width: 100%;
+  background: #141414;
+  color: #e8e8e8;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.eventCard textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* ====== HOVER SUTIL DE TARJETA ====== */
+.eventCard:hover {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+  border-color: rgba(255,255,255,0.09);
+}
+
+/* ====== MODO RESPONSIVE ====== */
+@media (max-width: 520px) {
+  .eventCard__title { font-size: 1.3rem; }
+  .eventCard__description { font-size: 0.94rem; }
+  .eventCard__delete { padding: 8px 14px; font-size: 0.9rem; }
+  .eventCard__row { grid-template-columns: 1fr; }
+}

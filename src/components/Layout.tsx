@@ -37,5 +37,5 @@ export default function Layout() {
         </aside>
       </div>
     </div>
-  )
+  );
 }
