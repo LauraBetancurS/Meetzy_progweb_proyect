@@ -1,3 +1,6 @@
+// src/types/Event.ts
+
+// Identificador de evento (simple alias, útil para autocompletado)
 export type EventId = string;
 
 export type EventModel = {
@@ -5,14 +8,12 @@ export type EventModel = {
   name: string;
   description: string;
   place: string;
-  /** Date as YYYY-MM-DD */
-  date: string;
-  /** Time as HH:MM (24h) */
-  startTime: string;
-
-  /** Timestamps (ms since epoch), no ISO strings */
+  date: string;        // YYYY-MM-DD
+  startTime: string;   // HH:MM
   createdAtMs: number;
   updatedAtMs: number;
+  imageUrl?: string;   // opcional, para cards públicas/suscritas
 };
 
+// Datos para crear un evento (sin id ni timestamps)
 export type NewEvent = Omit<EventModel, "id" | "createdAtMs" | "updatedAtMs">;
