@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import Sidebar from '../components/dashboard/sidebar/sidebar'
+import MobileNavbar from '../components/mobile-navbar/MobileNavbar'
 import './Layout.css'
 
 export default function Layout() {
@@ -23,7 +24,7 @@ export default function Layout() {
         </div>
       </header>
 
-      {/* Body general: SOLO Sidebar + Outlet (contenido de cada página) */}
+      {/* Body general: Sidebar (desktop) + Outlet */}
       <div className="app-body">
         <aside className="app-sidebar">
           <Sidebar />
@@ -33,6 +34,9 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Navbar solo en mobile (≤768px) */}
+      <MobileNavbar />
     </div>
   )
 }
