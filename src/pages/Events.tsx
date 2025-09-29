@@ -1,5 +1,5 @@
 // src/pages/Events.tsx
-import React, { useMemo } from "react";              // 👈 add useMemo
+import React, { useMemo } from "react";             
 import { useEvents } from "../context/EventContext";
 import { useSubscriptions } from "../context/SubscriptionsContext";
 import { EventCard } from "../components/EventCard";
