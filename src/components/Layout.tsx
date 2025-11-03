@@ -1,11 +1,17 @@
-import { Outlet } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import Sidebar from '../components/dashboard/sidebar/sidebar'
-import MobileNavbar from '../components/mobile-navbar/MobileNavbar'
-import './Layout.css'
+import { Outlet } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { logout } from "../redux/slices/AuthSlice";
+import Sidebar from "../components/dashboard/sidebar/sidebar";
+import MobileNavbar from "../components/mobile-navbar/MobileNavbar";
+import "./Layout.css";
 
 export default function Layout() {
-  const { user, logout } = useAuth()
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
+
+  function handleLogout() {
+    dispatch(logout());
+  }
 
   return (
     <div className="app">
@@ -19,8 +25,10 @@ export default function Layout() {
           />
         </div>
         <div className="app-header__right">
-          <span className="app-header__greet">Hola, {user?.userName ?? 'User'}</span>
-          <button className="app-header__logout" onClick={logout}>Logout</button>
+          <span className="app-header__greet">Hola, {user?.userName ?? "User"}</span>
+          <button className="app-header__logout" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </header>
 
@@ -38,5 +46,5 @@ export default function Layout() {
       {/* Navbar solo en mobile (≤768px) */}
       <MobileNavbar />
     </div>
-  )
+  );
 }
