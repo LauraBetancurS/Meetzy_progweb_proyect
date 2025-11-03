@@ -1,0 +1,200 @@
+:root{
+  --card-bg: #1f1f1f;
+  --card-body: #2a2a2a;
+  --txt: #f2f2f2;
+  --muted: #bdbdbd;
+  --meta: #cfcfcf;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.12);
+  --accent: #ff6b81;
+  --shadow: 0 8px 24px rgba(0,0,0,0.35);
+  --radius: 22px;
+}
+
+/* ====== CARD WRAPPER ====== */
+.eventCard {
+  background: var(--card-bg);
+  color: var(--txt);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .25s ease, border-color .25s ease;
+}
+
+.eventCard:hover {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+  border-color: rgba(255,255,255,0.12);
+}
+
+/* ====== MEDIA (IMAGEN) ====== */
+.eventCard__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 21 / 7; /* desktop más panorámico */
+  background: #0f0f0f;
+  overflow: hidden;
+}
+
+.eventCard__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ====== DELETE FLOAT BTN ====== */
+.eventCard__delete {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #0e0e0e;
+  color: #ffffff;
+  border: 1px solid var(--border-strong);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+  user-select: none;
+}
+
+.eventCard__delete:hover { transform: translateY(-1px); background:#141414; }
+.eventCard__delete:active { transform: translateY(0); }
+.eventCard__delete:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ====== BODY ====== */
+.eventCard__body {
+  padding: 14px 16px;
+  background: var(--card-body);
+}
+
+.eventCard__title {
+  margin: 2px 0 6px 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: #fff;
+}
+
+.eventCard__description {
+  margin: 0 0 10px 0;
+  font-size: .97rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-height: 3em;
+  color: var(--muted);
+}
+
+.eventCard__meta {
+  margin: 0 0 10px 0;
+  font-size: .94rem;
+  color: var(--meta);
+}
+.eventCard__meta strong { color: #e5e5e5; }
+
+/* ====== FOOTER / ACCIONES ====== */
+.eventCard__footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+/* Botón principal (rosa) */
+.eventCard__editBtn {
+  border: none;
+  outline: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .95rem;
+  cursor: pointer;
+  background: linear-gradient(180deg, #ff7a8d 0%, var(--accent) 100%);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(255, 107, 129, 0.35);
+  transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+}
+.eventCard__editBtn:hover { transform: translateY(-1px); filter: brightness(1.03); }
+.eventCard__editBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Botón secundario (cancel / about) */
+.eventCard__cancelBtn {
+  border: 1px solid var(--border-strong);
+  background: #0e0e0e;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+}
+.eventCard__cancelBtn:hover { background:#141414; transform: translateY(-1px); }
+.eventCard__cancelBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ====== EDIT GRID (inputs) ====== */
+.eventCard__editGrid { display: grid; gap: 12px; }
+
+.eventCard__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.eventCard input,
+.eventCard textarea {
+  width: 100%;
+  background: #141414;
+  color: #e8e8e8;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+}
+.eventCard input:focus,
+.eventCard textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255, 107, 129, .25);
+}
+
+.eventCard textarea { min-height: 80px; resize: vertical; }
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 900px) {
+  .eventCard__media { aspect-ratio: 16 / 9; } /* en tablets/móvil se ve mejor */
+}
+
+@media (max-width: 520px) {
+  .eventCard__title { font-size: 1.3rem; }
+  .eventCard__description { font-size: .94rem; }
+  .eventCard__meta { font-size: .9rem; }
+  .eventCard__delete { padding: 8px 14px; font-size: .9rem; }
+  .eventCard__row { grid-template-columns: 1fr; }
+  .eventCard__footer { gap: 8px; }
+  .eventCard__editBtn, .eventCard__cancelBtn { padding: 10px 14px; font-size: .92rem; }
+}
+
+@media (max-width: 360px) {
+  .eventCard__body { padding: 12px 12px; }
+  .eventCard__title { font-size: 1.15rem; }
+  .eventCard__editBtn, .eventCard__cancelBtn { padding: 9px 12px; font-size: .88rem; }
+}
+
+/* Accesibilidad: respetar reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .eventCard, .eventCard__delete, .eventCard__editBtn, .eventCard__cancelBtn {
+    transition: none !important;
+  }
+}

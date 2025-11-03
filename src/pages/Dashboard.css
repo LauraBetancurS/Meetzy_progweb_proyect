@@ -1,0 +1,39 @@
+/* Grid INTERNO del Dashboard
+   Total de la página = 3 columnas:
+   - Izquierda: la Sidebar del Layout
+   - Centro + Derecha: este grid de abajo
+*/
+.dash-grid{
+  display: grid;
+  grid-template-columns: 1fr var(--right-w); /* centro | derecha */
+  gap: 24px;
+  min-width: 0;
+}
+
+/* Centro */
+.dash-center{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.dash-hero{ display:flex; flex-direction:column; gap:6px; }
+.dash-title{ font-size: 32px; font-weight: 800; margin: 0; }
+.dash-title span{ color:#fff; }
+.dash-sub{ color:#bdbdbd; margin: 0; }
+
+/* Derecha (stickiness bajo el header) */
+.dash-right{
+  position: sticky;
+  top: var(--gap);
+  align-self: start;
+}
+
+/* En pantallas medianas, colapsa a una sola columna (oculta derecha) */
+@media (max-width: 1200px){
+  .dash-grid{
+    grid-template-columns: 1fr;
+  }
+  .dash-right{ display:none; }
+}

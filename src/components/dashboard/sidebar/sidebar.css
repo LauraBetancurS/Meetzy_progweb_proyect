@@ -1,0 +1,92 @@
+/* Tarjeta del sidebar “flotando” dentro de la columna izquierda */
+.sb {
+  /* deja de ser un panel pegado al borde y pasa a ser una tarjeta */
+  position: sticky;
+  top: var(--gap);               /* se pega bajo el header dejando el gap */
+  background: #151515;           /* tarjeta oscura */
+  border: 1px solid #262626;
+  border-radius: 14px;
+  padding: 18px 14px;
+
+  /* NO ocupar todo el ancho de la columna (como en la referencia) */
+  max-width: 260px;              /* la columna puede ser de ~280px, la tarjeta es un poco más angosta */
+  width: 100%;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  /* ya no necesitamos min-height:100vh ni border-right aquí */
+}
+
+/* Logo imagen */
+.sb__logo {
+  width: 130px;
+  height: auto;
+  display: block;
+  margin: 4px 0 8px 2px;
+}
+
+/* Lista de navegación */
+.sb__nav {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Separadores entre items (líneas grises) */
+.sb__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 10px;
+  color: #dcdcdc;                 /* texto e icono base */
+  text-decoration: none;
+  border-radius: 12px;
+  transition: background 120ms ease, color 120ms ease;
+}
+
+.sb__link + .sb__link {
+  margin-top: 12px;               /* espacio entre items */
+}
+
+.sb__link + .sb__link::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -8px;                      /* coloca la línea entre los bloques */
+  height: 1px;
+  background: #2a2a2a;            /* gris del separador */
+  border-radius: 1px;
+}
+
+/* Hover */
+.sb__link:hover {
+  background: #1d1d1d;
+  color: #ffffff;
+}
+
+/* Activo (rosa) */
+.sb__link.active {
+  background: transparent;        /* sin pill de fondo, como la ref */
+  color: #ff6b8a;                 /* rosa activo */
+}
+
+/* Icono (el SVG debe usar stroke: currentColor) */
+.sb__icon {
+  width: 24px;
+  min-width: 24px;
+  text-align: center;
+  line-height: 0;
+}
+
+/* Zona de acciones (botones rosados) */
+.sb__actions {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 10px;
+}

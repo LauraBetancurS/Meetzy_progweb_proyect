@@ -1,0 +1,7 @@
+.right-col {
+  position: sticky;
+  top: var(--gap); /* queda pegada bajo el header */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

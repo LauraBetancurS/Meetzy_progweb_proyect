@@ -1,0 +1,77 @@
+.cal {
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cal__title {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.cal__year {
+  color: #bdbdbd;
+  font-weight: 500;
+}
+
+.cal__nav {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #3a3a3a;
+  background: #222;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.cal__nav:hover { background: #2a2a2a; }
+
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.cal__grid--labels { margin-bottom: 6px; }
+
+.cal__label {
+  text-transform: lowercase;
+  color: #9a9a9a;
+  font-size: 12px;
+  text-align: center;
+}
+
+.cal__cell {
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #2a2a2a;
+  background: #121212;
+  color: #eaeaea;
+  font-size: 13px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.cal__cell:hover { border-color: #ff6b8a; }
+
+.cal__cell--empty {
+  background: transparent;
+  border: none;
+}
+
+.cal__cell.is-today {
+  border-color: #ff6b8a;
+}
+
+.cal__cell.is-selected {
+  background: linear-gradient(90deg, #ff7a7a, #ff4f85);
+  border-color: transparent;
+  color: #fff;
+}

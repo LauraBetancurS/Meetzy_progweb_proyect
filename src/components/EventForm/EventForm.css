@@ -1,0 +1,109 @@
+/* === Form wrapper === */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;                 /* menos separación vertical */
+  background: transparent;      /* hereda el #161616 del contenedor */
+  color: #f2f2f2;
+  padding-top: 0;               /* sin relleno superior */
+  margin-top: 0;                /* sin margen superior extra */
+}
+
+/* Title */
+.form h2 {
+  margin: 0 0 0.75rem 0;        /* 🔑 sin margin-top, un poco más de separación abajo */
+  font-size: 1.3rem;            /* ligeramente más compacto */
+  color: #ff6b81;               /* acento */
+  font-weight: 700;
+}
+
+/* Labels stack their field below the caption */
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: #dcdcdc;
+  margin: 0;                    /* evita márgenes por defecto del navegador */
+}
+
+/* Inputs / textarea / select look consistent in dark */
+.form input,
+.form textarea,
+.form select {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #2b2b2b;
+  outline: none;
+  background: #212121;
+  color: #ffffff;
+  font-size: 0.98rem;
+  box-sizing: border-box;
+  line-height: 1.1;
+}
+
+/* Fuerza alturas consistentes (útil para alinear la fila Date/Start time) */
+.form input[type="date"],
+.form input[type="time"],
+.form select {
+  height: 44px;
+}
+
+/* Textarea height & behavior */
+.form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Placeholder color */
+.form input::placeholder,
+.form textarea::placeholder {
+  color: #9a9a9a;
+}
+
+/* Focus ring */
+.form input:focus,
+.form textarea:focus,
+.form select:focus {
+  border-color: #ff6b81;
+  box-shadow: 0 0 0 3px rgba(255, 107, 129, 0.18);
+}
+
+/* Date + time row side-by-side */
+.form .row {
+  display: flex;
+  gap: 0.75rem;                 /* un poco más compacto */
+  align-items: center;          /* alinea verticalmente los controles */
+}
+
+.form .row > label {
+  flex: 1;
+  margin: 0;                    /* sin margen extra */
+}
+
+/* Primary button */
+.form .primary {
+  width: 100%;                  /* botón a lo ancho del form */
+  margin-top: 0.5rem;
+  padding: 0.9rem 1.1rem;       /* un pelín más compacto */
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #ff6b81, #ff4d5a);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: transform 0.08s ease, opacity 0.2s ease;
+}
+.form .primary:hover { transform: translateY(-1px); }
+.form .primary:active { transform: translateY(0); }
+.form .primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Mobile: stack date/time vertically */
+@media (max-width: 700px) {
+  .form .row { flex-direction: column; }
+}

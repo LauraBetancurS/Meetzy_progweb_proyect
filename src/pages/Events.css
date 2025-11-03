@@ -1,0 +1,123 @@
+/* ===== Página ===== */
+.eventsPage {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: auto 1fr;
+}
+
+/* Contenido centrado */
+.eventsPage__content {
+  display: flex;
+  justify-content: center;
+  padding: clamp(20px, 3vw, 32px);
+  box-sizing: border-box;
+}
+
+.eventsPage__wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-inline: clamp(8px, 2vw, 16px);
+}
+
+/* Títulos */
+.eventsPage__title {
+  color: #fff;
+  font-size: clamp(1.6rem, 2.2vw, 2rem);
+  font-weight: 800;
+  margin: 10px 0 14px 6px;
+}
+
+/* GRID responsive:
+   - min 320px para caber bien en móviles
+   - auto-fit para llenar el ancho disponible */
+.eventsGrid {
+  display: grid;
+  gap: clamp(16px, 2.4vw, 24px);
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  align-items: start;
+}
+
+.eventsGrid > * {
+  width: 100%;
+  min-width: 0;
+}
+
+/* ===== Barra superior solo móvil (título + botón crear) ===== */
+.eventsPage__mobileBar {
+  display: none; /* oculta en desktop */
+}
+
+.eventsPage__createBtnMobile {
+  text-decoration: none;
+  border: none;
+  outline: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  background: linear-gradient(180deg, #ff7a8d 0%, #ff6b81 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(255, 107, 129, 0.35);
+}
+
+.eventsPage__createBtnMobile:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 1400px) {
+  .eventsPage__wrap { max-width: 1100px; }
+}
+
+@media (max-width: 900px) {
+  .eventsPage__title { font-size: 1.6rem; }
+  .eventsPage__content { padding: 18px; }
+  .eventsPage__wrap { padding-inline: 10px; }
+}
+
+/* ===== Ajustes fuertes para móvil <=768px ===== */
+@media (max-width: 768px) {
+  /* Activa la barra superior móvil */
+  .eventsPage__mobileBar {
+    position: sticky;
+    top: calc(var(--header-h)); /* queda justo bajo tu header fijo */
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 6px 6px 6px;
+    background: var(--bg);
+    border-bottom: 1px solid #2a2a2a;
+    margin-bottom: 10px;
+  }
+  .eventsPage__mobileBar h1 {
+    margin: 0 0 0 6px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  /* Grid más compacto en móviles pequeños */
+  .eventsGrid {
+    grid-template-columns: 1fr;            /* una columna segura */
+  }
+
+  /* Si tienes móviles medianos (≥380px), deja 2 columnas si cabe: */
+  @media (min-width: 380px) {
+    .eventsGrid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+  }
+}
+
+/* ===== Micro-ajustes para pantallas muy pequeñas (≤360px) ===== */
+@media (max-width: 360px) {
+  .eventsGrid {
+    gap: 12px;
+  }
+  .eventsPage__createBtnMobile {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+}

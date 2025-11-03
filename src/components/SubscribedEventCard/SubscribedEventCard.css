@@ -1,0 +1,119 @@
+/* ====== CARD WRAPPER ====== */
+.subscribedCard {
+  background: #1f1f1f;
+  color: #f2f2f2;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  border: none;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.subscribedCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* ====== MEDIA (IMAGEN) ====== */
+.subscribedCard__media {
+  position: relative;
+  width: 100%;
+  /* reduce height for more horizontal look */
+  aspect-ratio: 21 / 7;
+  background: #0f0f0f;
+  overflow: hidden;
+}
+
+.subscribedCard__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ====== BODY ====== */
+.subscribedCard__body {
+  padding: 14px 16px;
+  background: #2a2a2a;
+}
+
+.subscribedCard__title {
+  margin: 0 0 6px 0;
+  font-size: 1.35rem; /* slightly smaller */
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.subscribedCard__description {
+  margin: 0 0 10px 0;
+  font-size: 0.93rem;
+  line-height: 1.4;
+  color: #bdbdbd;
+
+  /* clamp to 2 lines to reduce height */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.subscribedCard__meta {
+  margin: 0 0 10px 0;
+  font-size: 0.88rem;
+  color: #cfcfcf;
+}
+
+.subscribedCard__meta strong {
+  font-weight: 700;
+  color: #e5e5e5;
+}
+
+/* ====== FOOTER ====== */
+.subscribedCard__footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+/* ====== BOTONES ====== */
+.subscribedCard__aboutBtn {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #222;
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.subscribedCard__aboutBtn:hover {
+  background: #2b2b2b;
+  transform: translateY(-1px);
+}
+
+.subscribedCard__leaveBtn {
+  border: none;
+  outline: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  background: linear-gradient(180deg, #ff7a8d 0%, #ff6b81 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(255, 107, 129, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.subscribedCard__leaveBtn:hover {
+  background: linear-gradient(180deg, #ff914d 0%, #ff6a00 100%); /* naranja degradado */
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(255, 106, 0, 0.5); /* glow naranja */
+  filter: brightness(1.05);
+}
