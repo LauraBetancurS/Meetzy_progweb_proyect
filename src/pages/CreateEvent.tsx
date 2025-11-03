@@ -1,17 +1,19 @@
-// src/pages/CreateEvent.tsx
 import { useNavigate } from "react-router-dom";
-import { useEvents } from "../context/EventContext";
+import { useAppDispatch } from "../redux/hooks";
+import { addEvent } from "../redux/slices/EventsSlice";
 import { EventForm } from "../components/EventForm/EventForm";
 import type { NewEvent } from "../types/Event";
 import "./CreateEvent.css";
 
 export default function CreateEventPage() {
-  const { addEvent } = useEvents();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   function handleCreate(data: NewEvent) {
-    addEvent(data);           // crea y persiste en contexto + localStorage
-    navigate("/events");      // redirige a la lista de eventos
+    // crea y persiste en redux (el slice ya guarda en localStorage)
+    dispatch(addEvent(data));
+    // redirige a la lista de eventos
+    navigate("/events");
   }
 
   return (
