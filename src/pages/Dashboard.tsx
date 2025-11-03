@@ -4,23 +4,20 @@ import Composer from "../components/dashboard/composer/Composer";
 import EventsSection from "../components/dashboard/events/EventsSection";
 import "./Dashboard.css";
 
-// Auth
-import { useAuth } from "../context/AuthContext";
-
-// Router
+import { useAppSelector } from "../redux/hooks";
 import { useNavigate } from "react-router-dom";
 
 // Mock de eventos públicos
 import { PUBLIC_EVENTS } from "../mocks/publicEvents.mock";
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const user = useAppSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
   const rawName =
     (user as any)?.name ||
     (user as any)?.username ||
-    ((user as any)?.email ? String((user as any).email).split("@")[0] : "") ||
+    (user?.email ? String(user.email).split("@")[0] : "") ||
     "Friend";
 
   const firstName = String(rawName).trim().split(" ")[0];
