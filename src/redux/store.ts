@@ -3,6 +3,7 @@ import appReducer from "./slices/AppSlice";
 import authReducer from "./slices/AuthSlice";
 import eventsReducer from "./slices/EventsSlice";
 import subscriptionsReducer from "./slices/SubscriptionsSlice";
+import profileReducer from "./slices/ProfileSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
       auth: authReducer,  
     events: eventsReducer,
     subscriptions: subscriptionsReducer,
+    profile: profileReducer, 
   },
 });
 
