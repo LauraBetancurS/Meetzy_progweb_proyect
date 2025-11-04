@@ -1,121 +1,159 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import usersMock from "../../mocks/users.json";
+// src/redux/slices/AuthSlice.ts
+import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
+import type { Session, User } from "@supabase/supabase-js";
+import { supabase } from "../../services/supabaseClient";
 
-const LOGGED_USER_KEY = "loggedUser";
-const USERS_KEY = "users";
-
-interface UserType {
+/* ------------------ Payloads ------------------ */
+type RegisterPayload = {
   fullName: string;
+  userName: string;
   email: string;
   password: string;
-  userName: string;
-}
+  avatarUrl?: string; // optional
+};
 
+type LoginPayload = {
+  email: string;
+  password: string;
+};
+
+/* ------------------ State ------------------ */
 interface AuthState {
-  user: UserType | null;
-  users: UserType[];
+  session: Session | null;
+  user: User | null;
+  isLoading: boolean;
   error: string | null;
 }
 
-// cargar usuarios (lo que hacías en el useEffect del contexto)
-function loadInitialUsers(): UserType[] {
-  try {
-    const stored = localStorage.getItem(USERS_KEY);
-    if (stored) {
-      return JSON.parse(stored) as UserType[];
-    }
-  } catch {
-    //
-  }
-  // si no había nada, guardamos el mock como hacías en el efecto
-  localStorage.setItem(USERS_KEY, JSON.stringify(usersMock));
-  return usersMock as UserType[];
-}
-
-// cargar usuario logueado
-function loadInitialLoggedUser(): UserType | null {
-  try {
-    const stored = localStorage.getItem(LOGGED_USER_KEY);
-    if (stored) {
-      return JSON.parse(stored) as UserType;
-    }
-  } catch {
-    //
-  }
-  return null;
-}
-
 const initialState: AuthState = {
-  user: loadInitialLoggedUser(),
-  users: loadInitialUsers(),
+  session: null,
+  user: null,
+  isLoading: true, // stays true until first auth hydration
   error: null,
 };
 
+/* ------------------ Thunks ------------------ */
+
+// REGISTER: create auth user, put full_name/user_name/avatar_url in metadata,
+// and upsert public.profiles (trigger will also mirror metadata on user creation).
+export const register = createAsyncThunk(
+  "auth/register",
+  async (
+    { fullName, userName, email, password, avatarUrl }: RegisterPayload,
+    { rejectWithValue }
+  ) => {
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          user_name: userName,
+          avatar_url: avatarUrl || null, // critical
+        },
+      },
+    });
+    if (signUpError) return rejectWithValue(signUpError.message);
+
+    const userId = signUpData.user?.id;
+    if (!userId) return rejectWithValue("No user returned by Supabase.");
+
+    // Optional immediate upsert (ok if RLS blocks; DB trigger should still populate it)
+    await supabase
+      .from("profiles")
+      .upsert(
+        {
+          id: userId,
+          full_name: fullName,
+          user_name: userName,
+          avatar_url: avatarUrl || null,
+        },
+        { onConflict: "id" }
+      );
+
+    // Session can be null if email confirmation is ON
+    const { data: sessionRes } = await supabase.auth.getSession();
+
+    return { session: sessionRes.session, user: signUpData.user || null };
+  }
+);
+
+// LOGIN
+export const login = createAsyncThunk(
+  "auth/login",
+  async ({ email, password }: LoginPayload, { rejectWithValue }) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return rejectWithValue(error.message);
+    return { session: data.session, user: data.user || null };
+  }
+);
+
+// LOGOUT
+export const logout = createAsyncThunk("auth/logout", async () => {
+  await supabase.auth.signOut();
+  return true;
+});
+
+/* ------------------ Slice ------------------ */
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // login(userName, password)
-    login: (
-      state,
-      action: PayloadAction<{ userName: string; password: string }>
-    ) => {
-      const { userName, password } = action.payload;
-
-      const foundUser = state.users.find(
-        (u) => u.userName === userName && u.password === password
-      );
-
-      if (foundUser) {
-        state.user = foundUser;
-        state.error = null;
-        localStorage.setItem(LOGGED_USER_KEY, JSON.stringify(foundUser));
-        // la navegación (navigate("/")) la hará el componente que despacha este action
-      } else {
-        state.error = "Credenciales inválidas";
-      }
-    },
-
-    // logout()
-    logout: (state) => {
-      state.user = null;
-      state.error = null;
-      localStorage.removeItem(LOGGED_USER_KEY);
-    },
-
-    // register(newUser)
-    register: (state, action: PayloadAction<UserType>) => {
-      const newUser = action.payload;
-
-      const userExists = state.users.some(
-        (existingUser) =>
-          existingUser.userName === newUser.userName ||
-          existingUser.email === newUser.email
-      );
-
-      if (userExists) {
-        // en tu contexto hacías window.alert
-        window.alert("User Already Exists");
-        state.error = "User Already Exists";
-        return;
-      }
-
-      // agregar usuario
-      state.users.push(newUser);
-      // persistir lista de usuarios
-      localStorage.setItem(USERS_KEY, JSON.stringify(state.users));
-      // loguear al nuevo usuario igual que hacías en el contexto
-      state.user = newUser;
-      localStorage.setItem(LOGGED_USER_KEY, JSON.stringify(newUser));
+    // For hydration via useSupabaseAuthSync (getSession/onAuthStateChange)
+    setSession: (state, action: PayloadAction<Session | null>) => {
+      state.session = action.payload;
+      state.user = action.payload?.user ?? null;
+      state.isLoading = false;
       state.error = null;
     },
-
-    // opcional: para limpiar errores
-    clearAuthError: (state) => {
+    startLoading: (state) => {
+      state.isLoading = true;
+    },
+    clearError: (state) => {
       state.error = null;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      // REGISTER
+      .addCase(register.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.session = action.payload.session;
+        state.user = action.payload.user;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = (action.payload as string) || "Register failed";
+      })
+
+      // LOGIN
+      .addCase(login.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.session = action.payload.session;
+        state.user = action.payload.user;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = (action.payload as string) || "Login failed";
+      })
+
+      // LOGOUT
+      .addCase(logout.fulfilled, (state) => {
+        state.session = null;
+        state.user = null;
+        state.isLoading = false;
+        state.error = null;
+      });
+  },
 });
 
-export const { login, logout, register, clearAuthError } = authSlice.actions;
+export const { setSession, startLoading, clearError } = authSlice.actions;
 export default authSlice.reducer;
