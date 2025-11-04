@@ -7,7 +7,7 @@ import subscriptionsReducer from "./slices/SubscriptionsSlice";
 export const store = configureStore({
   reducer: {
     app: appReducer,
-    auth: authReducer,
+      auth: authReducer,  
     events: eventsReducer,
     subscriptions: subscriptionsReducer,
   },
