@@ -1,32 +1,51 @@
+// src/pages/Login.tsx
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { login } from "../redux/slices/AuthSlice";
+import { login } from "../redux//slices/AuthSlice";
 import RegisterForm from "../components/auth/RegisterForm";
 import type { Field } from "../types/ui";
 
 export function Login() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.auth.user);
+  const { user, session } = useAppSelector((state) => state.auth);
 
+  // Campos adaptados a email/password (Supabase)
   const fields: Field[] = [
-    { name: "userName", label: "Username", placeholder: "Enter your username", required: true },
-    { name: "password", label: "Password", type: "password", placeholder: "Enter your password", required: true },
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "Enter your email",
+      required: true,
+    },
+    {
+      name: "password",
+      label: "Password",
+      type: "password",
+      placeholder: "Enter your password",
+      required: true,
+    },
   ];
 
-  const initialValues = { userName: "", password: "" };
+  const initialValues = { email: "", password: "" };
 
   function handleSubmit(values: Record<string, string>) {
-    dispatch(login({ userName: values.userName, password: values.password }));
+    dispatch(
+      login({
+        email: values.email,
+        password: values.password,
+      })
+    );
   }
 
-  // Si hay usuario después de loguear, redirigimos
+  // Redirigir si hay sesión activa (usuario logueado)
   useEffect(() => {
-    if (user) {
+    if (session) {
       navigate("/");
     }
-  }, [user, navigate]);
+  }, [session, navigate]);
 
   return (
     <RegisterForm
