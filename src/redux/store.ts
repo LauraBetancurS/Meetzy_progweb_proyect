@@ -3,18 +3,17 @@ import appReducer from "./slices/AppSlice";
 import authReducer from "./slices/AuthSlice";
 import eventsReducer from "./slices/EventsSlice";
 import subscriptionsReducer from "./slices/SubscriptionsSlice";
-import profileReducer from "./slices/ProfileSlice";
+import a11yReducer from "./slices/a11ySlice";
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
-      auth: authReducer,  
+    auth: authReducer,
     events: eventsReducer,
     subscriptions: subscriptionsReducer,
-    profile: profileReducer, 
+    a11y: a11yReducer,            // 👈 add
   },
 });
 
-// tipos para usar en toda la app
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
