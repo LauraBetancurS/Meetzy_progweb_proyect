@@ -1,5 +1,6 @@
+// src/pages/Events.tsx
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 
 import {
@@ -22,6 +23,7 @@ import "./Events.css";
 
 export default function EventsPage() {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   // Estado global
   const { events, subscribed, loading } = useAppSelector((s) => s.events);
@@ -51,8 +53,9 @@ export default function EventsPage() {
   );
 
   // UI actions
-  function handleAbout(ev: { name: string }) {
-    alert(`Acerca de: ${ev.name}`);
+  function handleAbout(ev: Pick<EventModel, "id" | "name">) {
+    // Navega al detalle del evento
+    navigate(`/events/${ev.id}`);
   }
 
   async function handleUpdateEvent(id: string, patch: Partial<NewEventInput>) {
