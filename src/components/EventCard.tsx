@@ -1,10 +1,10 @@
 import { useState } from "react";
-import type { EventModel } from "../types/Event";
+import type { EventModel, NewEventInput } from "../types/Event";
 import "./EventCard.css";
 
 export type EventCardProps = {
   event: EventModel;
-  onUpdate: (id: string, changes: Partial<Omit<EventModel, "id" | "createdAtMs">>) => void;
+  onUpdate: (id: string, patch: Partial<NewEventInput>) => void;
   onDelete: (id: string) => void;
 };
 
@@ -13,12 +13,13 @@ const DEFAULT_IMG =
 
 export default function EventCard({ event, onUpdate, onDelete }: EventCardProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [draft, setDraft] = useState({
+  const [draft, setDraft] = useState<NewEventInput>({
     name: event.name,
     description: event.description,
     place: event.place,
     date: event.date,
     startTime: event.startTime,
+    imageUrl: event.imageUrl || "",
   });
 
   function save() {
@@ -33,6 +34,7 @@ export default function EventCard({ event, onUpdate, onDelete }: EventCardProps)
       place: event.place,
       date: event.date,
       startTime: event.startTime,
+      imageUrl: event.imageUrl || "",
     });
     setIsEditing(false);
   }
@@ -41,7 +43,7 @@ export default function EventCard({ event, onUpdate, onDelete }: EventCardProps)
     <div className="eventCard">
       {!isEditing && (
         <div className="eventCard__media">
-          <img className="eventCard__img" src={DEFAULT_IMG} alt={event.name} />
+          <img className="eventCard__img" src={event.imageUrl || DEFAULT_IMG} alt={event.name} />
           <button className="eventCard__delete" onClick={() => onDelete(event.id)}>
             Eliminar
           </button>
@@ -57,7 +59,7 @@ export default function EventCard({ event, onUpdate, onDelete }: EventCardProps)
               placeholder="Nombre del evento"
             />
             <textarea
-              value={draft.description}
+              value={draft.description || ""}
               onChange={(e) => setDraft({ ...draft, description: e.target.value })}
               placeholder="Descripción"
             />
@@ -66,6 +68,7 @@ export default function EventCard({ event, onUpdate, onDelete }: EventCardProps)
               onChange={(e) => setDraft({ ...draft, place: e.target.value })}
               placeholder="Lugar"
             />
+
             <div className="eventCard__row">
               <input
                 type="date"
@@ -78,6 +81,12 @@ export default function EventCard({ event, onUpdate, onDelete }: EventCardProps)
                 onChange={(e) => setDraft({ ...draft, startTime: e.target.value })}
               />
             </div>
+
+            <input
+              value={draft.imageUrl || ""}
+              onChange={(e) => setDraft({ ...draft, imageUrl: e.target.value })}
+              placeholder="Imagen (URL)"
+            />
 
             <div className="eventCard__footer">
               <button className="eventCard__editBtn" onClick={save}>
@@ -94,8 +103,7 @@ export default function EventCard({ event, onUpdate, onDelete }: EventCardProps)
             <p className="eventCard__description">{event.description || "Sin descripción"}</p>
             <p className="eventCard__meta">
               <strong>Lugar:</strong> {event.place || "—"} ·{" "}
-              <strong>Fecha:</strong> {event.date} ·{" "}
-              <strong>Hora:</strong> {event.startTime}
+              <strong>Fecha:</strong> {event.date} · <strong>Hora:</strong> {event.startTime}
             </p>
 
             <div className="eventCard__footer">
