@@ -1,5 +1,5 @@
 // src/pages/Events.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 
@@ -25,53 +25,76 @@ export default function EventsPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  // Estado global
+  const { user } = useAppSelector((s) => s.auth);
   const { events, subscribed, loading } = useAppSelector((s) => s.events);
 
-  // Estado local para eventos públicos (todos)
+  // Public events (all)
   const [publicEvents, setPublicEvents] = useState<EventModel[]>([]);
   const [loadingPublic, setLoadingPublic] = useState<boolean>(false);
+  const [publicError, setPublicError] = useState<string | null>(null);
 
-  // Carga inicial: mis eventos + suscritos + públicos
+  const loadPublic = useCallback(async () => {
+    setLoadingPublic(true);
+    setPublicError(null);
+    const { data, error } = await fetchPublicEvents();
+    if (error) setPublicError(error);
+    setPublicEvents(data || []);
+    setLoadingPublic(false);
+  }, []);
+
+  // Initial load: my events + subscriptions + public
   useEffect(() => {
     dispatch(loadMyEvents());
     dispatch(loadSubscribedEvents());
+    loadPublic();
+  }, [dispatch, loadPublic]);
 
-    (async () => {
-      setLoadingPublic(true);
-      const { data, error } = await fetchPublicEvents();
-      if (!error && data) setPublicEvents(data);
-      setLoadingPublic(false);
-    })();
-  }, [dispatch]);
+  // Re-sync public list whenever my events or subscriptions change
+  useEffect(() => {
+    loadPublic();
+  }, [events.length, subscribed.length, loadPublic]);
 
-  // Filtrar “disponibles” = públicos que no estén suscritos
+  // Public “available” = not subscribed and not created by me
+  const myId = user?.id ?? null;
   const subscribedIds = useMemo(() => new Set(subscribed.map((e) => e.id)), [subscribed]);
   const availablePublic = useMemo(
-    () => publicEvents.filter((ev) => !subscribedIds.has(ev.id)),
-    [publicEvents, subscribedIds]
+    () =>
+      publicEvents.filter(
+        (ev) => !subscribedIds.has(ev.id) && (ev as any).createdBy !== myId
+      ),
+    [publicEvents, subscribedIds, myId]
   );
 
-  // UI actions
+  // Actions
   function handleAbout(ev: Pick<EventModel, "id" | "name">) {
-    // Navega al detalle del evento
     navigate(`/events/${ev.id}`);
   }
 
   async function handleUpdateEvent(id: string, patch: Partial<NewEventInput>) {
     await dispatch(updateExistingEvent({ id, patch }));
+    // refresh my events list
+    dispatch(loadMyEvents());
   }
 
   async function handleDeleteEvent(id: string) {
     await dispatch(deleteExistingEvent(id));
+    // refresh lists
+    dispatch(loadMyEvents());
+    loadPublic();
   }
 
   async function handleJoin(ev: EventModel) {
     await dispatch(joinEventThunk(ev));
+    // refresh subs + public (so it disappears from available)
+    dispatch(loadSubscribedEvents());
+    loadPublic();
   }
 
   async function handleLeave(id: string) {
     await dispatch(leaveEventThunk(id));
+    // refresh subs + public (so it reappears)
+    dispatch(loadSubscribedEvents());
+    loadPublic();
   }
 
   return (
@@ -130,6 +153,8 @@ export default function EventsPage() {
           </h2>
           {loadingPublic ? (
             <p className="eventsPage__empty">Cargando…</p>
+          ) : publicError ? (
+            <p className="eventsPage__empty">Error: {publicError}</p>
           ) : availablePublic.length === 0 ? (
             <p className="eventsPage__empty">¡Ya te uniste a todos los eventos!</p>
           ) : (
