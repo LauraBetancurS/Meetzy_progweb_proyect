@@ -10,7 +10,6 @@ import { useAppSelector } from "../redux/hooks";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
 
-// 🆕 service that reads events from Supabase (already created earlier)
 import { fetchPublicEvents } from "../services/events.service";
 import type { EventModel } from "../types/Event";
 
@@ -20,12 +19,12 @@ export default function Dashboard() {
 
   const [username, setUsername] = useState<string>("Friend");
 
-  // 🆕 public events state
+  // Public events
   const [events, setEvents] = useState<EventModel[]>([]);
   const [loadingEvents, setLoadingEvents] = useState<boolean>(false);
   const [eventsError, setEventsError] = useState<string | null>(null);
 
-  // -------- Username (unchanged) ----------
+  // Resolve username (profiles → metadata → email prefix)
   useEffect(() => {
     let mounted = true;
 
@@ -70,7 +69,7 @@ export default function Dashboard() {
     };
   }, [user]);
 
-  // -------- Public events from Supabase ----------
+  // Load public events
   const loadPublicEvents = useCallback(async () => {
     setLoadingEvents(true);
     setEventsError(null);
@@ -112,13 +111,15 @@ export default function Dashboard() {
 
         <Composer onPost={handlePost} />
 
-        {/* SECCIÓN: Events (usa PublicEventCard internamente) */}
+        {/* Uses PublicEventCard internally */}
         <EventsSection
           events={events}
           onCreate={goCreateEvent}
           loading={loadingEvents}
           error={eventsError || undefined}
           onRetry={loadPublicEvents}
+          // (Optional) You can pass onAbout/onJoin if you want actions from dashboard
+          onAbout={(ev) => navigate(`/events/${ev.id}`)}
         />
       </section>
 
