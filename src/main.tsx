@@ -6,25 +6,36 @@ import { store } from "./redux/store";
 import App from "./App";
 import "./index.css";
 
-// ✅ use the typed dispatch hook
+// Redux hooks
 import { useAppDispatch } from "./redux/hooks";
 
-// your thunks/helpers
+// Auth helpers
 import { initAuthFromSupabase, startAuthListener } from "./redux/slices/AuthSlice";
 
+/**
+ * ✅ Bootstraps Supabase authentication when the app starts.
+ * Loads session from localStorage, then subscribes to auth changes.
+ */
 function AuthBootstrap() {
-  const dispatch = useAppDispatch(); // <-- typed to AppDispatch
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(initAuthFromSupabase());        // no TS error now ✅
+    // 1️⃣ Initialize session from Supabase (refresh token, localStorage, etc.)
+    dispatch(initAuthFromSupabase());
+
+    // 2️⃣ Start Supabase auth state listener (login, logout, refresh)
     const unsubscribe = startAuthListener(dispatch);
-    return () => unsubscribe?.();
+
+    // 3️⃣ Clean up listener when component unmounts
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, [dispatch]);
 
   return <App />;
 }
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
       <AuthBootstrap />
