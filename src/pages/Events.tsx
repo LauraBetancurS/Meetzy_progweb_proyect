@@ -1,55 +1,75 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+
 import {
-  updateEvent as updateEventAction,
-  deleteEvent as deleteEventAction,
+  loadMyEvents,
+  loadSubscribedEvents,
+  updateExistingEvent,
+  deleteExistingEvent,
+  joinEventThunk,
+  leaveEventThunk,
 } from "../redux/slices/EventsSlice";
-import {
-  join as joinSubscription,
-  leave as leaveSubscription,
-} from "../redux/slices/SubscriptionsSlice";
+
+import { fetchPublicEvents } from "../services/events.service";
 
 import EventCard from "../components/EventCard";
 import PublicEventCard from "../components/PublicEventCard/PublicEventCard";
 import SubscribedEventCard from "../components/SubscribedEventCard/SubscribedEventCard";
-import { PUBLIC_EVENTS } from "../mocks/publicEvents.mock";
+
+import type { EventModel, NewEventInput } from "../types/Event";
 import "./Events.css";
 
 export default function EventsPage() {
   const dispatch = useAppDispatch();
 
-  // eventos creados por el usuario (vienen del slice de eventos)
-  const events = useAppSelector((state) => state.events.events);
+  // Estado global
+  const { events, subscribed, loading } = useAppSelector((s) => s.events);
 
-  // eventos a los que estoy suscrito (vienen del slice de suscripciones)
-  const subscribed = useAppSelector((state) => state.subscriptions.subscribed);
+  // Estado local para eventos públicos (todos)
+  const [publicEvents, setPublicEvents] = useState<EventModel[]>([]);
+  const [loadingPublic, setLoadingPublic] = useState<boolean>(false);
 
+  // Carga inicial: mis eventos + suscritos + públicos
+  useEffect(() => {
+    dispatch(loadMyEvents());
+    dispatch(loadSubscribedEvents());
+
+    (async () => {
+      setLoadingPublic(true);
+      const { data, error } = await fetchPublicEvents();
+      if (!error && data) setPublicEvents(data);
+      setLoadingPublic(false);
+    })();
+  }, [dispatch]);
+
+  // Filtrar “disponibles” = públicos que no estén suscritos
+  const subscribedIds = useMemo(() => new Set(subscribed.map((e) => e.id)), [subscribed]);
+  const availablePublic = useMemo(
+    () => publicEvents.filter((ev) => !subscribedIds.has(ev.id)),
+    [publicEvents, subscribedIds]
+  );
+
+  // UI actions
   function handleAbout(ev: { name: string }) {
     alert(`Acerca de: ${ev.name}`);
   }
 
-  // handlers que antes venían directo del contexto
-  function handleUpdateEvent(id: string, changes: Partial<(typeof events)[number]>) {
-    dispatch(updateEventAction({ id, changes }));
+  async function handleUpdateEvent(id: string, patch: Partial<NewEventInput>) {
+    await dispatch(updateExistingEvent({ id, patch }));
   }
 
-  function handleDeleteEvent(id: string) {
-    dispatch(deleteEventAction(id));
+  async function handleDeleteEvent(id: string) {
+    await dispatch(deleteExistingEvent(id));
   }
 
-  function handleJoin(ev: (typeof PUBLIC_EVENTS)[number]) {
-    // nuestro slice de subscriptions espera un EventModel;
-    // PUBLIC_EVENTS debería tener misma forma, si no, aquí se haría el mapeo
-    dispatch(joinSubscription(ev));
+  async function handleJoin(ev: EventModel) {
+    await dispatch(joinEventThunk(ev));
   }
 
-  function handleLeave(id: string) {
-    dispatch(leaveSubscription(id));
+  async function handleLeave(id: string) {
+    await dispatch(leaveEventThunk(id));
   }
-
-  // para filtrar los públicos que NO tengo en mis suscritos
-  const subscribedIds = new Set(subscribed.map((s) => s.id));
-  const availablePublic = PUBLIC_EVENTS.filter((pub) => !subscribedIds.has(pub.id));
 
   return (
     <div className="eventsPage">
@@ -65,7 +85,9 @@ export default function EventsPage() {
 
           {/* Mis eventos */}
           <h1 className="eventsPage__title">Mis eventos</h1>
-          {events.length === 0 ? (
+          {loading ? (
+            <p className="eventsPage__empty">Cargando…</p>
+          ) : events.length === 0 ? (
             <p className="eventsPage__empty">Aún no has creado eventos. Ve a “Crear evento”.</p>
           ) : (
             <div className="eventsGrid">
@@ -90,10 +112,10 @@ export default function EventsPage() {
             <div className="eventsGrid">
               {subscribed.map((ev) => (
                 <SubscribedEventCard
-                    key={ev.id}
-                    event={ev}
-                    onAbout={handleAbout}
-                    onUnsubscribe={handleLeave}
+                  key={ev.id}
+                  event={ev}
+                  onAbout={handleAbout}
+                  onUnsubscribe={handleLeave}
                 />
               ))}
             </div>
@@ -103,7 +125,9 @@ export default function EventsPage() {
           <h2 className="eventsPage__title" style={{ marginTop: 28 }}>
             Eventos disponibles
           </h2>
-          {availablePublic.length === 0 ? (
+          {loadingPublic ? (
+            <p className="eventsPage__empty">Cargando…</p>
+          ) : availablePublic.length === 0 ? (
             <p className="eventsPage__empty">¡Ya te uniste a todos los eventos!</p>
           ) : (
             <div className="eventsGrid">
