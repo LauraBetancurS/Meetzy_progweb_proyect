@@ -1,4 +1,3 @@
-// src/pages/EventAbout.tsx
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
@@ -16,11 +15,11 @@ export default function EventAboutPage() {
 
   const [event, setEvent] = useState<EventModel | null>(null);
   const [loading, setLoading] = useState(true);
-  const [joined, setJoined] = useState<boolean>(false);
-  const [busy, setBusy] = useState<boolean>(false);
+  const [joined, setJoined] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Cargar detalle de evento
+  // Load event detail (includes creator profile)
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -41,10 +40,12 @@ export default function EventAboutPage() {
       }
       setLoading(false);
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
-  // Saber si el usuario ya está unido
+  // Is user already joined?
   useEffect(() => {
     let mounted = true;
     (async () => {
@@ -53,7 +54,9 @@ export default function EventAboutPage() {
       if (!mounted) return;
       if (!res.error) setJoined(res.joined);
     })();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   async function handleJoin() {
@@ -107,6 +110,30 @@ export default function EventAboutPage() {
         <div className="ea-hero-content">
           <h1 className="ea-title">{event.name}</h1>
           <p className="ea-subtitle">{event.description || "Sin descripción"}</p>
+
+          {/* 🧑‍🎨 Creator info (from event.createdByProfile) */}
+          {event.createdByProfile && (
+            <div className="ea-creator">
+              <div className="ea-creator-avatar">
+                {event.createdByProfile.avatar_url ? (
+                  <img
+                    src={event.createdByProfile.avatar_url}
+                    alt={event.createdByProfile.user_name ?? "Creador"}
+                  />
+                ) : (
+                  <div className="ea-creator-placeholder">
+                    {(event.createdByProfile.user_name?.[0] ?? "U").toUpperCase()}
+                  </div>
+                )}
+              </div>
+              <div className="ea-creator-meta">
+                <span className="ea-creator-label">Creado por</span>
+                <span className="ea-creator-name">
+                  @{event.createdByProfile.user_name ?? "usuario"}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -130,21 +157,13 @@ export default function EventAboutPage() {
           <div className="ea-actions">
             {joined ? (
               <>
-                <button
-                  className="ea-btn danger"
-                  onClick={handleLeave}
-                  disabled={busy}
-                >
+                <button className="ea-btn danger" onClick={handleLeave} disabled={busy}>
                   {busy ? "Saliendo..." : "Salir del evento"}
                 </button>
                 <span className="ea-joined-tag">Ya estás suscrito ✅</span>
               </>
             ) : (
-              <button
-                className="ea-btn primary"
-                onClick={handleJoin}
-                disabled={busy}
-              >
+              <button className="ea-btn primary" onClick={handleJoin} disabled={busy}>
                 {busy ? "Uniéndose..." : "Unirse"}
               </button>
             )}
