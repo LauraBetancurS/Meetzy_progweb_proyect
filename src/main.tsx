@@ -12,6 +12,9 @@ import { useAppDispatch } from "./redux/hooks";
 // Auth helpers
 import { initAuthFromSupabase, startAuthListener } from "./redux/slices/AuthSlice";
 
+// 👇 NEW: applies and persists --app-font-scale
+import FontScaleApplier from "./components/FontScaleApplier";
+
 /**
  * ✅ Bootstraps Supabase authentication when the app starts.
  * Loads session from localStorage, then subscribes to auth changes.
@@ -32,7 +35,13 @@ function AuthBootstrap() {
     };
   }, [dispatch]);
 
-  return <App />;
+  return (
+    <>
+      {/* Ensures the CSS var --app-font-scale is set + persisted */}
+      <FontScaleApplier />
+      <App />
+    </>
+  );
 }
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
