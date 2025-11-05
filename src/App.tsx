@@ -15,10 +15,12 @@ import { Login } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import EventAboutPage from "./pages/EventAbout";
 
-/** Inline helper: if already logged in, bounce away from /login or /register */
+// 👇 mount the applier
+import FontScaleApplier from "./components/FontScaleApplier";
+
+/** If already logged in, redirect away from /login or /register */
 function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAppSelector((s) => s.auth);
-
   if (isLoading) return <div>Loading...</div>;
   if (user) return <Navigate to="/" replace />;
   return <>{children}</>;
@@ -27,6 +29,9 @@ function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <Router>
+      {/* 👇 this keeps --app-font-scale in sync with Redux */}
+      <FontScaleApplier />
+
       <Routes>
         {/* Public routes */}
         <Route

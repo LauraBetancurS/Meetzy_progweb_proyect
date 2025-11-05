@@ -1,0 +1,36 @@
+/* src/components/a11y/FontSizeControls.css */
+.a11y-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 6px 8px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  position: fixed;
+ right: 16px;
+  bottom: 16px;
+ z-index: 2000;
+  
+}
+
+
+.a11y-btn, .a11y-reset {
+  background: var(--bg-soft, #232327);
+  color: var(--text-light, #fafafa);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+.a11y-btn:hover, .a11y-reset:hover {
+  border-color: rgba(253, 137, 220, 0.6);
+  color: #fff;
+}
+
+.a11y-scale {
+  min-width: 3ch;
+  text-align: center;
+  opacity: 0.85;
+}

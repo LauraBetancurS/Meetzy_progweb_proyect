@@ -1,19 +1,36 @@
+/* ===================================================================
+   Global base + a11y font scale
+   -------------------------------------------------------------------
+   The Redux a11y slice updates --app-font-scale (1.0 = 100%).
+   We apply it to the root font-size so all rem-based text scales.
+   =================================================================== */
+:root {
+  --app-font-scale: 1;        /* overwritten by FontScaleApplier */
+  --bg: #1e1e1e;
+  --header-h: 64px;
+  --gap: 24px;
+  --sidebar-w: 280px;         /* ancho col. izquierda */
+  --right-w: 360px;
+}
+
+/* Scale the whole typography using rems */
+html {
+  /* 16px base * scale factor */
+  font-size: calc(16px * var(--app-font-scale));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 html, body, #root { 
   height: 100%; 
 }
 
 #root {
   width: 100%;
-  max-width: none;   /* elimina límite de 1280px */
+  max-width: none;          /* elimina límite de 1280px */
   margin: 0;         
   padding: 0;        
   text-align: initial;
-
-  --bg: #1e1e1e;
-  --header-h: 64px;
-  --gap: 24px;
-  --sidebar-w: 280px; /* ancho col. izquierda */
-  --right-w: 360px;
 }
 
 * {
@@ -21,10 +38,18 @@ html, body, #root {
   font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
+/* Accessible default text & background */
 body {
   margin: 0;
-  background: var(--bg); /* Fondo global en TODA la app */
+  background: var(--bg);    /* Fondo global en TODA la app */
   color: #fff;
+}
+
+/* Improve default focus visibility */
+:focus-visible {
+  outline: 2px solid rgba(253, 137, 220, 0.9);
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 a {
