@@ -7,9 +7,13 @@ export interface EventsSectionProps {
   events: EventModel[];
   onCreate?: () => void;
   className?: string;
-
   onJoin?: (event: EventModel) => void;
   onAbout?: (event: EventModel) => void;
+
+  // 🆕 optional props for better UX
+  loading?: boolean;
+  error?: string;
+  onRetry?: () => void;
 }
 
 export default function EventsSection({
@@ -18,27 +22,45 @@ export default function EventsSection({
   className = "",
   onJoin,
   onAbout,
+  loading = false,
+  error,
+  onRetry,
 }: EventsSectionProps) {
-  
   const handleJoin = onJoin ?? (() => {});
   const handleAbout = onAbout ?? (() => {});
 
   return (
     <section className={`dash-events ${className}`}>
       <div className="dash-events__head">
-        <h2 className="dash-events__title">Events</h2>
+        <h2 className="dash-events__title">Eventos</h2>
 
-        <TertiaryButton
-          type="button"
-          onClick={onCreate}
-          className="dash-events__createBtn"
-          aria-label="Create a new event"
-        >
-          Create event
-        </TertiaryButton>
+        {onCreate && (
+          <TertiaryButton
+            type="button"
+            onClick={onCreate}
+            className="dash-events__createBtn"
+            aria-label="Crear un nuevo evento"
+          >
+            Crear evento
+          </TertiaryButton>
+        )}
       </div>
 
-      {events?.length ? (
+      {/* -------- ESTADOS: loading / error / vacío -------- */}
+      {loading ? (
+        <div className="dash-events__state dash-events__loading">
+          <p>Cargando eventos...</p>
+        </div>
+      ) : error ? (
+        <div className="dash-events__state dash-events__error">
+          <p>{error}</p>
+          {onRetry && (
+            <button className="dash-events__retry" onClick={onRetry}>
+              Reintentar
+            </button>
+          )}
+        </div>
+      ) : events?.length ? (
         <div className="dash-events__grid">
           {events.map((ev) => (
             <PublicEventCard
@@ -50,8 +72,8 @@ export default function EventsSection({
           ))}
         </div>
       ) : (
-        <div className="dash-events__empty">
-          <p>No public events yet.</p>
+        <div className="dash-events__state dash-events__empty">
+          <p>No hay eventos públicos aún.</p>
         </div>
       )}
     </section>
