@@ -1,5 +1,5 @@
 // src/pages/Dashboard.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import SearchBar from "../components/dashboard/search/SearchBar";
 import RightColumn from "../components/dashboard/right/RightColumn";
 import Composer from "../components/dashboard/composer/Composer";
@@ -10,8 +10,9 @@ import { useAppSelector } from "../redux/hooks";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
 
-// Mock de eventos públicos
-import { PUBLIC_EVENTS } from "../mocks/publicEvents.mock";
+// 🆕 service that reads events from Supabase (already created earlier)
+import { fetchPublicEvents } from "../services/events.service";
+import type { EventModel } from "../types/Event";
 
 export default function Dashboard() {
   const { user } = useAppSelector((state) => state.auth);
@@ -19,6 +20,12 @@ export default function Dashboard() {
 
   const [username, setUsername] = useState<string>("Friend");
 
+  // 🆕 public events state
+  const [events, setEvents] = useState<EventModel[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState<boolean>(false);
+  const [eventsError, setEventsError] = useState<string | null>(null);
+
+  // -------- Username (unchanged) ----------
   useEffect(() => {
     let mounted = true;
 
@@ -28,7 +35,6 @@ export default function Dashboard() {
         return;
       }
 
-      // 1) Intenta leer de la tabla profiles (prioridad: user_name)
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("user_name, full_name")
@@ -45,7 +51,6 @@ export default function Dashboard() {
         }
       }
 
-      // 2) Fallback: metadata del usuario
       const metaUser =
         (user.user_metadata as any)?.user_name ||
         (user.user_metadata as any)?.full_name;
@@ -55,7 +60,6 @@ export default function Dashboard() {
         return;
       }
 
-      // 3) Último fallback: prefijo del email
       const emailPrefix = user.email ? String(user.email).split("@")[0] : "Friend";
       if (mounted) setUsername(emailPrefix);
     }
@@ -66,6 +70,20 @@ export default function Dashboard() {
     };
   }, [user]);
 
+  // -------- Public events from Supabase ----------
+  const loadPublicEvents = useCallback(async () => {
+    setLoadingEvents(true);
+    setEventsError(null);
+    const { data, error } = await fetchPublicEvents();
+    if (error) setEventsError(error);
+    setEvents(data || []);
+    setLoadingEvents(false);
+  }, []);
+
+  useEffect(() => {
+    loadPublicEvents();
+  }, [loadPublicEvents]);
+
   function handleSearch(q: string) {
     console.log("Buscar:", q);
   }
@@ -74,12 +92,9 @@ export default function Dashboard() {
     console.log("Post enviado:", { text, communityId });
   }
 
-  // Redirección al crear evento
   function goCreateEvent() {
     navigate("/events/new");
   }
-
-  const events = (PUBLIC_EVENTS as any[]) || [];
 
   return (
     <div className="dash-grid">
@@ -97,8 +112,14 @@ export default function Dashboard() {
 
         <Composer onPost={handlePost} />
 
-        {/* SECCIÓN: Events (usa PublicEventCard) */}
-        <EventsSection events={events} onCreate={goCreateEvent} />
+        {/* SECCIÓN: Events (usa PublicEventCard internamente) */}
+        <EventsSection
+          events={events}
+          onCreate={goCreateEvent}
+          loading={loadingEvents}
+          error={eventsError || undefined}
+          onRetry={loadPublicEvents}
+        />
       </section>
 
       <aside className="dash-right">
