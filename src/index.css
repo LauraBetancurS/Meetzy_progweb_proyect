@@ -5,51 +5,72 @@
    We apply it to the root font-size so all rem-based text scales.
    =================================================================== */
 :root {
-  --app-font-scale: 1;        /* overwritten by FontScaleApplier */
+  --app-font-scale: 1; /* overwritten dynamically by FontScaleApplier */
   --bg: #1e1e1e;
   --header-h: 64px;
   --gap: 24px;
-  --sidebar-w: 280px;         /* ancho col. izquierda */
+  --sidebar-w: 280px;
   --right-w: 360px;
 }
 
-/* Scale the whole typography using rems */
+/* ===========================================================
+   GLOBAL FONT SCALING
+   -----------------------------------------------------------
+   Smoothly scale the entire UI using rem units + transitions.
+   =========================================================== */
 html {
-  /* 16px base * scale factor */
   font-size: calc(16px * var(--app-font-scale));
+  transition: font-size 0.25s ease-in-out; /* smoother zoom */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-html, body, #root { 
-  height: 100%; 
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    transition: none;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
 }
 
 #root {
   width: 100%;
-  max-width: none;          /* elimina límite de 1280px */
-  margin: 0;         
-  padding: 0;        
+  max-width: none;
+  margin: 0;
+  padding: 0;
   text-align: initial;
 }
 
+/* ===========================================================
+   GLOBAL TYPOGRAPHY + RESET
+   =========================================================== */
 * {
   box-sizing: border-box;
-  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Arial, sans-serif;
 }
 
-/* Accessible default text & background */
 body {
   margin: 0;
-  background: var(--bg);    /* Fondo global en TODA la app */
+  background: var(--bg);
   color: #fff;
+  line-height: 1.6;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Improve default focus visibility */
+/* ===========================================================
+   ACCESSIBILITY IMPROVEMENTS
+   =========================================================== */
 :focus-visible {
   outline: 2px solid rgba(253, 137, 220, 0.9);
   outline-offset: 2px;
   border-radius: 6px;
+  transition: outline-color 0.2s ease;
 }
 
 a {
@@ -62,23 +83,73 @@ img {
   max-width: 100%;
 }
 
-/* ===== Animaciones / estilos existentes ===== */
+/* ===========================================================
+   DYSLEXIA MODE
+   -----------------------------------------------------------
+   Applied when <body class="dyslexia-mode"> is set by Redux.
+   Uses a dyslexia-friendly stack if available, increases spacing,
+   and underlines links for better word shape recognition.
+   =========================================================== */
+
+/* Optional: if you add the font files, uncomment and host them.
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("/fonts/OpenDyslexic3-Regular.woff2") format("woff2"),
+       url("/fonts/OpenDyslexic3-Regular.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+body.dyslexia-mode {
+  /* Put OpenDyslexic first if you’ve added it; otherwise fall back cleanly */
+  font-family: "OpenDyslexic", "Atkinson Hyperlegible", "Manrope",
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important;
+
+  letter-spacing: 0.04em;   /* a bit more spacing between letters */
+  word-spacing: 0.08em;     /* more spacing between words */
+  line-height: 1.75;        /* taller lines help tracking */
+}
+
+/* Underline links and increase thickness for clearer word shapes */
+body.dyslexia-mode a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 2px;
+}
+
+/* Slightly stronger focus ring while in dyslexia mode */
+body.dyslexia-mode :focus-visible {
+  outline: 3px solid rgba(253, 137, 220, 1);
+  outline-offset: 3px;
+}
+
+/* ===========================================================
+   EXISTING ANIMATIONS / DEMO ELEMENTS
+   =========================================================== */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
 @keyframes logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
