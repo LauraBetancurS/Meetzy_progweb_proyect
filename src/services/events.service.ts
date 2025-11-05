@@ -6,15 +6,26 @@ import type { EventRow, EventModel, NewEventInput } from "../types/Event";
 /* Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
-function rowToModel(row: EventRow): EventModel {
+function rowToModel(
+  row: EventRow,
+  opts?: {
+    profilesById?: Record<string, { user_name: string | null; avatar_url: string | null }>;
+    currentUid?: string | null;
+  }
+): EventModel {
+  const createdByProfile = opts?.profilesById?.[row.created_by] ?? undefined;
+
   return {
     id: row.id,
     name: row.name,
     description: row.description ?? "",
     place: row.place,
     date: row.date,                                      // YYYY-MM-DD
-    startTime: row.start_time?.slice(0, 5) ?? "00:00",   // HH:mm (recorta segundos)
+    startTime: row.start_time?.slice(0, 5) ?? "00:00",   // HH:mm
     imageUrl: row.image_url ?? undefined,
+    createdBy: row.created_by,
+    createdByProfile,                                    // { user_name, avatar_url }
+    isOwner: opts?.currentUid ? row.created_by === opts.currentUid : undefined,
   };
 }
 
@@ -35,16 +46,36 @@ async function getCurrentUserId(): Promise<string | null> {
   return data.user?.id ?? null;
 }
 
+async function attachProfiles(rows: EventRow[]): Promise<Record<string, { user_name: string | null; avatar_url: string | null }>> {
+  const creatorIds = Array.from(new Set(rows.map(r => r.created_by))).filter(Boolean);
+  if (creatorIds.length === 0) return {};
+
+  const { data: profiles, error } = await supabase
+    .from("profiles")
+    .select("id, user_name, avatar_url")
+    .in("id", creatorIds);
+
+  if (error || !profiles) return {};
+
+  const map: Record<string, { user_name: string | null; avatar_url: string | null }> = {};
+  for (const p of profiles as Array<{ id: string; user_name: string | null; avatar_url: string | null }>) {
+    map[p.id] = { user_name: p.user_name, avatar_url: p.avatar_url };
+  }
+  return map;
+}
+
 /* ------------------------------------------------------------------ */
 /* Reads (SELECT)                                                      */
 /* ------------------------------------------------------------------ */
 
-/** For now, “public” = whatever the RLS policies allow any authenticated user to read */
+/** “Public” = whatever the RLS policies allow any authenticated user to read */
 export async function fetchPublicEvents(): Promise<{ data: EventModel[]; error?: string }> {
   return fetchAllEvents();
 }
 
 export async function fetchAllEvents(): Promise<{ data: EventModel[]; error?: string }> {
+  const currentUid = await getCurrentUserId();
+
   const { data, error } = await supabase
     .from("events")
     .select("*")
@@ -52,12 +83,21 @@ export async function fetchAllEvents(): Promise<{ data: EventModel[]; error?: st
     .order("start_time", { ascending: true });
 
   if (error) return { data: [], error: error.message };
-  return { data: (data ?? []).map(rowToModel) };
+  const rows = (data ?? []) as EventRow[];
+
+  // fetch creators' profiles in one shot
+  const profilesById = await attachProfiles(rows);
+
+  return {
+    data: rows.map((row) => rowToModel(row, { profilesById, currentUid })),
+  };
 }
 
 export async function fetchEventById(
   eventId: string
 ): Promise<{ data: EventModel | null; error?: string }> {
+  const currentUid = await getCurrentUserId();
+
   const { data, error } = await supabase
     .from("events")
     .select("*")
@@ -65,7 +105,12 @@ export async function fetchEventById(
     .maybeSingle();
 
   if (error) return { data: null, error: error.message };
-  return { data: data ? rowToModel(data as EventRow) : null };
+  if (!data) return { data: null };
+
+  const row = data as EventRow;
+  const profilesById = await attachProfiles([row]);
+
+  return { data: rowToModel(row, { profilesById, currentUid }) };
 }
 
 export async function fetchMyEvents(): Promise<{ data: EventModel[]; error?: string }> {
@@ -79,14 +124,19 @@ export async function fetchMyEvents(): Promise<{ data: EventModel[]; error?: str
     .order("created_at", { ascending: false });
 
   if (error) return { data: [], error: error.message };
-  return { data: (data ?? []).map(rowToModel) };
+  const rows = (data ?? []) as EventRow[];
+  const profilesById = await attachProfiles(rows);
+
+  return {
+    data: rows.map((row) => rowToModel(row, { profilesById, currentUid: uid })),
+  };
 }
 
 export async function fetchSubscribedEvents(): Promise<{ data: EventModel[]; error?: string }> {
   const uid = await getCurrentUserId();
   if (!uid) return { data: [], error: "No authenticated user." };
 
-  // JOIN a través de event_members
+  // JOIN via event_members (we still get full event rows)
   const { data, error } = await supabase
     .from("events")
     .select("*, event_members!inner(user_id)")
@@ -94,7 +144,14 @@ export async function fetchSubscribedEvents(): Promise<{ data: EventModel[]; err
     .order("date", { ascending: true });
 
   if (error) return { data: [], error: error.message };
-  return { data: (data as any[]).map((r) => rowToModel(r as EventRow)) };
+
+  // strip the joined payload and map as rows
+  const rows = (data as any[]).map(({ event_members, ...e }) => e) as EventRow[];
+  const profilesById = await attachProfiles(rows);
+
+  return {
+    data: rows.map((row) => rowToModel(row, { profilesById, currentUid: uid })),
+  };
 }
 
 /* ------------------------------------------------------------------ */
@@ -111,7 +168,7 @@ export async function createEvent(
     date: input.date,                      // YYYY-MM-DD
     start_time: input.startTime,           // HH:mm
     image_url: input.imageUrl?.trim() || null,
-    // created_by lo rellena el trigger con auth.uid() si no se envía
+    // created_by lo rellena el trigger con auth.uid()
   };
 
   const { data, error } = await supabase
@@ -121,7 +178,12 @@ export async function createEvent(
     .single();
 
   if (error) return { data: null, error: error.message };
-  return { data: rowToModel(data as EventRow) };
+
+  const row = data as EventRow;
+  const profilesById = await attachProfiles([row]);
+  const currentUid = await getCurrentUserId();
+
+  return { data: rowToModel(row, { profilesById, currentUid }) };
 }
 
 export async function updateEvent(
@@ -138,7 +200,12 @@ export async function updateEvent(
     .single();
 
   if (error) return { data: null, error: error.message };
-  return { data: rowToModel(data as EventRow) };
+
+  const row = data as EventRow;
+  const profilesById = await attachProfiles([row]);
+  const currentUid = await getCurrentUserId();
+
+  return { data: rowToModel(row, { profilesById, currentUid }) };
 }
 
 export async function deleteEvent(eventId: string): Promise<{ ok: boolean; error?: string }> {

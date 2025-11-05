@@ -1,51 +1,55 @@
 // src/types/Event.ts
 
-// 🔹 Identificador de evento (alias útil para autocompletado)
+// 🔹 Unique identifier for events
 export type EventId = string;
 
-/** 
- * 🔹 Modelo que usa la UI.
- * - `createdBy` es opcional para no romper datos ya existentes,
- *   pero el servicio lo llenará cuando venga desde Supabase.
+/**
+ * 🔹 Event model used in the UI.
+ * - Includes derived/optional fields like `isOwner`, `isJoined`.
+ * - `createdBy` links to the user who created the event.
+ * - `createdByProfile` allows showing name and avatar in the UI.
  */
-// src/types/Event.ts
 export type EventModel = {
   id: string;
   name: string;
   description: string;
   place: string;
-  date: string;       // YYYY-MM-DD
-  startTime: string;  // HH:MM
+  date: string;        // YYYY-MM-DD
+  startTime: string;   // HH:MM
   imageUrl?: string;
-  // 👇 optional flags used by UI
+  createdBy?: string;  // 👈 auth user id
+  createdByProfile?: { // 👈 extra info from `profiles`
+    user_name?: string | null;
+    avatar_url?: string | null;
+  };
+  // 👇 Optional flags used in the UI
   isOwner?: boolean;
   isJoined?: boolean;
 };
 
+// 🔹 Data to create a new event (without id or createdBy)
+export type NewEvent = Omit<EventModel, "id" | "createdBy" | "createdByProfile" | "isOwner" | "isJoined">;
 
-// 🔹 Estructura para crear un evento (sin id)
-export type NewEvent = Omit<EventModel, "id" | "createdBy">;
-
-// 🔹 Representación del registro real en Supabase (coincide con la tabla)
+// 🔹 Raw row as it comes from Supabase (matches `events` table)
 export type EventRow = {
   id: string;
   name: string;
   description: string | null;
   place: string;
-  date: string;         // YYYY-MM-DD
-  start_time: string;   // HH:mm:ss (como lo devuelve Postgres)
+  date: string;          // DATE returned as string
+  start_time: string;    // TIME as HH:mm:ss
   image_url: string | null;
-  created_by: string;   // id del usuario creador
+  created_by: string;    // FK to auth.users(id)
   created_at: string;
   updated_at: string;
 };
 
-// 🔹 Entrada normalizada para enviar al servicio Supabase
+// 🔹 Input used when sending to Supabase via service
 export type NewEventInput = {
   name: string;
   description?: string;
   place: string;
-  date: string;        // YYYY-MM-DD
-  startTime: string;   // HH:mm
-  imageUrl?: string;   // se mapea a image_url en la BD
+  date: string;         // YYYY-MM-DD
+  startTime: string;    // HH:mm
+  imageUrl?: string;    // maps to image_url
 };
