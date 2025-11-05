@@ -1,243 +1,220 @@
+// src/pages/Perfil.tsx
 import { useEffect, useMemo, useState } from "react";
-import { useAppSelector } from "../redux/hooks";
-import { supabase } from "../services/supabaseClient";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import "./Perfil.css";
 
-type ProfileRow = {
-  id: string;
-  full_name: string | null;
-  user_name: string | null;
-  avatar_url: string | null;
-};
+import {
+  // selectors
+  selectMyProfile,
+  selectProfileLoading,
+  selectProfileSaving,
+  selectProfileError,
+  // thunks
+  fetchMyProfile,
+  saveMyProfile,
+} from "../redux/slices/ProfileSlice";
+
+import "./Perfil.css";
 
 export default function Perfil() {
-  const { user } = useAppSelector((s) => s.auth); // assumes AuthSlice stores supabase user here
-  const email = user?.email ?? "";
+  const dispatch = useAppDispatch();
 
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [okMsg, setOkMsg] = useState<string | null>(null);
+  // auth (email is read-only, not editable)
+  const authUser = useAppSelector((s) => s.auth.user);
 
-  // editable fields (except email)
+  // profile state from Redux
+  const profile = useAppSelector(selectMyProfile);
+  const isLoading = useAppSelector(selectProfileLoading);
+  const isSaving = useAppSelector(selectProfileSaving);
+  const error = useAppSelector(selectProfileError);
+
+  // local edit state
+  const [isEditing, setIsEditing] = useState(false);
   const [fullName, setFullName] = useState("");
   const [userName, setUserName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
 
-  // edit mode toggle
-  const [isEditing, setIsEditing] = useState(false);
-
-  // simple avatar preview fallback
-  const avatarPreview = useMemo(() => {
-    const url = (avatarUrl || "").trim();
-    return url.length > 0 ? url : "/img/default-avatar.png";
-  }, [avatarUrl]);
-
-  // Load profile from Supabase
+  // initial load
   useEffect(() => {
-    let mounted = true;
-    async function load() {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      setError(null);
-      setOkMsg(null);
-
-      // Try profiles first
-      const { data: profile, error: pErr } = await supabase
-        .from("profiles")
-        .select("id, full_name, user_name, avatar_url")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (!mounted) return;
-
-      if (pErr) {
-        setError(pErr.message);
-      }
-
-      if (profile) {
-        setFullName(profile.full_name ?? "");
-        setUserName(profile.user_name ?? "");
-        setAvatarUrl(profile.avatar_url ?? "");
-      } else {
-        // If profile row doesn't exist yet, prefill with auth metadata
-        const meta = (user.user_metadata as any) || {};
-        setFullName(meta.full_name ?? "");
-        setUserName(meta.user_name ?? "");
-        setAvatarUrl(meta.avatar_url ?? "");
-      }
-
-      setLoading(false);
+    // If we have no profile and we’re not already loading, fetch it
+    // (safe to call multiple times; thunk will just run)
+    if (!profile && !isLoading) {
+      dispatch(fetchMyProfile());
     }
-    load();
-    return () => {
-      mounted = false;
-    };
-  }, [user]);
+  }, [dispatch, profile, isLoading]);
 
-  async function handleSave() {
-    if (!user) return;
-    setSaving(true);
-    setError(null);
-    setOkMsg(null);
+  // when profile arrives -> hydrate local form fields (but only when NOT editing)
+  useEffect(() => {
+    if (profile && !isEditing) {
+      setFullName(profile.full_name ?? "");
+      setUserName(profile.user_name ?? "");
+      setAvatarUrl(profile.avatar_url ?? "");
+    }
+  }, [profile, isEditing]);
 
-    // 1) Upsert into profiles (so new users get their row on first save)
-    const payload: ProfileRow = {
-      id: user.id,
+  const email = useMemo(() => authUser?.email ?? "", [authUser]);
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    // very basic normalization
+    const payload = {
       full_name: fullName.trim() || null,
       user_name: userName.trim() || null,
       avatar_url: avatarUrl.trim() || null,
     };
 
-    const { error: upErr } = await supabase.from("profiles").upsert(payload, { onConflict: "id" });
-    if (upErr) {
-      setError(upErr.message);
-      setSaving(false);
-      return;
-    }
-
-    // 2) Optionally sync auth metadata (handy for quick display elsewhere)
-    const { error: metaErr } = await supabase.auth.updateUser({
-      data: {
-        full_name: fullName.trim() || null,
-        user_name: userName.trim() || null,
-        avatar_url: avatarUrl.trim() || null,
-      },
-    });
-    if (metaErr) {
-      // not fatal for the page—show message but don't revert
-      setError(`Guardado en perfil, pero falló metadata: ${metaErr.message}`);
-      setSaving(false);
+    const res = await dispatch(saveMyProfile(payload));
+    // If thunk fulfilled, close edit mode
+    if ((res as any).meta?.requestStatus === "fulfilled") {
       setIsEditing(false);
-      setOkMsg("Perfil guardado.");
-      return;
     }
-
-    setSaving(false);
-    setIsEditing(false);
-    setOkMsg("Perfil guardado.");
   }
 
-  if (!user) {
+  if (isLoading && !profile) {
     return (
-      <div className="profile-page">
-        <div className="profile-card">
-          <p className="profile-error">No hay sesión activa.</p>
+      <div className="perfil-page">
+        <div className="perfil-card">
+          <div className="perfil-skel" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="profile-page">
-      <div className="profile-card">
-        <div className="profile-card__header">
-          <h1>Mi Perfil</h1>
-
-          {/* ✏️ Edit / Cancel */}
-          {!isEditing ? (
-            <button
-              className="icon-btn"
-              type="button"
-              onClick={() => setIsEditing(true)}
-              aria-label="Editar perfil"
-              title="Editar"
-            >
-              {/* Pencil icon (inline SVG) */}
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M3 21l3.75-.75L19.5 7.5l-3.75-3.75L3 16.5V21z" stroke="currentColor" strokeWidth="1.5" />
-                <path d="M14.25 6.75l3 3" stroke="currentColor" strokeWidth="1.5" />
-              </svg>
-              Editar
-            </button>
-          ) : (
-            <button
-              className="ghost-btn"
-              type="button"
-              onClick={() => {
-                setIsEditing(false);
-                setOkMsg(null);
-                setError(null);
-              }}
-            >
-              Cancelar
-            </button>
-          )}
-        </div>
-
-        {loading ? (
-          <div className="profile-skeleton" />
-        ) : (
-          <>
-            {error && <div className="profile-banner error">{error}</div>}
-            {okMsg && <div className="profile-banner ok">{okMsg}</div>}
-
-            <div className="profile-body">
-              <div className="profile-avatar">
-                <img src={avatarPreview} alt={userName || fullName || email} />
+    <div className="perfil-page">
+      <div className="perfil-card">
+        <header className="perfil-header">
+          <div className="perfil-avatar-wrap">
+            {avatarUrl ? (
+              <img className="perfil-avatar" src={avatarUrl} alt={userName || fullName || "Avatar"} />
+            ) : (
+              <div className="perfil-avatar placeholder">
+                {(userName || fullName || email || "U").charAt(0).toUpperCase()}
               </div>
+            )}
+          </div>
 
-              <div className="profile-fields">
-                {/* Email (read-only) */}
-                <label className="pf-label">
-                  Email
-                  <input className="pf-input" value={email} disabled />
-                </label>
+          <div className="perfil-title">
+            <h1>Perfil</h1>
+            <p className="perfil-sub">Administra tu información personal</p>
+          </div>
 
-                <label className="pf-label">
-                  Nombre completo
-                  <input
-                    className="pf-input"
-                    type="text"
-                    placeholder="Tu nombre"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    disabled={!isEditing || saving}
-                  />
-                </label>
+          <div className="perfil-actions">
+            {!isEditing ? (
+              <button
+                className="perfil-icon-btn"
+                onClick={() => setIsEditing(true)}
+                title="Editar perfil"
+                aria-label="Editar perfil"
+              >
+                {/* pencil icon */}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z" fill="currentColor"/>
+                  <path d="M20.71 7.04a1 1 0 0 0 0-1.41L18.37 3.29a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" fill="currentColor"/>
+                </svg>
+                <span>Editar</span>
+              </button>
+            ) : (
+              <button
+                className="perfil-icon-btn ghost"
+                onClick={() => {
+                  // revert local values to current profile and exit edit
+                  setFullName(profile?.full_name ?? "");
+                  setUserName(profile?.user_name ?? "");
+                  setAvatarUrl(profile?.avatar_url ?? "");
+                  setIsEditing(false);
+                }}
+                title="Cancelar"
+                aria-label="Cancelar edición"
+              >
+                ✕ <span>Cancelar</span>
+              </button>
+            )}
+          </div>
+        </header>
 
-                <label className="pf-label">
-                  Username
-                  <input
-                    className="pf-input"
-                    type="text"
-                    placeholder="@usuario"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    disabled={!isEditing || saving}
-                  />
-                </label>
+        {error && <div className="perfil-error">⚠️ {error}</div>}
 
-                <label className="pf-label">
-                  Avatar URL
-                  <input
-                    className="pf-input"
-                    type="url"
-                    placeholder="https://tu-imagen.jpg"
-                    value={avatarUrl}
-                    onChange={(e) => setAvatarUrl(e.target.value)}
-                    disabled={!isEditing || saving}
-                  />
-                </label>
-
-                {isEditing && (
-                  <div className="profile-actions">
-                    <button
-                      className="primary-btn"
-                      type="button"
-                      onClick={handleSave}
-                      disabled={saving}
-                    >
-                      {saving ? "Guardando..." : "Guardar cambios"}
-                    </button>
-                  </div>
-                )}
-              </div>
+        {!isEditing ? (
+          // ---------- READ-ONLY VIEW ----------
+          <section className="perfil-grid">
+            <div className="perfil-field">
+              <label>Nombre completo</label>
+              <div className="perfil-value">{profile?.full_name || "—"}</div>
             </div>
-          </>
+
+            <div className="perfil-field">
+              <label>Usuario</label>
+              <div className="perfil-value">{profile?.user_name || "—"}</div>
+            </div>
+
+            <div className="perfil-field">
+              <label>Avatar URL</label>
+              <div className="perfil-value">{profile?.avatar_url || "—"}</div>
+            </div>
+
+            <div className="perfil-field">
+              <label>Email</label>
+              <div className="perfil-value">{email || "—"}</div>
+            </div>
+          </section>
+        ) : (
+          // ---------- EDIT FORM ----------
+          <form className="perfil-form" onSubmit={handleSave}>
+            <div className="perfil-field">
+              <label htmlFor="full_name">Nombre completo</label>
+              <input
+                id="full_name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Tu nombre"
+                autoComplete="name"
+              />
+            </div>
+
+            <div className="perfil-field">
+              <label htmlFor="user_name">Usuario</label>
+              <input
+                id="user_name"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                placeholder="@usuario"
+                autoComplete="username"
+              />
+            </div>
+
+            <div className="perfil-field">
+              <label htmlFor="avatar_url">Avatar URL</label>
+              <input
+                id="avatar_url"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                placeholder="https://…"
+                inputMode="url"
+                autoComplete="url"
+              />
+            </div>
+
+            <div className="perfil-field">
+              <label>Email</label>
+              <input value={email} disabled />
+              <small className="perfil-hint">El email no se puede editar.</small>
+            </div>
+
+            <div className="perfil-actions-row">
+              <button className="perfil-btn primary" type="submit" disabled={isSaving}>
+                {isSaving ? "Guardando…" : "Guardar cambios"}
+              </button>
+              <button
+                type="button"
+                className="perfil-btn ghost"
+                onClick={() => setIsEditing(false)}
+                disabled={isSaving}
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
         )}
       </div>
     </div>
