@@ -3,13 +3,12 @@ import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/tool
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "../../services/supabaseClient";
 
-/* ------------------ Payloads ------------------ */
 type RegisterPayload = {
   fullName: string;
   userName: string;
   email: string;
   password: string;
-  avatarUrl?: string; // optional
+  avatarUrl?: string | null;
 };
 
 type LoginPayload = {
@@ -17,135 +16,140 @@ type LoginPayload = {
   password: string;
 };
 
-/* ------------------ State ------------------ */
 interface AuthState {
   session: Session | null;
   user: User | null;
-  isLoading: boolean;
+  isLoading: boolean;  // true until we bootstrap from Supabase
   error: string | null;
 }
 
 const initialState: AuthState = {
   session: null,
   user: null,
-  isLoading: true, // stays true until first auth hydration
+  isLoading: true,
   error: null,
 };
 
-/* ------------------ Thunks ------------------ */
+/* ----------------------- Thunks you already had ----------------------- */
 
-// REGISTER: create auth user, put full_name/user_name/avatar_url in metadata,
-// and upsert public.profiles (trigger will also mirror metadata on user creation).
 export const register = createAsyncThunk(
   "auth/register",
-  async (
-    { fullName, userName, email, password, avatarUrl }: RegisterPayload,
-    { rejectWithValue }
-  ) => {
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+  async ({ fullName, userName, email, password, avatarUrl }: RegisterPayload, { rejectWithValue }) => {
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          full_name: fullName,
-          user_name: userName,
-          avatar_url: avatarUrl || null, // critical
-        },
-      },
+      options: { data: { full_name: fullName, user_name: userName, avatar_url: avatarUrl ?? null } },
     });
-    if (signUpError) return rejectWithValue(signUpError.message);
+    if (error) return rejectWithValue(error.message);
 
-    const userId = signUpData.user?.id;
-    if (!userId) return rejectWithValue("No user returned by Supabase.");
-
-    // Optional immediate upsert (ok if RLS blocks; DB trigger should still populate it)
-    await supabase
-      .from("profiles")
-      .upsert(
-        {
-          id: userId,
-          full_name: fullName,
-          user_name: userName,
-          avatar_url: avatarUrl || null,
-        },
-        { onConflict: "id" }
-      );
-
-    // Session can be null if email confirmation is ON
-    const { data: sessionRes } = await supabase.auth.getSession();
-
-    return { session: sessionRes.session, user: signUpData.user || null };
+    const userId = data.user?.id;
+    if (userId) {
+      await supabase
+        .from("profiles")
+        .upsert({ id: userId, full_name: fullName, user_name: userName, avatar_url: avatarUrl ?? null }, { onConflict: "id" });
+    }
+    return { session: (await supabase.auth.getSession()).data.session, user: data.user ?? null };
   }
 );
 
-// LOGIN
 export const login = createAsyncThunk(
   "auth/login",
   async ({ email, password }: LoginPayload, { rejectWithValue }) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return rejectWithValue(error.message);
-    return { session: data.session, user: data.user || null };
+    return { session: data.session, user: data.user ?? null };
   }
 );
 
-// LOGOUT
 export const logout = createAsyncThunk("auth/logout", async () => {
   await supabase.auth.signOut();
   return true;
 });
 
-/* ------------------ Slice ------------------ */
+/* -------------------- NEW: bootstrap + listener helpers -------------------- */
+
+/** 1) Bootstrap Redux from the session Supabase saved in localStorage. */
+export const initAuthFromSupabase = createAsyncThunk("auth/init", async () => {
+  const { data } = await supabase.auth.getSession();
+  // if user previously logged in, data.session will exist on refresh
+  return { session: data.session ?? null, user: data.session?.user ?? null };
+});
+
+/** 2) Start a Supabase listener that keeps Redux in sync. */
+export function startAuthListener(dispatch: (a: any) => void) {
+  const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Whenever Supabase session changes, reflect it in Redux:
+    dispatch(authSlice.actions.setAuth({ session, user: session?.user ?? null }));
+  });
+  return () => sub.subscription.unsubscribe();
+}
+
+/* -------------------------------- Slice -------------------------------- */
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    // For hydration via useSupabaseAuthSync (getSession/onAuthStateChange)
-    setSession: (state, action: PayloadAction<Session | null>) => {
-      state.session = action.payload;
-      state.user = action.payload?.user ?? null;
+    setAuth: (state, action: PayloadAction<{ session: Session | null; user: User | null }>) => {
+      state.session = action.payload.session;
+      state.user = action.payload.user;
       state.isLoading = false;
       state.error = null;
     },
-    startLoading: (state) => {
-      state.isLoading = true;
-    },
-    clearError: (state) => {
+    clearAuth: (state) => {
+      state.session = null;
+      state.user = null;
+      state.isLoading = false;
       state.error = null;
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      // REGISTER
-      .addCase(register.pending, (state) => {
+      // init
+      .addCase(initAuthFromSupabase.fulfilled, (state, { payload }) => {
+        state.session = payload.session;
+        state.user = payload.user;
+        state.isLoading = false;
+      })
+      .addCase(initAuthFromSupabase.pending, (state) => {
         state.isLoading = true;
-        state.error = null;
       })
-      .addCase(register.fulfilled, (state, action) => {
+      .addCase(initAuthFromSupabase.rejected, (state, action) => {
         state.isLoading = false;
-        state.session = action.payload.session;
-        state.user = action.payload.user;
-      })
-      .addCase(register.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = (action.payload as string) || "Register failed";
+        state.error = action.error.message ?? "Init error";
       })
 
-      // LOGIN
-      .addCase(login.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(login.fulfilled, (state, action) => {
+      // login
+      .addCase(login.fulfilled, (state, { payload }) => {
+        state.session = payload.session;
+        state.user = payload.user;
         state.isLoading = false;
-        state.session = action.payload.session;
-        state.user = action.payload.user;
+        state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
+        state.error = action.payload as string;
         state.isLoading = false;
-        state.error = (action.payload as string) || "Login failed";
       })
 
-      // LOGOUT
+      // register
+      .addCase(register.fulfilled, (state, { payload }) => {
+        state.session = payload.session;
+        state.user = payload.user;
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.error = action.payload as string;
+        state.isLoading = false;
+      })
+
+      // logout
       .addCase(logout.fulfilled, (state) => {
         state.session = null;
         state.user = null;
@@ -155,5 +159,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setSession, startLoading, clearError } = authSlice.actions;
+export const { setAuth, clearAuth, setLoading, setError } = authSlice.actions;
 export default authSlice.reducer;
