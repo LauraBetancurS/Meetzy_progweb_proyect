@@ -1,20 +1,39 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-export type FontScale = 0.85 | 1 | 1.15 | 1.3;
+export interface A11yState {
+  fontScale: number; // more flexible than fixed union
+}
 
-type A11yState = { fontScale: FontScale };
-const initialState: A11yState = { fontScale: 1 };
+const initialState: A11yState = {
+  fontScale: 1,
+};
+
+const MIN_SCALE = 0.6; // smaller than before
+const MAX_SCALE = 1.8; // bigger than before
+const STEP = 0.15; // each button press changes by 15%
 
 const a11ySlice = createSlice({
   name: "a11y",
   initialState,
   reducers: {
-    setFontScale: (s, a: PayloadAction<FontScale>) => { s.fontScale = a.payload; },
-    increaseFont: (s) => { s.fontScale = (Math.min(1.3, +(s.fontScale + 0.15).toFixed(2)) as FontScale); },
-    decreaseFont: (s) => { s.fontScale = (Math.max(0.85, +(s.fontScale - 0.15).toFixed(2)) as FontScale); },
-    resetFont:    (s) => { s.fontScale = 1; },
+    setFontScale: (state, action: PayloadAction<number>) => {
+      const newScale = action.payload;
+      state.fontScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, +newScale.toFixed(2)));
+    },
+    increaseFont: (state) => {
+      state.fontScale = Math.min(MAX_SCALE, +(state.fontScale + STEP).toFixed(2));
+    },
+    decreaseFont: (state) => {
+      state.fontScale = Math.max(MIN_SCALE, +(state.fontScale - STEP).toFixed(2));
+    },
+    resetFont: (state) => {
+      state.fontScale = 1;
+    },
   },
 });
 
 export const { setFontScale, increaseFont, decreaseFont, resetFont } = a11ySlice.actions;
 export default a11ySlice.reducer;
+
+// Selector helper
+export const selectFontScale = (state: { a11y: A11yState }) => state.a11y.fontScale;
