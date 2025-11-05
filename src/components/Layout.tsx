@@ -4,11 +4,13 @@ import { Outlet, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { logout } from "../redux/slices/AuthSlice";
 
-// ⬇️ use your existing a11y slice
+// a11y controls
 import {
   increaseFont as increaseFontAction,
   decreaseFont as decreaseFontAction,
-  resetFont as resetFontAction,
+  resetFont as resetFontAction,      // keep reset (optional)
+  toggleDyslexiaMode,
+  selectDyslexiaMode,
 } from "../redux/slices/a11ySlice";
 
 import Sidebar from "../components/dashboard/sidebar/sidebar";
@@ -21,14 +23,17 @@ export default function Layout() {
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
 
-  // ⬇️ read scale directly from the a11y slice
+  // current font scale (for the % label)
   const fontScale = useAppSelector((s) => s.a11y.fontScale);
+  // dyslexia mode state
+  const dyslexiaMode = useAppSelector(selectDyslexiaMode);
 
   const [displayName, setDisplayName] = useState<string>("User");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
 
   useEffect(() => {
     let mounted = true;
+
     async function loadUserData() {
       if (!user) {
         if (mounted) {
@@ -37,6 +42,7 @@ export default function Layout() {
         }
         return;
       }
+
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("user_name, full_name, avatar_url")
@@ -56,6 +62,7 @@ export default function Layout() {
         return;
       }
 
+      // fallback to auth metadata
       const meta = (user.user_metadata as any) || {};
       const metaName =
         meta.user_name ||
@@ -67,6 +74,7 @@ export default function Layout() {
         setAvatarUrl(meta.avatar_url || "");
       }
     }
+
     loadUserData();
     return () => {
       mounted = false;
@@ -79,10 +87,11 @@ export default function Layout() {
   }
 
   const initialLetter =
-    (displayName && displayName.trim().charAt(0).toUpperCase()) || "U";
+    (displayName?.trim?.().charAt(0).toUpperCase()) || "U";
 
   return (
     <div className="app">
+      {/* Header fijo */}
       <header className="app-header">
         <div className="app-header__left">
           <img
@@ -93,8 +102,13 @@ export default function Layout() {
         </div>
 
         <div className="app-header__right">
-          {/* A11y font controls */}
-          <div className="app-header__a11y" role="group" aria-label="Controles de tamaño de fuente">
+          {/* A11y controls */}
+          <div
+            className="app-header__a11y"
+            role="group"
+            aria-label="Controles de accesibilidad"
+          >
+            {/* Font size */}
             <button
               type="button"
               className="a11y-btn"
@@ -104,7 +118,17 @@ export default function Layout() {
             >
               A−
             </button>
-           
+
+            <button
+              type="button"
+              className="a11y-btn"
+              onClick={() => dispatch(resetFontAction())}
+              aria-label="Restablecer tamaño de fuente"
+              title="100%"
+            >
+              100%
+            </button>
+
             <button
               type="button"
               className="a11y-btn"
@@ -114,18 +138,37 @@ export default function Layout() {
             >
               A+
             </button>
+
             <span className="a11y-scale" aria-live="polite">
               {Math.round(fontScale * 100)}%
             </span>
+
+            {/* Dyslexia Mode */}
+            <button
+              type="button"
+              className={`a11y-btn dyslexia-toggle ${dyslexiaMode ? "is-on" : ""}`}
+              onClick={() => dispatch(toggleDyslexiaMode())}
+              aria-pressed={dyslexiaMode}
+              aria-label="Alternar modo dislexia"
+              title="Modo dislexia"
+            >
+              Dyslexia {dyslexiaMode ? "ON" : "OFF"}
+            </button>
           </div>
 
-          {/* Avatar */}
+          {/* Avatar + greet */}
           <div className="app-header__profile">
             <div className="app-header__avatar-wrapper">
               {avatarUrl ? (
-                <img src={avatarUrl} alt={displayName} className="app-header__avatar" />
+                <img
+                  src={avatarUrl}
+                  alt={displayName}
+                  className="app-header__avatar"
+                />
               ) : (
-                <div className="app-header__avatar-placeholder">{initialLetter}</div>
+                <div className="app-header__avatar-placeholder">
+                  {initialLetter}
+                </div>
               )}
             </div>
             <span className="app-header__greet">Hola, {displayName}</span>
@@ -137,6 +180,7 @@ export default function Layout() {
         </div>
       </header>
 
+      {/* Body general: Sidebar (desktop) + Outlet */}
       <div className="app-body">
         <aside className="app-sidebar">
           <Sidebar />
@@ -147,6 +191,7 @@ export default function Layout() {
         </main>
       </div>
 
+      {/* Navbar solo en mobile (≤768px) */}
       <MobileNavbar />
     </div>
   );
