@@ -8,16 +8,20 @@ export type EventId = string;
  * - `createdBy` es opcional para no romper datos ya existentes,
  *   pero el servicio lo llenará cuando venga desde Supabase.
  */
+// src/types/Event.ts
 export type EventModel = {
-  id: EventId;
+  id: string;
   name: string;
   description: string;
   place: string;
-  date: string;        // YYYY-MM-DD
-  startTime: string;   // HH:MM
-  imageUrl?: string;   // URL opcional de la imagen del evento
-  createdBy?: string;  // <- NUEVO: id del creador (auth.users.id)
+  date: string;       // YYYY-MM-DD
+  startTime: string;  // HH:MM
+  imageUrl?: string;
+  // 👇 optional flags used by UI
+  isOwner?: boolean;
+  isJoined?: boolean;
 };
+
 
 // 🔹 Estructura para crear un evento (sin id)
 export type NewEvent = Omit<EventModel, "id" | "createdBy">;
