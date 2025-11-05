@@ -3,6 +3,14 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { logout } from "../redux/slices/AuthSlice";
+
+// ⬇️ use your existing a11y slice
+import {
+  increaseFont as increaseFontAction,
+  decreaseFont as decreaseFontAction,
+  resetFont as resetFontAction,
+} from "../redux/slices/a11ySlice";
+
 import Sidebar from "../components/dashboard/sidebar/sidebar";
 import MobileNavbar from "../components/mobile-navbar/MobileNavbar";
 import "./Layout.css";
@@ -13,13 +21,14 @@ export default function Layout() {
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
 
+  // ⬇️ read scale directly from the a11y slice
+  const fontScale = useAppSelector((s) => s.a11y.fontScale);
+
   const [displayName, setDisplayName] = useState<string>("User");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
 
-  // Fetch user data (name + avatar) from Supabase
   useEffect(() => {
     let mounted = true;
-
     async function loadUserData() {
       if (!user) {
         if (mounted) {
@@ -28,7 +37,6 @@ export default function Layout() {
         }
         return;
       }
-
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("user_name, full_name, avatar_url")
@@ -48,33 +56,33 @@ export default function Layout() {
         return;
       }
 
-      // fallback: metadata
+      const meta = (user.user_metadata as any) || {};
       const metaName =
-        (user.user_metadata as any)?.user_name ||
-        (user.user_metadata as any)?.full_name ||
+        meta.user_name ||
+        meta.full_name ||
         (user.email ? user.email.split("@")[0] : "User");
 
       if (mounted) {
-        setDisplayName(metaName);
-        setAvatarUrl((user.user_metadata as any)?.avatar_url || "");
+        setDisplayName(String(metaName));
+        setAvatarUrl(meta.avatar_url || "");
       }
     }
-
     loadUserData();
     return () => {
       mounted = false;
     };
   }, [user]);
 
-  // Logout logic
   async function handleLogout() {
     await dispatch(logout());
     navigate("/login");
   }
 
+  const initialLetter =
+    (displayName && displayName.trim().charAt(0).toUpperCase()) || "U";
+
   return (
     <div className="app">
-      {/* Header fijo */}
       <header className="app-header">
         <div className="app-header__left">
           <img
@@ -85,19 +93,39 @@ export default function Layout() {
         </div>
 
         <div className="app-header__right">
+          {/* A11y font controls */}
+          <div className="app-header__a11y" role="group" aria-label="Controles de tamaño de fuente">
+            <button
+              type="button"
+              className="a11y-btn"
+              onClick={() => dispatch(decreaseFontAction())}
+              aria-label="Reducir tamaño de fuente"
+              title="A−"
+            >
+              A−
+            </button>
+           
+            <button
+              type="button"
+              className="a11y-btn"
+              onClick={() => dispatch(increaseFontAction())}
+              aria-label="Aumentar tamaño de fuente"
+              title="A+"
+            >
+              A+
+            </button>
+            <span className="a11y-scale" aria-live="polite">
+              {Math.round(fontScale * 100)}%
+            </span>
+          </div>
+
           {/* Avatar */}
           <div className="app-header__profile">
             <div className="app-header__avatar-wrapper">
               {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt={displayName}
-                  className="app-header__avatar"
-                />
+                <img src={avatarUrl} alt={displayName} className="app-header__avatar" />
               ) : (
-                <div className="app-header__avatar-placeholder">
-                  {displayName.charAt(0).toUpperCase()}
-                </div>
+                <div className="app-header__avatar-placeholder">{initialLetter}</div>
               )}
             </div>
             <span className="app-header__greet">Hola, {displayName}</span>
@@ -109,7 +137,6 @@ export default function Layout() {
         </div>
       </header>
 
-      {/* Body general: Sidebar (desktop) + Outlet */}
       <div className="app-body">
         <aside className="app-sidebar">
           <Sidebar />
@@ -120,7 +147,6 @@ export default function Layout() {
         </main>
       </div>
 
-      {/* Navbar solo en mobile (≤768px) */}
       <MobileNavbar />
     </div>
   );
