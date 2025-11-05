@@ -23,8 +23,7 @@ export default function PublicEventCard({ event, onJoin, onAbout }: PublicEventC
         <p className="eventCard__description">{event.description || "Sin descripción"}</p>
         <p className="eventCard__meta">
           <strong>Lugar:</strong> {event.place || "—"} ·{" "}
-          <strong>Fecha:</strong> {event.date} ·{" "}
-          <strong>Hora:</strong> {event.startTime}
+          <strong>Fecha:</strong> {event.date} · <strong>Hora:</strong> {event.startTime}
         </p>
 
         <div className="eventCard__footer">

@@ -1,38 +1,47 @@
 import { useState } from "react";
-import type { NewEvent } from "../../types/Event";
+import type { NewEventInput } from "../../types/Event";
 import "./EventForm.css";
 
 export type EventFormProps = {
-  onCreate: (data: NewEvent) => void;
+  onCreate: (data: NewEventInput) => void;
 };
 
 export function EventForm({ onCreate }: EventFormProps) {
-  const [form, setForm] = useState<NewEvent>({
+  const [form, setForm] = useState<NewEventInput>({
     name: "",
     description: "",
     place: "",
     date: "",
     startTime: "",
+    imageUrl: "",
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!form.name.trim() || !form.place.trim() || !form.date || !form.startTime) return;
 
     onCreate({
       ...form,
       name: form.name.trim(),
-      description: form.description.trim(),
+      description: form.description?.trim(),
       place: form.place.trim(),
+      imageUrl: form.imageUrl?.trim(),
     });
 
-    // reset
-    setForm({ name: "", description: "", place: "", date: "", startTime: "" });
+    // reset form
+    setForm({
+      name: "",
+      description: "",
+      place: "",
+      date: "",
+      startTime: "",
+      imageUrl: "",
+    });
   }
 
   return (
@@ -80,6 +89,17 @@ export function EventForm({ onCreate }: EventFormProps) {
           <input type="time" name="startTime" value={form.startTime} onChange={handleChange} required />
         </label>
       </div>
+
+      <label>
+        Imagen (URL)
+        <input
+          type="url"
+          name="imageUrl"
+          value={form.imageUrl}
+          onChange={handleChange}
+          placeholder="https://ejemplo.com/imagen.jpg"
+        />
+      </label>
 
       <button className="primary" type="submit">
         Crear evento
