@@ -1,22 +1,51 @@
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import RegisterForm from '../components/auth/RegisterForm'
-import type { Field } from '../types/ui'
+// src/pages/Login.tsx
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { login } from "../redux//slices/AuthSlice";
+import RegisterForm from "../components/auth/RegisterForm";
+import type { Field } from "../types/ui";
 
 export function Login() {
-  const navigate = useNavigate()
-  const { login } = useAuth()
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { user, session } = useAppSelector((state) => state.auth);
 
+  // Campos adaptados a email/password (Supabase)
   const fields: Field[] = [
-    { name: 'userName', label: 'Username', placeholder: 'Enter your username', required: true },
-    { name: 'password', label: 'Password', type: 'password', placeholder: 'Enter your password', required: true },
-  ]
+    {
+      name: "email",
+      label: "Email",
+      type: "email",
+      placeholder: "Enter your email",
+      required: true,
+    },
+    {
+      name: "password",
+      label: "Password",
+      type: "password",
+      placeholder: "Enter your password",
+      required: true,
+    },
+  ];
 
-  const initialValues = { userName: '', password: '' }
+  const initialValues = { email: "", password: "" };
 
   function handleSubmit(values: Record<string, string>) {
-    login(values.userName, values.password)
+    dispatch(
+      login({
+        email: values.email,
+        password: values.password,
+      })
+    );
   }
+
+  // Redirigir si hay sesión activa (usuario logueado)
+  useEffect(() => {
+    if (session) {
+      navigate("/");
+    }
+  }, [session, navigate]);
 
   return (
     <RegisterForm
@@ -29,7 +58,7 @@ export function Login() {
       logoUrl="https://jzlxkxxstoryjoifaeak.supabase.co/storage/v1/object/public/AUTH%20IMG/MeetzyLogo.png"
       bottomText="Don't have an account?"
       bottomLinkLabel="Register"
-      onBottomLink={() => navigate('/register')}
+      onBottomLink={() => navigate("/register")}
     />
-  )
+  );
 }

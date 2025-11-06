@@ -1,0 +1,246 @@
+/* ============================
+   Perfil.css — Meetzy Neo
+   Mantiene dark theme + acentos coral/pink,
+   añade glass, glow suave y avatar más grande.
+   ============================ */
+
+:root {
+  --perfil-bg: #161618;
+  --perfil-elev: #1d1d22;
+  --perfil-soft: #24242a;
+  --perfil-border: rgba(255,255,255,0.08);
+  --perfil-text: #f7f7fb;
+  --perfil-dim: #b8b8c2;
+
+  --accent-coral: #ff6a44;
+  --accent-pink:  #fd89dc;
+
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --shadow-soft: 0 10px 32px rgba(0,0,0,.35), 0 0 28px rgba(253,137,220,.12);
+  --ring: 0 0 0 3px rgba(253,137,220,.18);
+}
+
+/* Page wrapper */
+.perfil-page {
+  width: 100%;
+  min-height: calc(100vh - var(--header-h));
+  display: flex;
+  justify-content: center;
+  padding: 26px;
+  background: transparent;
+}
+
+/* Card / glassy */
+.perfil-card {
+  width: 100%;
+  max-width: 1040px;
+  color: var(--perfil-text);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)) ,
+    var(--perfil-bg);
+  border: 1px solid var(--perfil-border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-soft);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle top gradient glow */
+.perfil-card::before{
+  content:"";
+  position:absolute; inset:-1px -1px auto -1px; height:140px;
+  background: radial-gradient(1200px 180px at 20% -40px, rgba(253,137,220,.18), transparent 55%),
+              radial-gradient(900px 160px at 95% -60px, rgba(255,106,68,.16), transparent 55%);
+  pointer-events:none;
+}
+
+/* Header — bigger avatar and tidy actions */
+.perfil-header {
+  display: grid;
+  grid-template-columns: 120px 1fr auto; /* avatar más grande 👈 */
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.perfil-title h1 {
+  margin: 0 0 6px 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+.perfil-sub {
+  margin: 0;
+  color: var(--perfil-dim);
+  font-size: 0.98rem;
+}
+
+/* Avatar block */
+.perfil-avatar-wrap {
+  width: 120px;
+  height: 120px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--perfil-border);
+  background: #101013;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 22px rgba(0,0,0,.35);
+}
+.perfil-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.perfil-avatar.placeholder {
+  width: 100%; height: 100%;
+  display: grid; place-items: center;
+  font-weight: 900;
+  font-size: 2.2rem;
+  color: #8e8e98;
+  background: linear-gradient(145deg, #1b1b20, #0f0f12);
+}
+
+/* Icon buttons (edit / cancel) */
+.perfil-actions { display: flex; gap: 10px; }
+.perfil-icon-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: #fff;
+  background: var(--perfil-soft);
+  border: 1px solid rgba(255,255,255,.12);
+  font-weight: 700;
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, opacity .15s;
+}
+.perfil-icon-btn:hover { border-color: rgba(253,137,220,.55); box-shadow: 0 0 14px rgba(253,137,220,.18); }
+.perfil-icon-btn:active { transform: translateY(1px) scale(.995); }
+.perfil-icon-btn.ghost { background: transparent; }
+
+/* Error banner */
+.perfil-error {
+  margin: 6px 0 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255,106,68,0.10);
+  border: 1px solid rgba(255,106,68,0.40);
+  color: #ffd1c6;
+}
+
+/* Skeleton */
+.perfil-skel {
+  height: 170px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #1e1e23 0%, #2a2a31 50%, #1e1e23 100%);
+  background-size: 200% 100%;
+  animation: perfilShimmer 1.4s infinite;
+}
+@keyframes perfilShimmer { 0% {background-position: 200% 0;} 100% {background-position: -200% 0;} }
+
+/* --------- Read-only grid --------- */
+.perfil-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 6px;
+}
+.perfil-field {
+  background: var(--perfil-elev);
+  border: 1px solid var(--perfil-border);
+  border-radius: 12px;
+  padding: 14px;
+}
+.perfil-field > label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--perfil-dim);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 6px;
+}
+.perfil-value {
+  font-weight: 700;
+  color: var(--perfil-text);
+  word-break: break-word;
+}
+
+/* --------- Edit form --------- */
+.perfil-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 8px;
+}
+.perfil-form .perfil-field {
+  display: grid; gap: 8px; padding: 14px;
+  background: var(--perfil-elev);
+  border: 1px solid var(--perfil-border);
+  border-radius: 12px;
+}
+.perfil-form label {
+  font-size: .82rem; color: var(--perfil-dim); text-transform: uppercase; letter-spacing: .04em;
+}
+
+.perfil-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: #1a1a1f;
+  color: #fff;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .2s ease, background .15s ease;
+}
+.perfil-form input:focus {
+  border-color: rgba(253,137,220,.6);
+  box-shadow: var(--ring);
+}
+.perfil-form input:disabled { opacity: .65; cursor: not-allowed; }
+.perfil-hint { color: var(--perfil-dim); font-size: .8rem; }
+
+/* Buttons row */
+.perfil-actions-row {
+  grid-column: 1 / -1;
+  display: flex; flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 2px;
+}
+.perfil-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #fff;
+  background: var(--perfil-soft);
+  border: 1px solid rgba(255,255,255,.14);
+  font-weight: 800;
+  letter-spacing: .2px;
+  transition: transform .15s ease, box-shadow .2s ease, border-color .2s ease, opacity .15s;
+}
+.perfil-btn:hover { border-color: rgba(253,137,220,.55); box-shadow: 0 0 16px rgba(253,137,220,.22); }
+.perfil-btn:active { transform: translateY(1px) scale(.995); }
+
+.perfil-btn.primary {
+  background: linear-gradient(90deg, var(--accent-coral), var(--accent-pink));
+  border: none;
+  box-shadow: 0 6px 18px rgba(253,137,220,.25);
+}
+.perfil-btn.primary:hover { box-shadow: 0 10px 24px rgba(253,137,220,.32); }
+
+.perfil-btn.ghost { background: transparent; }
+
+/* --------- Responsive --------- */
+@media (max-width: 980px) {
+  .perfil-header {
+    grid-template-columns: 100px 1fr auto;
+  }
+  .perfil-avatar-wrap { width: 100px; height: 100px; border-radius: 18px; }
+}
+@media (max-width: 780px) {
+  .perfil-header { grid-template-columns: 80px 1fr auto; gap: 12px; }
+  .perfil-avatar-wrap { width: 80px; height: 80px; border-radius: 16px; }
+  .perfil-grid, .perfil-form { grid-template-columns: 1fr; }
+}

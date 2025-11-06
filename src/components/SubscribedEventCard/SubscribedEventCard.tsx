@@ -23,8 +23,7 @@ export default function SubscribedEventCard({ event, onAbout, onUnsubscribe }: S
         <p className="subscribedCard__description">{event.description || "Sin descripción"}</p>
         <p className="subscribedCard__meta">
           <strong>Lugar:</strong> {event.place || "—"} ·{" "}
-          <strong>Fecha:</strong> {event.date} ·{" "}
-          <strong>Hora:</strong> {event.startTime}
+          <strong>Fecha:</strong> {event.date} · <strong>Hora:</strong> {event.startTime}
         </p>
 
         <div className="subscribedCard__footer">

@@ -29,12 +29,75 @@ body { margin: 0; background: var(--bg); color: #fff; }
   border-bottom: 1px solid #2a2a2a;
 }
 .app-header__logo{ height: 28px; }
-.app-header__right{ display:flex; gap:12px; align-items:center; }
+.app-header__right{
+  display:flex;
+  align-items:center;
+  gap:12px; /* espacio entre a11y, perfil y logout */
+}
 .app-header__logout{
   padding: 8px 14px; border:1px solid #3a3a3a; background:#2a2a2a; color:#fff;
   border-radius:999px; cursor:pointer;
 }
 .app-header__logout:hover{ background:#333; }
+
+/* ===== Controles de accesibilidad (A− / 100% / A+) ===== */
+.app-header__a11y {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 10px;
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 0 10px rgba(253, 137, 220, 0.05);
+}
+
+.a11y-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.a11y-btn:hover {
+  border-color: #fd89dc;
+  color: #fd89dc;
+  box-shadow: 0 0 8px rgba(253, 137, 220, 0.3);
+  transform: scale(1.05);
+}
+
+.a11y-btn:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+/* Resaltar el botón de reset (100%) */
+.a11y-btn[title="100%"] {
+  color: #ff6a44;
+  border-color: rgba(255, 106, 68, 0.4);
+}
+.a11y-btn[title="100%"]:hover {
+  background: rgba(255, 106, 68, 0.15);
+  color: #fff;
+  border-color: rgba(255, 106, 68, 0.7);
+}
+
+/* Indicador de porcentaje actual */
+.a11y-scale {
+  font-size: 0.85rem;
+  color: #fd89dc;
+  opacity: 0.9;
+  font-weight: 600;
+  margin-left: 4px;
+  text-shadow: 0 0 4px rgba(253, 137, 220, 0.4);
+}
 
 /* ===== Body del layout: 2 columnas (Sidebar | Contenido) ===== */
 .app-body{
@@ -50,6 +113,43 @@ body { margin: 0; background: var(--bg); color: #fff; }
   min-width: 0;
   /* en desktop no necesitamos espacio extra abajo */
   padding-bottom: 0;
+}
+
+/* ===== Perfil en header ===== */
+.app-header__profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-header__avatar-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #e1e1e1;
+}
+
+.app-header__avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.app-header__avatar-placeholder {
+  font-weight: 600;
+  color: #555;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.app-header__greet {
+  font-weight: 600;
+  letter-spacing: .2px;
 }
 
 /* ===== Responsive (≤768px) ===== */
@@ -68,5 +168,18 @@ body { margin: 0; background: var(--bg); color: #fff; }
   .app-outlet{
     /* Altura de la bottom bar + un margen de respiro + safe-area-bottom si existe */
     padding-bottom: calc(var(--mnav-h) + 16px + env(safe-area-inset-bottom));
+  }
+
+  /* Compactar a11y en mobile */
+  .app-header__a11y {
+    gap: 6px;
+    padding: 4px 8px;
+  }
+  .a11y-btn {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+  }
+  .a11y-scale {
+    font-size: 0.8rem;
   }
 }

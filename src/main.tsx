@@ -1,26 +1,53 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App'
-import './index.css'
+// src/main.tsx
+import React, { useEffect } from "react";
+import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
+import App from "./App";
+import "./index.css";
 
-import { AppProvider } from './context/AppContext'        // tuyo
-import { AuthProvider } from './context/AuthContext'      // de DanielaDev
-import { EventsProvider } from './context/EventContext'
-import { SubscriptionsProvider } from "./context/SubscriptionsContext";  // feature de eventos (laurita-dev)
+// Redux hooks
+import { useAppDispatch } from "./redux/hooks";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// Auth helpers
+import { initAuthFromSupabase, startAuthListener } from "./redux/slices/AuthSlice";
+
+// 👇 NEW: applies and persists --app-font-scale
+import FontScaleApplier from "./components/FontScaleApplier";
+
+/**
+ * ✅ Bootstraps Supabase authentication when the app starts.
+ * Loads session from localStorage, then subscribes to auth changes.
+ */
+function AuthBootstrap() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    // 1️⃣ Initialize session from Supabase (refresh token, localStorage, etc.)
+    dispatch(initAuthFromSupabase());
+
+    // 2️⃣ Start Supabase auth state listener (login, logout, refresh)
+    const unsubscribe = startAuthListener(dispatch);
+
+    // 3️⃣ Clean up listener when component unmounts
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, [dispatch]);
+
+  return (
+    <>
+      {/* Ensures the CSS var --app-font-scale is set + persisted */}
+      <FontScaleApplier />
+      <App />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <BrowserRouter>
-  <AuthProvider>
-    <AppProvider>
-      <EventsProvider>
-        <SubscriptionsProvider>
-          <App />
-        </SubscriptionsProvider>
-      </EventsProvider>
-    </AppProvider>
-  </AuthProvider>
-</BrowserRouter>
-  </React.StrictMode>,
-)
+    <Provider store={store}>
+      <AuthBootstrap />
+    </Provider>
+  </React.StrictMode>
+);
