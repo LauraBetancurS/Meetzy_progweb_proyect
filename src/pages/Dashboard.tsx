@@ -13,7 +13,7 @@ import {
   fetchPublicEvents,
   fetchMyEvents,
   fetchSubscribedEvents,
-} from "../services/events.service";
+} from "../services/supaevents";
 import { joinEventThunk } from "../redux/slices/EventsSlice";
 import type { EventModel } from "../types/Event";
 

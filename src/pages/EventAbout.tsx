@@ -5,7 +5,7 @@ import {
   isUserJoined,
   joinEvent,
   leaveEvent,
-} from "../services/events.service";
+} from "../services/supaevents";
 import type { EventModel } from "../types/Event";
 import "./EventAbout.css";
 

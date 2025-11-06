@@ -8,7 +8,7 @@ import {
   deleteEvent,
   joinEvent,
   leaveEvent,
-} from "../../services/events.service";
+} from "../../services/supaevents";
 
 /* ---------------------- Estado inicial ---------------------- */
 

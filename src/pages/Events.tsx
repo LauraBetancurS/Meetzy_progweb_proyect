@@ -12,7 +12,7 @@ import {
   leaveEventThunk,
 } from "../redux/slices/EventsSlice";
 
-import { fetchPublicEvents } from "../services/events.service";
+import { fetchPublicEvents } from "../services/supaevents";
 
 import EventCard from "../components/EventCard";
 import PublicEventCard from "../components/PublicEventCard/PublicEventCard";
