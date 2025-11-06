@@ -1,5 +1,5 @@
 // src/components/layout/sidebar/Sidebar.tsx
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import PrimaryButton from "../../UI/PrimaryButton";
 import DashboardItem from "../items/DashboardItem";
 import EventosItem from "../items/EventosItem";
@@ -8,18 +8,8 @@ import NotificacionesItem from "../items/NotificacionesItem";
 import PerfilItem from "../items/PerfilItem";
 import "./Sidebar.css";
 
-// Import para logout
-import { useAppDispatch } from "../../../redux/hooks";
-import { logout } from "../../../redux/slices/AuthSlice";
 
 function Sidebar() {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    await dispatch(logout());
-    navigate("/login");
-  };
 
   return (
     <aside className="sb">
@@ -45,10 +35,6 @@ function Sidebar() {
           <PrimaryButton fullWidth>Crea una comunidad</PrimaryButton>
         </NavLink>
 
-        {/* Botón de Logout */}
-        <PrimaryButton fullWidth onClick={handleLogout} style={{ marginTop: "1rem", backgroundColor: "#E74C3C" }}>
-          Cerrar sesión
-        </PrimaryButton>
       </div>
     </aside>
   );

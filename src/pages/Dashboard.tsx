@@ -2,7 +2,6 @@
 import { useEffect, useState, useCallback } from "react";
 import SearchBar from "../components/dashboard/search/SearchBar";
 import RightColumn from "../components/dashboard/right/RightColumn";
-import Composer from "../components/dashboard/composer/Composer";
 import EventsSection from "../components/dashboard/events/EventsSection";
 import "./Dashboard.css";
 
@@ -93,9 +92,6 @@ export default function Dashboard() {
     console.log("Buscar:", q);
   }
 
-  function handlePost({ text }: { text: string; communityId: string }) {
-    console.log("Post enviado:", { text });
-  }
 
   function goCreateEvent() {
     navigate("/events/new");
@@ -121,8 +117,6 @@ export default function Dashboard() {
             Turn plans into moments. Subtitle: Set the details, vote in real time, and keep every memory in one place.
           </p>
         </div>
-
-        <Composer onPost={handlePost} />
 
         <EventsSection
           events={events}
