@@ -9,7 +9,7 @@ import type { Field } from "../types/ui";
 export function Login() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { user, session } = useAppSelector((state) => state.auth);
+  const {  session } = useAppSelector((state) => state.auth);
 
   // Campos adaptados a email/password (Supabase)
   const fields: Field[] = [
