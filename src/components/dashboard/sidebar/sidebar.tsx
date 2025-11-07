@@ -6,7 +6,7 @@ import EventosItem from "../items/EventosItem";
 import ComunidadesItem from "../items/ComunidadesItem";
 import NotificacionesItem from "../items/NotificacionesItem";
 import PerfilItem from "../items/PerfilItem";
-import "./Sidebar.css";
+import "./sidebar.css";
 
 
 function Sidebar() {
