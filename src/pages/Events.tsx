@@ -1,22 +1,32 @@
-import type { EventRow } from "../redux/slices/EventsSlice";
-import type { EventModel } from "../types/Event";
+import { useMemo } from "react";
+import { useAppSelector } from "../redux/hooks";
 
-function mapRowToModel(
-  row: EventRow,
-  isOwnerComputed: boolean,
-  isJoinedComputed: boolean
-): EventModel {
-  return {
-    id: row.id,
-    name: row.name,
-    description: row.description ?? "",
-    place: row.place ?? "",
-    date: row.date ?? "",
-    startTime: row.start_time ? row.start_time.slice(0, 5) : "",
-    imageUrl: row.image_url ?? undefined,
-    createdBy: row.created_by,
-    createdByProfile: undefined,
-    isOwner: isOwnerComputed,
-    isJoined: isJoinedComputed,
-  };
-}
+export default function Events() {
+  const events = useAppSelector((s) => s.events.events);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const { myEvents, subscribedEvents, generalEvents } = useMemo(() => {
+    if (!userId) {
+      return {
+        myEvents: [],
+        subscribedEvents: [],
+        generalEvents: [],
+      };
+    }
+
+    const mine = events
+      .filter((e) => e.created_by === userId)
+      .map((e) => mapRowToModel(e, true, true));
+
+    const subs = events
+      .filter((e) => e.created_by !== userId && (e.subscribers || []).includes(userId))
+      .map((e) => mapRowToModel(e, false, true));
+
+    const general = events
+      .filter(
+        (e) => e.created_by !== userId && !(e.subscribers || []).includes(userId)
+      )
+      .map((e) => mapRowToModel(e, false, false));
+
+    return { myEvents: mine, subscribedEvents: subs, generalEvents: general };
+  }, [events, userId]);
