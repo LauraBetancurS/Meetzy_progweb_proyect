@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
-// import EventsPage from "./pages/Events";
+import EventsPage from "./pages/Events";
  import CreateEventPage from "./pages/CreateEvent";
 // import Comunidades from "./pages/Comunidades";
 import CuestionarioMood from "./pages/CuestionarioMood";
@@ -68,6 +68,7 @@ export default function App() {
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/events/:id" element={<EventAboutPage />} />
           <Route path="/events/new" element={<CreateEventPage />} />
+          <Route path="/events" element={<EventsPage />} />   
           
         </Route>
 
