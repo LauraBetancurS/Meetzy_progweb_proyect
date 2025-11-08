@@ -1,179 +1,153 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { supabase } from "../services/supabaseClient";
+import { useAppSelector, useAppDispatch } from "../redux/hooks";
 import {
-  fetchEventById,
-  isUserJoined,
-  joinEvent,
-  leaveEvent,
-} from "../services/supaevents";
+  subscribeToEvent,
+  type EventRow,
+} from "../redux/slices/EventsSlice";
 import type { EventModel } from "../types/Event";
 import "./EventAbout.css";
 
-export default function EventAboutPage() {
+export default function EventAbout() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
+  const eventsFromStore = useAppSelector((s) => s.events.events);
+  const [userId, setUserId] = useState<string | null>(null);
   const [event, setEvent] = useState<EventModel | null>(null);
   const [loading, setLoading] = useState(true);
-  const [joined, setJoined] = useState(false);
-  const [busy, setBusy] = useState(false);
+  const [loadingJoin, setLoadingJoin] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load event detail (includes creator profile)
+  function mapRowToModel(row: EventRow): EventModel {
+    return {
+      id: row.id,
+      name: row.name,
+      description: row.description ?? "",
+      place: row.place ?? "",
+      date: row.date ?? "",
+      startTime: row.start_time ? row.start_time.slice(0, 5) : "",
+      imageUrl: row.image_url ?? undefined,
+      createdBy: row.created_by,
+      createdByProfile: undefined,
+      isOwner: row.isOwner ?? false,
+      isJoined: row.isJoined ?? false,
+    };
+  }
+
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      if (!id) {
-        setError("Evento no encontrado.");
+    async function loadUser() {
+      const { data } = await supabase.auth.getUser();
+      if (data.user) setUserId(data.user.id);
+    }
+    loadUser();
+  }, []);
+
+  useEffect(() => {
+    if (!id) {
+      setError("No se encontró el evento.");
+      setLoading(false);
+      return;
+    }
+
+    const inStore = eventsFromStore.find((ev) => ev.id === id);
+    if (inStore) {
+      setEvent(mapRowToModel(inStore));
+      setLoading(false);
+      return;
+    }
+
+    async function fetchEvent() {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error || !data) {
+        setError("No pudimos cargar el evento.");
         setLoading(false);
         return;
       }
-      setLoading(true);
-      const res = await fetchEventById(id);
-      if (!mounted) return;
-      if (res.error) {
-        setError(res.error);
-        setEvent(null);
-      } else {
-        setEvent(res.data);
-        setError(null);
-      }
-      setLoading(false);
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [id]);
 
-  // Is user already joined?
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      if (!id) return;
-      const res = await isUserJoined(id);
-      if (!mounted) return;
-      if (!res.error) setJoined(res.joined);
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [id]);
+      const row = data as EventRow;
+      setEvent(mapRowToModel(row));
+      setLoading(false);
+    }
+
+    fetchEvent();
+  }, [id, eventsFromStore]);
 
   async function handleJoin() {
-    if (!id) return;
-    setBusy(true);
-    const res = await joinEvent(id);
-    if (!res.error) setJoined(true);
-    setBusy(false);
+    if (!event || !userId) return;
+    setLoadingJoin(true);
+    dispatch(subscribeToEvent({ eventId: event.id, userId }));
+    setEvent({ ...event, isJoined: true });
+    setLoadingJoin(false);
   }
 
-  async function handleLeave() {
-    if (!id) return;
-    setBusy(true);
-    const res = await leaveEvent(id);
-    if (!res.error) setJoined(false);
-    setBusy(false);
-  }
-
-  if (loading) {
+  if (loading) return <p className="eventAbout__loading">Cargando evento...</p>;
+  if (error || !event)
     return (
-      <div className="ea-page">
-        <div className="ea-container">
-          <div className="ea-skeleton" />
-        </div>
+      <div className="eventAbout__error">
+        <p>{error || "Evento no encontrado."}</p>
+        <button onClick={() => navigate(-1)}>Volver</button>
       </div>
     );
-  }
 
-  if (error || !event) {
-    return (
-      <div className="ea-page">
-        <div className="ea-container">
-          <p className="ea-error">{error ?? "Evento no encontrado."}</p>
-          <button className="ea-back" onClick={() => navigate(-1)}>
-            ← Volver
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const showJoin = !event.isOwner && !event.isJoined;
 
   return (
-    <div className="ea-page">
-      <header className="ea-hero">
+    <div className="eventAbout">
+      <div className="eventAbout__image">
         <img
-          className="ea-hero-img"
           src={event.imageUrl || "/img/default-event.jpg"}
           alt={event.name}
         />
-        <div className="ea-hero-overlay" />
-        <div className="ea-hero-content">
-          <h1 className="ea-title">{event.name}</h1>
-          <p className="ea-subtitle">{event.description || "Sin descripción"}</p>
+      </div>
 
-          {/* 🧑‍🎨 Creator info (from event.createdByProfile) */}
-          {event.createdByProfile && (
-            <div className="ea-creator">
-              <div className="ea-creator-avatar">
-                {event.createdByProfile.avatar_url ? (
-                  <img
-                    src={event.createdByProfile.avatar_url}
-                    alt={event.createdByProfile.user_name ?? "Creador"}
-                  />
-                ) : (
-                  <div className="ea-creator-placeholder">
-                    {(event.createdByProfile.user_name?.[0] ?? "U").toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <div className="ea-creator-meta">
-                <span className="ea-creator-label">Creado por</span>
-                <span className="ea-creator-name">
-                  @{event.createdByProfile.user_name ?? "usuario"}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
+      <h1 className="eventAbout__title">{event.name}</h1>
+      <p className="eventAbout__description">
+        {event.description || "Sin descripción"}
+      </p>
 
-      <main className="ea-container">
-        <section className="ea-card">
-          <div className="ea-meta">
-            <div className="ea-meta-item">
-              <span className="ea-label">Lugar</span>
-              <span className="ea-value">{event.place || "—"}</span>
-            </div>
-            <div className="ea-meta-item">
-              <span className="ea-label">Fecha</span>
-              <span className="ea-value">{event.date}</span>
-            </div>
-            <div className="ea-meta-item">
-              <span className="ea-label">Hora</span>
-              <span className="ea-value">{event.startTime}</span>
-            </div>
-          </div>
+      <div className="eventAbout__details">
+        <p>
+          <strong>Creador:</strong> {event.createdBy}
+        </p>
+        <p>
+          <strong>Lugar:</strong> {event.place || "—"}
+        </p>
+        <p>
+          <strong>Fecha:</strong> {event.date || "—"}
+        </p>
+        <p>
+          <strong>Hora:</strong> {event.startTime || "—"}
+        </p>
+      </div>
 
-          <div className="ea-actions">
-            {joined ? (
-              <>
-                <button className="ea-btn danger" onClick={handleLeave} disabled={busy}>
-                  {busy ? "Saliendo..." : "Salir del evento"}
-                </button>
-                <span className="ea-joined-tag">Ya estás suscrito ✅</span>
-              </>
-            ) : (
-              <button className="ea-btn primary" onClick={handleJoin} disabled={busy}>
-                {busy ? "Uniéndose..." : "Unirse"}
-              </button>
-            )}
+      <div className="eventAbout__buttons">
+        {showJoin ? (
+          <button
+            className="eventAbout__joinBtn"
+            onClick={handleJoin}
+            disabled={loadingJoin}
+          >
+            {loadingJoin ? "Uniendo..." : "Unirse al evento"}
+          </button>
+        ) : (
+          <button className="eventAbout__joinedBtn" disabled>
+            {event.isOwner ? "Tu evento" : "Ya unido"}
+          </button>
+        )}
 
-            <Link to="/events" className="ea-btn ghost">
-              Ver más eventos
-            </Link>
-          </div>
-        </section>
-      </main>
+        <button className="eventAbout__backBtn" onClick={() => navigate(-1)}>
+          Volver
+        </button>
+      </div>
     </div>
   );
 }
