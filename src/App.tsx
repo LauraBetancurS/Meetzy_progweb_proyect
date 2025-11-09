@@ -7,13 +7,13 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import EventsPage from "./pages/Events";
- import CreateEventPage from "./pages/CreateEvent";
-// import Comunidades from "./pages/Comunidades";
+import CreateEventPage from "./pages/CreateEvent";
+import Comunidades from "./pages/Comunidades";
 import CuestionarioMood from "./pages/CuestionarioMood";
 import Perfil from "./pages/Perfil";
 import { Login } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
- import EventAboutPage from "./pages/EventAbout";
+import EventAboutPage from "./pages/EventAbout";
 
 // 👇 mount the applier
 import FontScaleApplier from "./components/FontScaleApplier";
@@ -60,16 +60,12 @@ export default function App() {
           }
         >
           <Route index element={<Dashboard />} />
-          {/* <Route path="/events" element={<EventsPage />} /> */}
-          {/* <Route path="/events/new" element={<CreateEventPage />} />
-          <Route path="/events/:id" element={<EventAboutPage />} 
-          <Route path="/comunidades" element={<Comunidades />} /> */}
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/events/new" element={<CreateEventPage />} />
+          <Route path="/events/:id" element={<EventAboutPage />} />
+          <Route path="/comunidades" element={<Comunidades />} />
           <Route path="/mood" element={<CuestionarioMood />} />
           <Route path="/perfil" element={<Perfil />} />
-          <Route path="/events/:id" element={<EventAboutPage />} />
-          <Route path="/events/new" element={<CreateEventPage />} />
-          <Route path="/events" element={<EventsPage />} />   
-          
         </Route>
 
         {/* Fallback */}
