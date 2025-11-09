@@ -23,7 +23,7 @@ export default function CreateEvent() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // 1️⃣ Obtener el usuario actual de la sesión
+  // Obtener usuario actual
   useEffect(() => {
     async function loadUser() {
       const { data, error } = await supabase.auth.getUser();
@@ -33,7 +33,7 @@ export default function CreateEvent() {
     loadUser();
   }, []);
 
-  // 2️⃣ Crear evento
+  // Crear evento
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -46,7 +46,6 @@ export default function CreateEvent() {
     setLoading(true);
     setErrorMsg(null);
 
-    // Solo los campos que existen en la tabla de Supabase
     const newEvent = {
       name,
       description: description || null,
@@ -57,7 +56,6 @@ export default function CreateEvent() {
       image_url: imageUrl || null,
     };
 
-    // Guardar en Supabase
     const created = await createEventInDb(newEvent);
 
     if (!created) {
@@ -66,7 +64,6 @@ export default function CreateEvent() {
       return;
     }
 
-    // Agregar al store (para que se vea al instante)
     const eventForRedux: EventRow = {
       ...created,
       isOwner: true,
@@ -74,89 +71,109 @@ export default function CreateEvent() {
     };
 
     dispatch(addEvent(eventForRedux));
-
     setLoading(false);
-    navigate("/"); // o `/events/${created.id}` si quieres ir al detalle
+    navigate("/");
   }
 
   return (
-    <div className="createEvent">
-      <h1 className="createEvent__title">Crear evento</h1>
+    <div className="createEventPage">
+      <div className="createEventPage__content">
+        <div className="createEvent__wrap">
+          {/* === Imagen del evento === */}
+          <div className="createEvent__imageCard">
+            <div className="mockImage__frame">
+              {imageUrl ? (
+                <img src={imageUrl} alt="Vista previa del evento" />
+              ) : (
+                <span>Imagen<br />aquí</span>
+              )}
+            </div>
+          </div>
 
-      <form className="createEvent__form" onSubmit={handleSubmit}>
-        {errorMsg && <p className="createEvent__error">{errorMsg}</p>}
+          {/* === Formulario === */}
+          <div className="createEvent__formCard">
+            <h1 className="createEvent__title">Crear evento</h1>
 
-        <label className="createEvent__label">
-          Nombre *
-          <input
-            className="createEvent__input"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Ej: Meetup de React"
-          />
-        </label>
+            <form className="createEvent__form" onSubmit={handleSubmit}>
+              {errorMsg && <p className="createEvent__error">{errorMsg}</p>}
 
-        <label className="createEvent__label">
-          Descripción
-          <textarea
-            className="createEvent__textarea"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Cuéntanos de qué trata el evento..."
-          />
-        </label>
+              <label className="createEvent__label">
+                Nombre *
+                <input
+                  className="createEvent__input"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Ej: Meetup de React"
+                />
+              </label>
 
-        <label className="createEvent__label">
-          Lugar
-          <input
-            className="createEvent__input"
-            type="text"
-            value={place}
-            onChange={(e) => setPlace(e.target.value)}
-            placeholder="Cali, Medellín..."
-          />
-        </label>
+              <label className="createEvent__label">
+                Descripción
+                <textarea
+                  className="createEvent__textarea"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Cuéntanos de qué trata el evento..."
+                />
+              </label>
 
-        <label className="createEvent__label">
-          Fecha *
-          <input
-            className="createEvent__input"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </label>
+              <label className="createEvent__label">
+                Lugar
+                <input
+                  className="createEvent__input"
+                  type="text"
+                  value={place}
+                  onChange={(e) => setPlace(e.target.value)}
+                  placeholder="Cali, Medellín..."
+                />
+              </label>
 
-        <label className="createEvent__label">
-          Hora *
-          <input
-            className="createEvent__input"
-            type="time"
-            value={startTime}
-            onChange={(e) => setStartTime(e.target.value)}
-          />
-        </label>
+              <div className="createEvent__dateRowTitle">Fecha y hora</div>
+              <div className="createEvent__dateRow">
+                <label className="createEvent__label">
+                  Fecha *
+                  <input
+                    className="createEvent__input"
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                  />
+                </label>
 
-        <label className="createEvent__label">
-          URL de imagen
-          <input
-            className="createEvent__input"
-            type="text"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="https://..."
-          />
-        </label>
+                <label className="createEvent__label">
+                  Hora *
+                  <input
+                    className="createEvent__input"
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                  />
+                </label>
+              </div>
 
-        <button
-          className="createEvent__submit"
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? "Creando..." : "Crear evento"}
-        </button>
-      </form>
+              <label className="createEvent__label">
+                URL de imagen
+                <input
+                  className="createEvent__input"
+                  type="text"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  placeholder="https://..."
+                />
+              </label>
+
+              <button
+                className="createEvent__submit"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? "Creando..." : "Crear evento"}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
