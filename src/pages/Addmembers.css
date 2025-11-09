@@ -1,0 +1,122 @@
+.addmembers {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.addmembers__container h1 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.addmembers__back {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+}
+
+.addmembers__back:hover {
+  color: #000;
+}
+
+.addmembers__form {
+  background: #000;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.addmembers__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.addmembers__field label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.addmembers__help {
+  color: #fff;
+  font-size: 0.85rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.addmembers__search {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.addmembers__search input {
+  border-radius: 8px;
+  flex: 1;
+  font-size: 1rem;
+  padding: 0.75rem;
+}
+
+.addmembers__search input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.addmembers__error {
+  background: #000;
+  border-radius: 8px;
+  color: #c33;
+  padding: 1rem;
+}
+
+.addmembers__foundUser {
+  background: #232323;
+  border-radius: 8px;
+  padding: 1.5rem;
+}
+
+.addmembers__foundUser h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.addmembers__userInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.addmembers__userInfo p {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .addmembers {
+    padding: 1rem;
+  }
+
+  .addmembers__form {
+    padding: 1.5rem;
+  }
+
+  .addmembers__search {
+    flex-direction: column;
+  }
+
+  .addmembers__search input {
+    width: 100%;
+  }
+}
+
+.addmembers_img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
