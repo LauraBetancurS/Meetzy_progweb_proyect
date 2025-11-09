@@ -1,5 +1,4 @@
 // src/Layout.tsx
-import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { logout } from "../redux/slices/AuthSlice";
@@ -8,7 +7,7 @@ import { logout } from "../redux/slices/AuthSlice";
 import {
   increaseFont as increaseFontAction,
   decreaseFont as decreaseFontAction,
-  resetFont as resetFontAction,      // keep reset (optional)
+  
   toggleDyslexiaMode,
   selectDyslexiaMode,
 } from "../redux/slices/a11ySlice";
@@ -16,82 +15,46 @@ import {
 import Sidebar from "../components/dashboard/sidebar/sidebar";
 import MobileNavbar from "../components/mobile-navbar/MobileNavbar";
 import "./Layout.css";
-import { supabase } from "../services/supabaseClient";
 
 export default function Layout() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { user } = useAppSelector((state) => state.auth);
 
-  // current font scale (for the % label)
+  // ✅ Auth user (email, uid)
+  const authUser = useAppSelector((state) => state.auth.user);
+
+  // ✅ Profile from Redux (avatar_url, user_name, full_name)
+  const profile = useAppSelector((state) => state.profile.me);
+
+  // A11y
   const fontScale = useAppSelector((s) => s.a11y.fontScale);
-  // dyslexia mode state
   const dyslexiaMode = useAppSelector(selectDyslexiaMode);
 
-  const [displayName, setDisplayName] = useState<string>("User");
-  const [avatarUrl, setAvatarUrl] = useState<string>("");
+  // ✅ Username fallback
+  const displayName =
+    profile?.user_name?.trim() ||
+    profile?.full_name?.trim() ||
+    authUser?.email?.split("@")[0] ||
+    "User";
 
-  useEffect(() => {
-    let mounted = true;
+  // ✅ Avatar fallback
+  const avatarUrl =
+    profile?.avatar_url ||
+    authUser?.user_metadata?.avatar_url ||
+    "";
 
-    async function loadUserData() {
-      if (!user) {
-        if (mounted) {
-          setDisplayName("User");
-          setAvatarUrl("");
-        }
-        return;
-      }
+  const initialLetter =
+    displayName.trim().charAt(0).toUpperCase() || "U";
 
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("user_name, full_name, avatar_url")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (!error && profile) {
-        const pickedName =
-          (profile.user_name && profile.user_name.trim()) ||
-          (profile.full_name && profile.full_name.trim()) ||
-          (user.email ? user.email.split("@")[0] : "User");
-
-        if (mounted) {
-          setDisplayName(pickedName);
-          setAvatarUrl(profile.avatar_url || "");
-        }
-        return;
-      }
-
-      // fallback to auth metadata
-      const meta = (user.user_metadata as any) || {};
-      const metaName =
-        meta.user_name ||
-        meta.full_name ||
-        (user.email ? user.email.split("@")[0] : "User");
-
-      if (mounted) {
-        setDisplayName(String(metaName));
-        setAvatarUrl(meta.avatar_url || "");
-      }
-    }
-
-    loadUserData();
-    return () => {
-      mounted = false;
-    };
-  }, [user]);
-
+  // ✅ Logout
   async function handleLogout() {
     await dispatch(logout());
     navigate("/login");
   }
 
-  const initialLetter =
-    (displayName?.trim?.().charAt(0).toUpperCase()) || "U";
-
   return (
     <div className="app">
-      {/* Header fijo */}
+      {/* Header */}
       <header className="app-header">
         <div className="app-header__left">
           <img
@@ -108,49 +71,33 @@ export default function Layout() {
             role="group"
             aria-label="Controles de accesibilidad"
           >
-            {/* Font size */}
             <button
               type="button"
               className="a11y-btn"
               onClick={() => dispatch(decreaseFontAction())}
-              aria-label="Reducir tamaño de fuente"
               title="A−"
             >
               A−
             </button>
 
-            <button
-              type="button"
-              className="a11y-btn"
-              onClick={() => dispatch(resetFontAction())}
-              aria-label="Restablecer tamaño de fuente"
-              title="100%"
-            >
-              100%
-            </button>
+            
 
             <button
               type="button"
               className="a11y-btn"
               onClick={() => dispatch(increaseFontAction())}
-              aria-label="Aumentar tamaño de fuente"
               title="A+"
             >
               A+
             </button>
 
-            <span className="a11y-scale" aria-live="polite">
-              {Math.round(fontScale * 100)}%
-            </span>
+            <span className="a11y-scale">{Math.round(fontScale * 100)}%</span>
 
-            {/* Dyslexia Mode */}
             <button
               type="button"
               className={`a11y-btn dyslexia-toggle ${dyslexiaMode ? "is-on" : ""}`}
               onClick={() => dispatch(toggleDyslexiaMode())}
               aria-pressed={dyslexiaMode}
-              aria-label="Alternar modo dislexia"
-              title="Modo dislexia"
             >
               Dyslexia {dyslexiaMode ? "ON" : "OFF"}
             </button>
@@ -191,7 +138,7 @@ export default function Layout() {
         </main>
       </div>
 
-      {/* Navbar solo en mobile (≤768px) */}
+      {/* Navbar solo en mobile */}
       <MobileNavbar />
     </div>
   );
