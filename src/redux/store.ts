@@ -6,6 +6,7 @@ import subscriptionsReducer from "./slices/SubscriptionsSlice";
 import a11yReducer from "./slices/a11ySlice";
 import profileReducer from "./slices/ProfileSlice";
 import communitiesReducer from "./slices/CommunitiesSlice";
+import pollsReducer from './slices/PollsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     a11y: a11yReducer,    
     profile: profileReducer,        
     communities: communitiesReducer,
+    polls: pollsReducer,
   },
 });
 
