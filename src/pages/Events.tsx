@@ -1,9 +1,18 @@
-// src/pages/Events.tsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { subscribeToEvent, type EventRow } from "../redux/slices/EventsSlice";
+import {
+  subscribeToEvent,
+  unsubscribeFromEvent,
+  deleteEvent as deleteEventAction,
+  type EventRow,
+} from "../redux/slices/EventsSlice";
+import {
+  subscribeUserToEventInDb,
+  unsubscribeUserFromEventInDb,
+  deleteEventInDb,
+} from "../services/supaevents";
 import type { EventModel } from "../types/Event";
 import PublicEventCard from "../components/PublicEventCard/PublicEventCard";
 
@@ -13,8 +22,8 @@ export default function Events() {
 
   const events = useAppSelector((s) => s.events.events);
   const [userId, setUserId] = useState<string | null>(null);
+  const [refresh, setRefresh] = useState(0); // 👈 para forzar re-render tras unirse
 
-  // Obtener usuario desde sesión
   useEffect(() => {
     async function loadUser() {
       const { data } = await supabase.auth.getUser();
@@ -23,7 +32,6 @@ export default function Events() {
     loadUser();
   }, []);
 
-  // BD -> UI
   function mapRowToModel(
     row: EventRow,
     isOwnerComputed: boolean,
@@ -44,7 +52,7 @@ export default function Events() {
     };
   }
 
-  // Separar en 3 grupos
+  // 👇 usamos refresh como dependencia adicional
   const { myEvents, subscribedEvents, generalEvents } = useMemo(() => {
     if (!userId) {
       return {
@@ -56,25 +64,48 @@ export default function Events() {
 
     const mine = events
       .filter((e) => e.created_by === userId)
-      .map((e) => mapRowToModel(e, true, true)); // ya unidos
+      .map((e) => mapRowToModel(e, true, true));
 
     const subs = events
-      .filter((e) => e.created_by !== userId && (e.subscribers || []).includes(userId))
+      .filter(
+        (e) =>
+          e.created_by !== userId &&
+          ((e.subscribers || []).includes(userId) || e.isJoined)
+      )
       .map((e) => mapRowToModel(e, false, true));
 
     const general = events
       .filter(
-        (e) => e.created_by !== userId && !(e.subscribers || []).includes(userId)
+        (e) =>
+          e.created_by !== userId &&
+          !(e.subscribers || []).includes(userId) &&
+          !e.isJoined // 👈 evita duplicar
       )
       .map((e) => mapRowToModel(e, false, false));
 
     return { myEvents: mine, subscribedEvents: subs, generalEvents: general };
-  }, [events, userId]);
+  }, [events, userId, refresh]); // 👈 dependencia nueva
 
   // Handlers
-  function handleJoin(ev: EventModel) {
+  async function handleJoin(ev: EventModel) {
     if (!userId) return;
+    await subscribeUserToEventInDb(ev.id, userId);
     dispatch(subscribeToEvent({ eventId: ev.id, userId }));
+    setRefresh((r) => r + 1); // 👈 actualiza los grupos al instante
+  }
+
+  async function handleUnjoin(ev: EventModel) {
+    if (!userId) return;
+    await unsubscribeUserFromEventInDb(ev.id, userId);
+    dispatch(unsubscribeFromEvent({ eventId: ev.id, userId }));
+    setRefresh((r) => r + 1);
+  }
+
+  async function handleDelete(ev: EventModel) {
+    if (!userId) return;
+    if (ev.createdBy !== userId) return;
+    await deleteEventInDb(ev.id);
+    dispatch(deleteEventAction(ev.id));
   }
 
   function handleAbout(ev: EventModel) {
@@ -93,12 +124,20 @@ export default function Events() {
           <ul>
             {myEvents.map((ev) => (
               <li key={ev.id}>
-                <PublicEventCard event={ev} onAbout={handleAbout} />
+                <PublicEventCard
+                  event={ev}
+                  onAbout={handleAbout}
+                  onDelete={handleDelete}
+                />
               </li>
             ))}
           </ul>
         ) : (
-          <p>{userId ? "Aún no has creado eventos." : "Inicia sesión para ver tus eventos."}</p>
+          <p>
+            {userId
+              ? "Aún no has creado eventos."
+              : "Inicia sesión para ver tus eventos."}
+          </p>
         )}
       </section>
 
@@ -108,12 +147,20 @@ export default function Events() {
           <ul>
             {subscribedEvents.map((ev) => (
               <li key={ev.id}>
-                <PublicEventCard event={ev} onAbout={handleAbout} />
+                <PublicEventCard
+                  event={ev}
+                  onAbout={handleAbout}
+                  onUnjoin={handleUnjoin}
+                />
               </li>
             ))}
           </ul>
         ) : (
-          <p>{userId ? "Todavía no te has unido a ningún evento." : "Inicia sesión para ver tus suscripciones."}</p>
+          <p>
+            {userId
+              ? "Todavía no te has unido a ningún evento."
+              : "Inicia sesión para ver tus suscripciones."}
+          </p>
         )}
       </section>
 
@@ -123,7 +170,11 @@ export default function Events() {
           <ul>
             {generalEvents.map((ev) => (
               <li key={ev.id}>
-                <PublicEventCard event={ev} onAbout={handleAbout} onJoin={handleJoin} />
+                <PublicEventCard
+                  event={ev}
+                  onAbout={handleAbout}
+                  onJoin={handleJoin}
+                />
               </li>
             ))}
           </ul>
