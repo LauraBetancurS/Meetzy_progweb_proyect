@@ -1,0 +1,103 @@
+
+.crearComunidad__container{
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+.crearComunidad__container h1 {
+  
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.primary {
+  width: 100%;                 
+  margin-top: 0.5rem;
+  padding: 0.9rem 1.1rem;      
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(90deg, #ff6b81, #ff4d5a);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: transform 0.08s ease, opacity 0.2s ease;
+}
+.primary:hover{
+  transform: translateY(-2px);
+}
+.crearComunidad__form {
+  background: rgba(255,255,255,0.06);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  min-width: 30rem;
+}
+
+.crearComunidad__field {
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.crearComunidad__field label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #ddd
+}
+
+
+.crearComunidad__field input,
+.crearComunidad__field select,
+.crearComunidad__field textarea {
+  color: #fff;
+  border: 1px solid #2b2b2b;
+  background: #1c1c1c;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.75rem;
+  resize: vertical;
+}
+
+.crearComunidad__field input:focus,
+.crearComunidad__field textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.crearComunidad__actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.crearComunidad__cancelBtn {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+}
+
+.crearComunidad__cancelBtn:hover {
+  background: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .crearComunidad {
+    padding: 1rem;
+  }
+
+  .crearComunidad__form {
+    padding: 1.5rem;
+  }
+
+  .crearComunidad__actions {
+    flex-direction: column;
+  }
+}
+
