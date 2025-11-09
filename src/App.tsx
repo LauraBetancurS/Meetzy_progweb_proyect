@@ -1,3 +1,4 @@
+// src/App.tsx
 import "./index.css";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAppSelector } from "./redux/hooks";
@@ -17,11 +18,6 @@ import { Login } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import EventAboutPage from "./pages/EventAbout";
 
-// 👇 mount the applier
-import FontScaleApplier from "./components/FontScaleApplier";
-import Addmemberspage from "./pages/Addmembers";
-
-
 /** If already logged in, redirect away from /login or /register */
 function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
   const { user, isLoading } = useAppSelector((s) => s.auth);
@@ -33,9 +29,6 @@ function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <Router>
-      {/* 👇 this keeps --app-font-scale in sync with Redux */}
-      <FontScaleApplier />
-
       <Routes>
         {/* Public routes */}
         <Route
@@ -66,14 +59,12 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="/comunidades" element={<Comunidades />} />
           <Route path="/comunidades/crear" element={<CrearComunidad />} />
-          <Route path="/comunidades/:id/addmembers" element={<Addmemberspage />} />
           <Route path="/comunidades/:id" element={<CommunityDetail />} />
           <Route path="/mood" element={<CuestionarioMood />} />
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/events/:id" element={<EventAboutPage />} />
           <Route path="/events/new" element={<CreateEventPage />} />
-          <Route path="/events" element={<EventsPage />} />   
-
+          <Route path="/events" element={<EventsPage />} />
         </Route>
 
         {/* Fallback */}
