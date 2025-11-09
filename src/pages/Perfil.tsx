@@ -65,8 +65,7 @@ export default function Perfil() {
       // close edit mode
       setIsEditing(false);
 
-      // ✅ refresh entire page to show updated data
-      window.location.reload();
+      
 
     } catch {
       // error is already in Redux
