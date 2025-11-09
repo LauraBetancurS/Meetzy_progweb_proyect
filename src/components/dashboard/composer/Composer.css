@@ -29,6 +29,22 @@
   align-items: center;
 }
 
+
+.composer__select option{
+  display: flex;
+  justify-content: flex-start;
+  gap: 2px;
+  background: #000;
+  padding: 10px;
+  transition: 0.4s;
+}
+.composer__select option:first-of-type{
+  border-radius: 8px 8px 0 0;
+}
+.composer__select option:last-of-type{
+  border-radius: 0 0 8px 8px;
+}
+
 .composer__select select {
   appearance: none;
   -webkit-appearance: none;
@@ -71,6 +87,29 @@
 }
 .composer__input:focus {
   border-color: #ff6b8a;
+}
+
+.composer__urlInputWrapper {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.composer__urlInput {
+  width: 100%;
+  background: #161616;
+  color: #fff;
+  border: 1.5px solid #353535;
+  border-radius: 7px;
+  padding: 8px 13px;
+  font-size: 0.99em;
+  margin-bottom: 3px;
+}
+.composer__urlInput:focus {
+  border-color: #ff6b8a;
+  outline: none;
 }
 
 /* ---- Acciones ---- */

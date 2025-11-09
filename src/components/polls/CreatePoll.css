@@ -1,0 +1,99 @@
+.createPoll {
+  background: #626262;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  padding: 1.5rem;
+}
+
+.createPoll__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.createPoll__form h3 {
+  margin: 0 0 0.5rem 0;
+}
+
+.createPoll__field {
+  display: flex;
+  color: white;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.createPoll__field label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.createPoll__field input[type="text"] {
+   color: white;
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0.75rem;
+}
+
+.createPoll__field input[type="datetime-local"] {
+  border-radius: 8px;
+  font-size: 1rem;
+  padding: 0.75rem;
+}
+
+.createPoll__optionRow {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.createPoll__optionRow input {
+  flex: 1;
+}
+
+.createPoll__removeBtn {
+  background: #dc3545;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  font-size: 1.5rem;
+  height: 32px;
+  line-height: 1;
+  width: 32px;
+}
+
+.createPoll__removeBtn:hover {
+  background: #c82333;
+}
+
+.createPoll__addOptionBtn {
+  background: #a9a9a9;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  width: fit-content;
+}
+
+.createPoll__addOptionBtn:hover {
+  background: #e0e0e0;
+}
+
+.createPoll__actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.createPoll__cancelBtn {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+}
+
+.createPoll__cancelBtn:hover {
+  background: #e0e0e0;
+}
+
