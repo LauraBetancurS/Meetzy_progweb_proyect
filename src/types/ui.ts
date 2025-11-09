@@ -96,7 +96,7 @@ export interface PromoBannerProps {
   className?: string;
 }
 
-/* ----------------------- Composer (dashboard) -------------------------- */
+
 
 export interface CommunityOption {
   id: string;
@@ -104,9 +104,10 @@ export interface CommunityOption {
 }
 
 export interface ComposerProps {
-  /** Lista de comunidades a elegir (si no envías, el componente usa un default) */
+  showpoll: () => void;
   communities?: CommunityOption[];
-  /** Callback cuando el usuario postea */
-  onPost: (payload: { text: string; communityId: string }) => void;
+  onPost: (payload: { text: string; communityId: string, postiamgeUrl?: string | null , createdById: string}) => void;
   className?: string;
+  defaultCommunityId?: string;
+  hideCommunitySelector?: boolean;
 }
