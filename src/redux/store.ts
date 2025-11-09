@@ -5,6 +5,7 @@ import eventsReducer from "./slices/EventsSlice";
 import subscriptionsReducer from "./slices/SubscriptionsSlice";
 import a11yReducer from "./slices/a11ySlice";
 import profileReducer from "./slices/ProfileSlice";
+import communitiesReducer from "./slices/CommunitiesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -13,7 +14,8 @@ export const store = configureStore({
     events: eventsReducer,
     subscriptions: subscriptionsReducer,
     a11y: a11yReducer,    
-    profile: profileReducer,        // 👈 add
+    profile: profileReducer,        
+    communities: communitiesReducer,
   },
 });
 
