@@ -8,9 +8,10 @@ export interface EventsSectionProps {
   onCreate?: () => void;
   className?: string;
   onJoin?: (event: EventModel) => void;
+  onUnjoin?: (event: EventModel) => void;
   onAbout?: (event: EventModel) => void;
+  onDelete?: (event: EventModel) => void;
 
-  // 🆕 optional props for better UX
   loading?: boolean;
   error?: string;
   onRetry?: () => void;
@@ -21,13 +22,17 @@ export default function EventsSection({
   onCreate,
   className = "",
   onJoin,
+  onUnjoin,
   onAbout,
+  onDelete,
   loading = false,
   error,
   onRetry,
 }: EventsSectionProps) {
   const handleJoin = onJoin ?? (() => {});
+  const handleUnjoin = onUnjoin ?? (() => {});
   const handleAbout = onAbout ?? (() => {});
+  const handleDelete = onDelete ?? (() => {});
 
   return (
     <section className={`dash-events ${className}`}>
@@ -46,7 +51,6 @@ export default function EventsSection({
         )}
       </div>
 
-      {/* -------- ESTADOS: loading / error / vacío -------- */}
       {loading ? (
         <div className="dash-events__state dash-events__loading">
           <p>Cargando eventos...</p>
@@ -67,7 +71,9 @@ export default function EventsSection({
               key={ev.id}
               event={ev}
               onJoin={handleJoin}
+              onUnjoin={handleUnjoin}
               onAbout={handleAbout}
+              onDelete={handleDelete}
             />
           ))}
         </div>
