@@ -17,7 +17,6 @@ import { Login } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import EventAboutPage from "./pages/EventAbout";
 
-
 // 👇 mount the applier
 import FontScaleApplier from "./components/FontScaleApplier";
 
@@ -66,6 +65,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="/comunidades" element={<Comunidades />} />
           <Route path="/comunidades/crear" element={<CrearComunidad />} />
+     
           <Route path="/comunidades/:id" element={<CommunityDetail />} />
           <Route path="/mood" element={<CuestionarioMood />} />
           <Route path="/perfil" element={<Perfil />} />
