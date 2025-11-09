@@ -1,26 +1,26 @@
 // src/redux/slices/ProfileSlice.ts
-import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { supabase } from "../../services/supabaseClient";
 
+/* -------------------- Types -------------------- */
 export type Profile = {
   id: string;
   full_name: string | null;
   user_name: string | null;
   avatar_url: string | null;
-  tagline?: string | null;
 };
 
 export type UpdateProfileInput = {
   full_name?: string | null;
   user_name?: string | null;
   avatar_url?: string | null;
-  tagline?: string | null; // keep optional if you add it later
 };
 
+/* -------------------- State -------------------- */
 interface ProfileState {
   me: Profile | null;
-  isLoading: boolean; // fetch loading
-  isSaving: boolean;  // save/persist loading
+  isLoading: boolean;   // fetching
+  isSaving: boolean;    // saving
   error: string | null;
 }
 
@@ -31,117 +31,145 @@ const initialState: ProfileState = {
   error: null,
 };
 
-/** Fetch the profile row for the currently logged-in user */
-export const fetchMyProfile = createAsyncThunk<Profile, void, { rejectValue: string }>(
-  "profile/fetchMyProfile",
-  async (_, { rejectWithValue }) => {
-    const { data: auth, error: authErr } = await supabase.auth.getUser();
-    if (authErr) return rejectWithValue(authErr.message);
-    const userId = auth.user?.id;
-    if (!userId) return rejectWithValue("No logged-in user.");
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, full_name, user_name, avatar_url")
-      .eq("id", userId)
-      .maybeSingle();
-
-    if (error) return rejectWithValue(error.message);
-    if (!data) return rejectWithValue("Profile not found.");
-
-    const metaTagline = (auth.user?.user_metadata as any)?.tagline ?? null;
-
-    return { ...data, tagline: metaTagline } as Profile;
-  }
-);
-
-/** Save (upsert) partial profile fields for the current user */
-export const saveMyProfile = createAsyncThunk<Profile, UpdateProfileInput, { rejectValue: string }>(
-  "profile/saveMyProfile",
-  async (partial, { rejectWithValue }) => {
-    const { data: auth, error: authErr } = await supabase.auth.getUser();
-    if (authErr) return rejectWithValue(authErr.message);
-    const userId = auth.user?.id;
-    if (!userId) return rejectWithValue("No logged-in user.");
-
-    const payload: Record<string, any> = { id: userId };
-    if ("full_name" in partial) payload.full_name = partial.full_name;
-    if ("user_name" in partial) payload.user_name = partial.user_name;
-    if ("avatar_url" in partial) payload.avatar_url = partial.avatar_url;
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .upsert(payload)
-      .select("id, full_name, user_name, avatar_url")
-      .single();
-
-    if (error) return rejectWithValue(error.message);
-
-    // optionally persist tagline in auth metadata (if you use it)
-    if ("tagline" in partial) {
-      const { error: mErr } = await supabase.auth.updateUser({
-        data: { tagline: partial.tagline ?? null },
-      });
-      if (mErr) {
-        // not fatal; continue
-        console.warn("Failed to update auth metadata:", mErr.message);
-      }
-    }
-
-    return {
-      ...data,
-      tagline: (auth.user?.user_metadata as any)?.tagline ?? null,
-    } as Profile;
-  }
-);
-
+/* -------------------- Slice -------------------- */
 const profileSlice = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    clearProfile(state) {
+    setMe: (state, action: PayloadAction<Profile | null>) => {
+      state.me = action.payload;
+    },
+    setProfileLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+    setProfileSaving: (state, action: PayloadAction<boolean>) => {
+      state.isSaving = action.payload;
+    },
+    setProfileError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
+    },
+    clearProfile: (state) => {
       state.me = null;
       state.isLoading = false;
       state.isSaving = false;
       state.error = null;
     },
   },
-  extraReducers: (builder) => {
-    builder
-      // fetch
-      .addCase(fetchMyProfile.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchMyProfile.fulfilled, (state, action: PayloadAction<Profile>) => {
-        state.isLoading = false;
-        state.me = action.payload;
-      })
-      .addCase(fetchMyProfile.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = (action.payload as string) || "Failed to load profile";
-      })
-      // save
-      .addCase(saveMyProfile.pending, (state) => {
-        state.isSaving = true;
-        state.error = null;
-      })
-      .addCase(saveMyProfile.fulfilled, (state, action: PayloadAction<Profile>) => {
-        state.isSaving = false;
-        state.me = action.payload;
-      })
-      .addCase(saveMyProfile.rejected, (state, action) => {
-        state.isSaving = false;
-        state.error = (action.payload as string) || "Failed to save profile";
-      });
-  },
 });
 
-export const { clearProfile } = profileSlice.actions;
+export const {
+  setMe,
+  setProfileLoading,
+  setProfileSaving,
+  setProfileError,
+  clearProfile,
+} = profileSlice.actions;
+
 export default profileSlice.reducer;
 
-// ✅ Selectors
-export const selectMyProfile       = (s: { profile: ProfileState }) => s.profile.me;
-export const selectProfileLoading  = (s: { profile: ProfileState }) => s.profile.isLoading;
-export const selectProfileSaving   = (s: { profile: ProfileState }) => s.profile.isSaving;
-export const selectProfileError    = (s: { profile: ProfileState }) => s.profile.error;
+/* -------------------- Simple async actions (arrow functions) -------------------- */
+/** Fetch current user's profile (very basic checks). */
+export const fetchMyProfile = () => {
+  return async (dispatch: any): Promise<Profile> => {
+    dispatch(setProfileLoading(true));
+    dispatch(setProfileError(null));
+
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const userId = auth.user?.id;
+      if (!userId) {
+        const msg = "No logged-in user.";
+        dispatch(setProfileError(msg));
+        dispatch(setProfileLoading(false));
+        throw new Error(msg);
+      }
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, full_name, user_name, avatar_url")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (error || !data) {
+        const msg = error?.message || "Profile not found.";
+        dispatch(setProfileError(msg));
+        dispatch(setProfileLoading(false));
+        throw new Error(msg);
+      }
+
+      const profile: Profile = {
+        id: data.id,
+        full_name: data.full_name,
+        user_name: data.user_name,
+        avatar_url: data.avatar_url,
+      };
+
+      dispatch(setMe(profile));
+      dispatch(setProfileLoading(false));
+      return profile;
+    } catch (e: any) {
+      dispatch(setProfileError(e?.message || "Failed to load profile"));
+      dispatch(setProfileLoading(false));
+      throw e;
+    }
+  };
+};
+
+/** Save partial profile; store is updated so UI refreshes. */
+export const saveMyProfile = (partial: UpdateProfileInput) => {
+  return async (dispatch: any): Promise<Profile> => {
+    dispatch(setProfileSaving(true));
+    dispatch(setProfileError(null));
+
+    try {
+      const { data: auth } = await supabase.auth.getUser();
+      const userId = auth.user?.id;
+      if (!userId) {
+        const msg = "No logged-in user.";
+        dispatch(setProfileError(msg));
+        dispatch(setProfileSaving(false));
+        throw new Error(msg);
+      }
+
+      // minimal payload
+      const payload: Record<string, any> = { id: userId };
+      if ("full_name" in partial) payload.full_name = partial.full_name;
+      if ("user_name" in partial) payload.user_name = partial.user_name;
+      if ("avatar_url" in partial) payload.avatar_url = partial.avatar_url;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .upsert(payload)
+        .select("id, full_name, user_name, avatar_url")
+        .single();
+
+      if (error || !data) {
+        const msg = error?.message || "Failed to save profile";
+        dispatch(setProfileError(msg));
+        dispatch(setProfileSaving(false));
+        throw new Error(msg);
+      }
+
+      const updated: Profile = {
+        id: data.id,
+        full_name: data.full_name,
+        user_name: data.user_name,
+        avatar_url: data.avatar_url,
+      };
+
+      dispatch(setMe(updated));          // ✅ updates Redux -> UI re-renders
+      dispatch(setProfileSaving(false)); // stop spinner
+      return updated;
+    } catch (e: any) {
+      dispatch(setProfileError(e?.message || "Failed to save profile"));
+      dispatch(setProfileSaving(false));
+      throw e;
+    }
+  };
+};
+
+/* -------------------- Selectors -------------------- */
+export const selectMyProfile      = (s: { profile: ProfileState }) => s.profile.me;
+export const selectProfileLoading = (s: { profile: ProfileState }) => s.profile.isLoading;
+export const selectProfileSaving  = (s: { profile: ProfileState }) => s.profile.isSaving;
+export const selectProfileError   = (s: { profile: ProfileState }) => s.profile.error;
