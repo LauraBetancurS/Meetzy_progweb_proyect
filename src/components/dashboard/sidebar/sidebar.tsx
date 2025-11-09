@@ -31,7 +31,7 @@ function Sidebar() {
         <NavLink to="/events/new">
           <PrimaryButton fullWidth>Crea un evento</PrimaryButton>
         </NavLink>
-        <NavLink to="/crear-comunidad">
+        <NavLink to="/comunidades/crear">
           <PrimaryButton fullWidth>Crea una comunidad</PrimaryButton>
         </NavLink>
         <NavLink to="/mood">
