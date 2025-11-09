@@ -1,4 +1,3 @@
-// src/redux/slices/eventsSlice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export type EventRow = {
@@ -12,9 +11,10 @@ export type EventRow = {
   created_at: string | null;
   updated_at: string | null;
   image_url: string | null;
+  // esto ya NO viene de la tabla events, lo armamos desde event_members
   subscribers?: string[];
 
-  // 👇 estas dos son solo para la app (no vienen de supabase)
+  // solo para la app
   isOwner?: boolean;
   isJoined?: boolean;
 };
@@ -51,6 +51,19 @@ export const eventsSlice = createSlice({
       if (!ev.subscribers.includes(userId)) {
         ev.subscribers.push(userId);
       }
+      ev.isJoined = true;
+    },
+    unsubscribeFromEvent: (
+      state,
+      action: PayloadAction<{ eventId: string; userId: string }>
+    ) => {
+      const { eventId, userId } = action.payload;
+      const ev = state.events.find((e) => e.id === eventId);
+      if (!ev) return;
+      if (ev.subscribers) {
+        ev.subscribers = ev.subscribers.filter((id) => id !== userId);
+      }
+      ev.isJoined = false;
     },
     editEvent: (state, action: PayloadAction<EventRow>) => {
       const index = state.events.findIndex(
@@ -68,6 +81,7 @@ export const {
   addEvent,
   deleteEvent,
   subscribeToEvent,
+  unsubscribeFromEvent,
   editEvent,
 } = eventsSlice.actions;
 
