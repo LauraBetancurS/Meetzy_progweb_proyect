@@ -45,6 +45,7 @@
   box-shadow: var(--shadow-soft);
   position: relative;
   overflow: hidden;
+  height: 70vh;
 }
 
 /* Subtle top gradient glow */
