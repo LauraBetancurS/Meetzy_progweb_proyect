@@ -4,8 +4,15 @@ import { supabase } from "../services/supabaseClient";
 import { useAppSelector, useAppDispatch } from "../redux/hooks";
 import {
   subscribeToEvent,
+  unsubscribeFromEvent,
+  deleteEvent as deleteEventAction,
   type EventRow,
 } from "../redux/slices/EventsSlice";
+import {
+  subscribeUserToEventInDb,
+  unsubscribeUserFromEventInDb,
+  deleteEventInDb,
+} from "../services/supaevents";
 import type { EventModel } from "../types/Event";
 import "./EventAbout.css";
 
@@ -84,9 +91,27 @@ export default function EventAbout() {
   async function handleJoin() {
     if (!event || !userId) return;
     setLoadingJoin(true);
+    await subscribeUserToEventInDb(event.id, userId);
     dispatch(subscribeToEvent({ eventId: event.id, userId }));
     setEvent({ ...event, isJoined: true });
     setLoadingJoin(false);
+  }
+
+  async function handleUnjoin() {
+    if (!event || !userId) return;
+    setLoadingJoin(true);
+    await unsubscribeUserFromEventInDb(event.id, userId);
+    dispatch(unsubscribeFromEvent({ eventId: event.id, userId }));
+    setEvent({ ...event, isJoined: false });
+    setLoadingJoin(false);
+  }
+
+  async function handleDelete() {
+    if (!event || !userId) return;
+    if (event.createdBy !== userId) return;
+    await deleteEventInDb(event.id);
+    dispatch(deleteEventAction(event.id));
+    navigate(-1);
   }
 
   if (loading) return <p className="eventAbout__loading">Cargando evento...</p>;
@@ -98,7 +123,8 @@ export default function EventAbout() {
       </div>
     );
 
-  const showJoin = !event.isOwner && !event.isJoined;
+  const isOwner = event.createdBy === userId || event.isOwner;
+  const showJoin = !isOwner && !event.isJoined;
 
   return (
     <div className="eventAbout">
@@ -130,7 +156,11 @@ export default function EventAbout() {
       </div>
 
       <div className="eventAbout__buttons">
-        {showJoin ? (
+        {isOwner ? (
+          <button className="eventAbout__joinBtn" onClick={handleDelete}>
+            Eliminar evento
+          </button>
+        ) : showJoin ? (
           <button
             className="eventAbout__joinBtn"
             onClick={handleJoin}
@@ -139,8 +169,12 @@ export default function EventAbout() {
             {loadingJoin ? "Uniendo..." : "Unirse al evento"}
           </button>
         ) : (
-          <button className="eventAbout__joinedBtn" disabled>
-            {event.isOwner ? "Tu evento" : "Ya unido"}
+          <button
+            className="eventAbout__joinBtn"
+            onClick={handleUnjoin}
+            disabled={loadingJoin}
+          >
+            {loadingJoin ? "Saliendo..." : "Salir del evento"}
           </button>
         )}
 
