@@ -34,6 +34,9 @@ function Sidebar() {
         <NavLink to="/crear-comunidad">
           <PrimaryButton fullWidth>Crea una comunidad</PrimaryButton>
         </NavLink>
+        <NavLink to="/mood">
+          <PrimaryButton fullWidth>Encuesta</PrimaryButton>
+        </NavLink>
 
       </div>
     </aside>
