@@ -1,0 +1,134 @@
+.poll {
+  background: #2c2c2c;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+
+.poll__question {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+.poll__question-input {
+  background-color: #606060;
+  border: none;
+  width: 100%;
+  color: white;
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.poll__options {
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.poll__option-input {
+  color: white;
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #606060;
+  border: none;
+  border-radius: 4px;
+}
+
+.poll__option {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  background: #444444;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.poll__option:hover:not(:disabled) {
+  background: #eeeeee;
+}
+
+.poll__option--voted {
+  cursor: default;
+}
+
+.poll__option-text {
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.poll__option-votes {
+  
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
+.poll__option-bar {
+  
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: transparent;
+}
+
+.poll__option-progress {
+  
+  height: 100%;
+  background: rgba(237, 42, 68, 0.1);
+  transition: width 0.3s ease;
+}
+
+.poll__add-option {
+  margin: 1rem 0;
+  padding: 0.5rem;
+  color: #b11e1e;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.poll__add-option:hover {
+  text-decoration: underline;
+}
+
+.poll__submit {
+  width: 100%;
+  padding: 0.8rem;
+  background: #606060;
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.poll__submit:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.poll__footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+
+  display: flex;
+  justify-content: space-between;
+  color: #ececec;
+  font-size: 0.9rem;
+}
