@@ -14,18 +14,20 @@ export type EventModel = {
   name: string;
   description: string;
   place: string;
-  date: string;        // YYYY-MM-DD
-  startTime: string;   // HH:MM
+  date: string;
+  startTime: string;
   imageUrl?: string;
-  createdBy?: string;  // 👈 auth user id
-  createdByProfile?: { // 👈 extra info from `profiles`
+  createdBy?: string;
+  createdByProfile?: {
     user_name?: string | null;
     avatar_url?: string | null;
   };
-  // 👇 Optional flags used in the UI
+
+  // flags de UI
   isOwner?: boolean;
   isJoined?: boolean;
 };
+
 
 // 🔹 Data to create a new event (without id or createdBy)
 export type NewEvent = Omit<EventModel, "id" | "createdBy" | "createdByProfile" | "isOwner" | "isJoined">;
