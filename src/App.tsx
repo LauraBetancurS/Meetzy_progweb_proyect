@@ -19,6 +19,7 @@ import EventAboutPage from "./pages/EventAbout";
 
 // 👇 mount the applier
 import FontScaleApplier from "./components/FontScaleApplier";
+import Addmemberspage from "./pages/Addmembers";
 
 
 /** If already logged in, redirect away from /login or /register */
@@ -65,7 +66,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="/comunidades" element={<Comunidades />} />
           <Route path="/comunidades/crear" element={<CrearComunidad />} />
-     
+          <Route path="/comunidades/:id/addmembers" element={<Addmemberspage />} />
           <Route path="/comunidades/:id" element={<CommunityDetail />} />
           <Route path="/mood" element={<CuestionarioMood />} />
           <Route path="/perfil" element={<Perfil />} />
