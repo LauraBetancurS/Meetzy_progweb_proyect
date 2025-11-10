@@ -1,4 +1,3 @@
-// src/App.tsx
 import "./index.css";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAppSelector } from "./redux/hooks";
