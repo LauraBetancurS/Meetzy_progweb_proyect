@@ -134,8 +134,8 @@ export async function votePoll(
     const { error: updateError } = await supabase
       .from('poll')
       .update({
-        options: updatedOptions,
-        voters: updatedVoters
+        options: updatedOptions, // aquí guardas los nuevos conteos
+        voters: updatedVoters// y quién votó qué 
       })
       .eq('id', pollId);
 
@@ -152,7 +152,8 @@ export async function votePoll(
     console.log('[pollServices] refreshed poll row', { pollId, refreshed, refreshError });
 
     if (refreshError) {
-      // still broadcast best-effort from our updatedOptions
+      // still broadcast best-effort from our updatedOptions  
+      //aqui hacemos el broadcast...los demas suscritos se enteran del voto
       const bestEffortCount = updatedOptions.find((o: { id: string }) => o.id === optionId)?.voteCount || 0;
       if (activeChannel) {
         activeChannel.send({
