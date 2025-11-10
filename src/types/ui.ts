@@ -1,7 +1,6 @@
-// src/types/ui.ts
 import type { ReactNode, ButtonHTMLAttributes } from "react";
 
-/** Variantes disponibles por si las necesitas en props más adelante */
+//Variantes disponibles por si las necesitas en props más adelante 
 export type ButtonVariant = "primary" | "secondary" | "tertiary";
 
 /** Props base reutilizables para cualquier <button> de la UI */
@@ -16,8 +15,6 @@ export interface PrimaryButtonProps extends BaseButtonProps {
 
 export interface SecondaryButtonProps extends BaseButtonProps {}
 export interface TertiaryButtonProps extends BaseButtonProps {}
-
-/* ----------------------------- Forms: Field ----------------------------- */
 
 type BaseField = {
   name: string;
