@@ -11,7 +11,7 @@ export type EventRow = {
   created_at: string | null;
   updated_at: string | null;
   image_url: string | null;
-  // esto ya NO viene de la tabla events, lo armamos desde event_members
+
   subscribers?: string[];
 
   // solo para la app
