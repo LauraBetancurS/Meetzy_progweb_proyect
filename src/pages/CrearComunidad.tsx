@@ -86,7 +86,7 @@ export default function CrearComunidad() {
                 }
                 alt="Event mock preview"
               />
-              <span className="mockImage__badge">imagen de la comunidad aquí</span>
+              
             </div>
           </section>
         </div>
