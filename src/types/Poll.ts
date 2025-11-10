@@ -1,4 +1,3 @@
-// src/types/Poll.ts
 
 // 🔹 Poll model used in the UI
 export type PollModel = {
