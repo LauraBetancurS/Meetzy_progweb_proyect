@@ -1,4 +1,3 @@
-// src/redux/slices/a11ySlice.ts
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface A11yState {
