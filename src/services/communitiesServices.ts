@@ -1,5 +1,5 @@
 import { supabase } from "./supabaseClient";
-import type { CommunityRow, CommunityModel, NewCommunityInput, UpdateCommunityInput } from "../types/Community";
+import type { CommunityRow, CommunityModel, NewCommunityInput } from "../types/Community";
 
 
 export async function getCurrentUserId(): Promise<string | null> {
@@ -160,37 +160,6 @@ export async function createCommunity(
   }
 }
 
-export async function updateCommunity(
-  communityId: string,
-  patch: UpdateCommunityInput
-): Promise<{ data: CommunityModel | null; error?: string }> {
-  const dbPatch: Record<string, any> = {};
-  if (patch.name !== undefined) dbPatch.name = patch.name;
-  if (patch.description !== undefined) dbPatch.description = patch.description || null;
-  if (patch.selectedEventIds !== undefined) dbPatch.selected_event_ids = patch.selectedEventIds;
-
-  const { data, error } = await supabase
-    .from("communities")
-    .update(dbPatch)
-    .eq("id", communityId)
-    .select()
-    .single();
-
-  if (error) return { data: null, error: error.message };
-
-  const row = data as CommunityRow;
-  const currentUid = await getCurrentUserId();
-  const profilesById = await attachProfiles([row]);
-
-  return { data: rowToModel(row, { profilesById, currentUid }) };
-}
-
-export async function deleteCommunity(communityId: string): Promise<{ ok: boolean; error?: string }> {
-  const { error } = await supabase.from("communities").delete().eq("id", communityId);
-  if (error) return { ok: false, error: error.message };
-  return { ok: true };
-}
-
 export async function addMemberToCommunity(
   communityId: string,
   userId: string
@@ -299,30 +268,5 @@ export async function selectEventForCommunity(
   return { ok: true };
 }
 
-export async function deselectEventFromCommunity(
-  communityId: string,
-  eventId: string
-): Promise<{ ok: boolean; error?: string }> {
-
-  const { data: community, error: fetchError } = await supabase
-    .from("communities")
-    .select("selected_event_ids")
-    .eq("id", communityId)
-    .single();
-
-  if (fetchError) return { ok: false, error: fetchError.message };
-  if (!community) return { ok: false, error: "Community not found" };
-
-  const currentEvents = (community.selected_event_ids as string[]) || [];
-  const updatedEvents = currentEvents.filter((id) => id !== eventId);
-
-  const { error } = await supabase
-    .from("communities")
-    .update({ selected_event_ids: updatedEvents })
-    .eq("id", communityId);
-
-  if (error) return { ok: false, error: error.message };
-  return { ok: true };
-}
 
 
