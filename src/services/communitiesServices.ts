@@ -1,14 +1,17 @@
 import { supabase } from "./supabaseClient";
 import type { CommunityRow, CommunityModel, NewCommunityInput } from "../types/Community";
 
-
+/** Obtiene el id del usuario autenticado en Supabase */
 export async function getCurrentUserId(): Promise<string | null> {
   const { data, error } = await supabase.auth.getUser();
   if (error) return null;
   return data.user?.id ?? null;
 }
 
-async function attachProfiles(rows: Array<{ owner_id: string }>): Promise<Record<string, { user_name: string | null; avatar_url: string | null }>> {
+/** Trae los perfiles (nombre y avatar) de los dueños de las comunidades y los mapea por id */
+async function attachProfiles(
+  rows: Array<{ owner_id: string }>
+): Promise<Record<string, { user_name: string | null; avatar_url: string | null }>> {
   const creatorIds = Array.from(new Set(rows.map(r => r.owner_id))).filter(Boolean);
   if (creatorIds.length === 0) return {};
 
@@ -26,6 +29,7 @@ async function attachProfiles(rows: Array<{ owner_id: string }>): Promise<Record
   return map;
 }
 
+/** Convierte una fila de la tabla communities al modelo que usa el front */
 function rowToModel(
   row: CommunityRow,
   opts?: {
@@ -41,17 +45,18 @@ function rowToModel(
     description: row.description ?? undefined,
     members: row.members_id?.length ?? 0,
     memberIds: row.members_id ?? [],
-    image_url:row.image_url,
+    image_url: row.image_url,
     owner_id: row.owner_id,
     selectedEventIds: row.selected_event_ids ?? [],
     createdByProfile,
+    // flags según el usuario actual
     isOwner: opts?.currentUid ? row.owner_id === opts.currentUid : undefined,
     isMember: opts?.currentUid ? row.members_id?.includes(opts.currentUid) : undefined,
     events: row.selected_event_ids ?? []
   };
 }
 
-
+/** Trae todas las comunidades, con info del usuario actual y perfiles de dueños */
 export async function fetchAllCommunities(): Promise<{ data: CommunityModel[]; error?: string }> {
   const currentUid = await getCurrentUserId();
 
@@ -70,6 +75,7 @@ export async function fetchAllCommunities(): Promise<{ data: CommunityModel[]; e
   };
 }
 
+/** Trae una comunidad por id y la convierte al modelo */
 export async function fetchCommunityById(
   communityId: string
 ): Promise<{ data: CommunityModel | null; error?: string }> {
@@ -90,6 +96,7 @@ export async function fetchCommunityById(
   return { data: rowToModel(row, { profilesById, currentUid }) };
 }
 
+/** Trae solo las comunidades donde el usuario autenticado es miembro */
 export async function fetchMyCommunities(): Promise<{ data: CommunityModel[]; error?: string }> {
   const uid = await getCurrentUserId();
   if (!uid) return { data: [], error: "No authenticated user." };
@@ -102,6 +109,7 @@ export async function fetchMyCommunities(): Promise<{ data: CommunityModel[]; er
   if (error) return { data: [], error: error.message };
   const rows = (data ?? []) as CommunityRow[];
   
+  // filtra las que sí contienen al usuario
   const myCommunities = rows.filter((row) => 
     row.members_id && Array.isArray(row.members_id) && row.members_id.includes(uid)
   );
@@ -113,7 +121,7 @@ export async function fetchMyCommunities(): Promise<{ data: CommunityModel[]; er
   };
 }
 
-
+/** Crea una nueva comunidad con el usuario actual como dueño y primer miembro */
 export async function createCommunity(
   input: NewCommunityInput
 ): Promise<{ data: CommunityModel | null; error?: string }> {
@@ -160,12 +168,14 @@ export async function createCommunity(
   }
 }
 
+/** Agrega un usuario al array de miembros de una comunidad */
 export async function addMemberToCommunity(
   communityId: string,
   userId: string
 ): Promise<{ ok: boolean; error?: string }> {
 
-const { data: community, error: fetchError } = await supabase
+  // primero trae los miembros actuales
+  const { data: community, error: fetchError } = await supabase
     .from("communities")
     .select("members_id")
     .eq("id", communityId)
@@ -176,10 +186,10 @@ const { data: community, error: fetchError } = await supabase
 
   const currentMembers = (community.members_id as string[]) || [];
   if (currentMembers.includes(userId)) {
-    return { ok: true }; // Already a member
+    return { ok: true }; // ya estaba
   }
 
-  // Add user to members array
+  // actualiza con el nuevo miembro
   const { error } = await supabase
     .from("communities")
     .update({ members_id: [...currentMembers, userId] })
@@ -189,6 +199,7 @@ const { data: community, error: fetchError } = await supabase
   return { ok: true };
 }
 
+/** Saca a un usuario del array de miembros de una comunidad */
 export async function removeMemberFromCommunity(
   communityId: string,
   userId: string
@@ -206,7 +217,7 @@ export async function removeMemberFromCommunity(
   const currentMembers = (community.members_id as string[]) || [];
   const updatedMembers = currentMembers.filter((id) => id !== userId);
 
-  
+  // actualiza la lista sin ese usuario
   const { error } = await supabase
     .from("communities")
     .update({ members_id: updatedMembers })
@@ -216,11 +227,13 @@ export async function removeMemberFromCommunity(
   return { ok: true };
 }
 
+/** Asocia un evento a la comunidad y suscribe a todos los miembros al evento */
 export async function selectEventForCommunity(
   communityId: string,
   eventId: string
 ): Promise<{ ok: boolean; error?: string }> {
  
+  // trae eventos ya seleccionados y miembros
   const { data: community, error: fetchError } = await supabase
     .from("communities")
     .select("selected_event_ids, members_id")
@@ -235,7 +248,7 @@ export async function selectEventForCommunity(
     return { ok: true };
   }
 
-  // First update the community's selected events
+  // 1. actualiza la comunidad con el nuevo evento
   const { error: updateError } = await supabase
     .from("communities")
     .update({ selected_event_ids: [...currentEvents, eventId] })
@@ -243,7 +256,7 @@ export async function selectEventForCommunity(
 
   if (updateError) return { ok: false, error: updateError.message };
 
-  // Then subscribe all community members to the event
+  // 2. suscribe a todos los miembros al evento
   const members = (community.members_id as string[]) || [];
   const { data: event, error: eventError } = await supabase
     .from("events")
@@ -267,6 +280,3 @@ export async function selectEventForCommunity(
 
   return { ok: true };
 }
-
-
-
