@@ -40,7 +40,8 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setAuth: (
+    //Aqui se guarda el session en redux
+    setAuth: ( 
       state,
       action: PayloadAction<{ session: Session | null; user: User | null }>
     ) => {
