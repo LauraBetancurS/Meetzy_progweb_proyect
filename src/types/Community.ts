@@ -1,4 +1,3 @@
-// 🔹 Community model used in the UI
 export type CommunityModel = {
   events: string[];
   id: string;
@@ -9,7 +8,7 @@ export type CommunityModel = {
   memberIds?: string[]; // Array of user IDs who are members
   owner_id?: string; // User ID of the creator
   selectedEventIds?: string[]; // Array of event IDs selected for this community
-  createdByProfile?: { // 👈 extra info from `profiles`
+  createdByProfile?: { //extra info from `profiles`
     user_name?: string | null;
     avatar_url?: string | null;
   };
@@ -17,7 +16,7 @@ export type CommunityModel = {
   isMember?: boolean;
 };
 
-// 🔹 Raw row as it comes from Supabase (matches `communities` table)
+//  Raw row as it comes from Supabase (matches `communities` table)
 export type CommunityRow = {
   id: string;
   name: string;
@@ -30,7 +29,7 @@ export type CommunityRow = {
   updated_at: string;
 };
 
-// 🔹 Input used when sending to Supabase via service
+//  Input used when sending to Supabase via service
 export type NewCommunityInput = {
   name: string;
   description?: string;
@@ -38,7 +37,7 @@ export type NewCommunityInput = {
   imageUrl?: string;
 };
 
-// 🔹 Input for updating a community
+// Input for updating a community
 export type UpdateCommunityInput = {
   name?: string;
   description?: string;
