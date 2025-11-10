@@ -26,11 +26,14 @@ export const subscribeToPollUpdates = (
   // Crear y suscribirlo al nuevo canal de la comunidad
   activeChannel = createPollChannel(communityId);
   
+   
+  // Aquí es donde NOS SUSCRIBIMOS a los mensajes de tipo "broadcast" con event: "vote"
   activeChannel
     .on('broadcast', { event: 'vote' }, ({ payload }) => {
       const { pollId, optionId, voteCount } = payload;
-      onVoteUpdate(pollId, optionId, voteCount);
+      onVoteUpdate(pollId, optionId, voteCount);  // aquí ya actualizas tu redux/UI
     })
+    //Quiero entrar y recibir actualizaciones
     .subscribe((status) => {
       if (status === 'SUBSCRIBED') {
         console.log(`Subscribed to polls in community ${communityId}`);
@@ -104,8 +107,9 @@ export async function votePoll(
       throw new Error('You have already voted in this poll');
     }
 
-    // Mark user as voted for this option first
-    //Registrar el voto del usuario,  Se crea una copia del objeto de votantes anterior y se agrega el nuevo vot
+    
+    //Registrar el voto del usuario,  Se crea una copia del objeto  
+    //memory
     const updatedVoters = {
       ...voters,[user.id]: {optionId,votedAt: new Date().toISOString()
       }
