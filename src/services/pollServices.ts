@@ -2,7 +2,7 @@ import { supabase } from "./supabaseClient";
 import type { NewPollInput, PollModel } from "../types/Poll";
 import { RealtimeChannel } from "@supabase/supabase-js";
 
-// Create a channel for each community's polls
+// Crear canalas por comunidad
 const createPollChannel = (communityId: string): RealtimeChannel => {
   return supabase.channel(`polls:${communityId}`, {
     config: { 
@@ -18,12 +18,12 @@ export const subscribeToPollUpdates = (
   communityId: string,
   onVoteUpdate: (pollId: string, optionId: string, newVoteCount: number) => void
 ) => {
-  // Unsubscribe from previous channel if exists
+  // Si ya estabas escuchando otro canal antes, te sales.
   if (activeChannel) {
     activeChannel.unsubscribe();
   }
 
-  // Create and subscribe to new channel
+  // Crear y suscribirlo al nuevo canal de la comunidad
   activeChannel = createPollChannel(communityId);
   
   activeChannel
@@ -130,6 +130,7 @@ export async function votePoll(
 
     // Update the poll with new vote counts and voters
     console.log('[pollServices] updating poll', { pollId, optionId, updatedOptions, updatedVoters });
+    //Dónde actualizas los votos en la BD
     const { error: updateError } = await supabase
       .from('poll')
       .update({
