@@ -1,4 +1,3 @@
-// src/App.tsx
 import "./index.css";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAppSelector } from "./redux/hooks";
@@ -17,6 +16,7 @@ import Perfil from "./pages/Perfil";
 import { Login } from "./pages/Login";
 import { RegisterPage } from "./pages/Register";
 import EventAboutPage from "./pages/EventAbout";
+import Addmemberspage from "./pages/Addmembers";
 
 /** If already logged in, redirect away from /login or /register */
 function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
@@ -59,6 +59,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="/comunidades" element={<Comunidades />} />
           <Route path="/comunidades/crear" element={<CrearComunidad />} />
+          <Route path="/comunidades/:id/addmembers" element={<Addmemberspage />} />
           <Route path="/comunidades/:id" element={<CommunityDetail />} />
           <Route path="/mood" element={<CuestionarioMood />} />
           <Route path="/perfil" element={<Perfil />} />

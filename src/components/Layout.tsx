@@ -7,7 +7,7 @@ import { logout } from "../redux/slices/AuthSlice";
 import {
   increaseFont as increaseFontAction,
   decreaseFont as decreaseFontAction,
-  resetFont as resetFontAction,
+  
   toggleDyslexiaMode,
   selectDyslexiaMode,
 } from "../redux/slices/a11ySlice";

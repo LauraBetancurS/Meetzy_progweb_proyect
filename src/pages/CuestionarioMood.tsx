@@ -1,14 +1,16 @@
-// src/pages/CuestionarioMood.tsx
 import { useCallback, useEffect, useMemo, useState } from "react";
 import PrimaryButton from "../components/UI/PrimaryButton";
 import PromoBanner from "../components/dashboard/right/PromoBanner";
 
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { supabase } from "../services/supabaseClient";
-import { fetchEventsFromDb } from "../services/supaevents";
+import {
+  fetchEventsFromDb,
+  subscribeUserToEventInDb, // 👈 para insertar en event_members
+} from "../services/supaevents";
 import {
   saveEvents,
-  subscribeToEvent,   // 👈 NEW: para “Unirse al evento”
+  subscribeToEvent,
   type EventRow,
 } from "../redux/slices/EventsSlice";
 import type { EventModel } from "../types/Event";
@@ -17,7 +19,6 @@ import {
   type EnergyId,
   type EnvId,
   type PlanId,
-  WEIGHTS,
 } from "../utils/scoring";
 
 import "./CuestionarioMood.css";
@@ -50,7 +51,11 @@ const isFutureOrToday = (d?: string | null) => {
   if (!d) return false;
   const event = new Date(d);
   const today = new Date();
-  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const startOfToday = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
   return event.getTime() >= startOfToday.getTime();
 };
 
@@ -85,6 +90,8 @@ export default function CuestionarioMood() {
   const [env, setEnv] = useState<EnvIdUI | null>(null);
   const [plan, setPlan] = useState<PlanIdUI | null>(null);
 
+  const [join, setJoin] = useState<boolean>(false);
+
   // user de sesión
   useEffect(() => {
     async function loadUser() {
@@ -103,7 +110,8 @@ export default function CuestionarioMood() {
       const enriched: EventRow[] = rows.map((ev) => ({
         ...ev,
         isOwner: userId ? ev.created_by === userId : false,
-        isJoined: false,
+        // 👇 marcar joined si viene en subscribers
+        isJoined: userId ? (ev.subscribers || []).includes(userId) : false,
       }));
       dispatch(saveEvents(enriched));
     } catch {
@@ -123,7 +131,9 @@ export default function CuestionarioMood() {
   const events: EventModel[] = useMemo(() => {
     const mapped = eventsRows.map((r) => {
       const isOwner = r.isOwner ?? (userId ? r.created_by === userId : false);
-      return mapRowToModel({ ...r, isOwner });
+      const isJoined =
+        r.isJoined ?? (userId ? (r.subscribers || []).includes(userId) : false);
+      return mapRowToModel({ ...r, isOwner, isJoined });
     });
     return mapped.filter((e) => isFutureOrToday(e.date));
   }, [eventsRows, userId]);
@@ -131,22 +141,34 @@ export default function CuestionarioMood() {
   // Recomendación
   const recommended = useMemo(() => {
     if (!energy || !env || !plan || events.length === 0) return null;
-    return recommendEvent(events, energy as EnergyId, env as EnvId, plan as PlanId);
+    return recommendEvent(
+      events,
+      energy as EnergyId,
+      env as EnvId,
+      plan as PlanId
+    );
   }, [energy, env, plan, events]);
 
-  // 👇 NEW: unirse al evento recomendado
-  const handleJoinRecommended = () => {
+  // 👇 unirse al evento recomendado usando la misma lógica del dashboard
+  const handleJoinRecommended = async () => {
     if (!recommended) return;
     if (!userId) {
       setErrorMsg("Debes iniciar sesión para unirte a un evento.");
       return;
     }
+
+    // 1. Supabase: insert en event_members
+    await subscribeUserToEventInDb(recommended.id, userId);
+    // 2. Redux: marcar como suscrito en el store
     dispatch(
       subscribeToEvent({
         eventId: recommended.id,
         userId,
       })
     );
+    setJoin(true)
+    console.log("se guardo exitosamente");
+    
   };
 
   const canNext1 = energy !== null;
@@ -162,7 +184,8 @@ export default function CuestionarioMood() {
           {step === 1 && (
             <>
               <p className="qm-sub">
-                Responde 3 preguntas y te recomendamos un evento que encaje con tu mood.
+                Responde 3 preguntas y te recomendamos un evento que encaje con
+                tu mood.
               </p>
             </>
           )}
@@ -250,26 +273,25 @@ export default function CuestionarioMood() {
             <h3 className="qm-question">Tu recomendación</h3>
 
             {!recommended && (
-              <p className="qm-hint">No hubo match perfecto. Te mostramos el más próximo.</p>
+              <p className="qm-hint">
+                No hubo match perfecto. Te mostramos el más próximo.
+              </p>
             )}
 
             {recommended && <RecommendedCard event={recommended} />}
 
-            {/* ✅ Reemplazado: ahora muestra “Unirse al evento” */}
             <div className="qm-actions qm-actions--split">
               <PrimaryButton onClick={() => setStep(1)}>Reiniciar</PrimaryButton>
-              <PrimaryButton
+             {
+              join ? <span>¡Te has unido al evento!</span> : (<PrimaryButton
                 onClick={handleJoinRecommended}
                 disabled={!recommended || !userId}
               >
                 Unirse al evento
-              </PrimaryButton>
+              </PrimaryButton>)
+             } 
             </div>
 
-            <small className="qm-weights">
-              Ponderaciones: energía {WEIGHTS.energy} · ambiente {WEIGHTS.env} · plan {WEIGHTS.plan} ·
-              cercanía (≤1d: {WEIGHTS.near_1d}, ≤3d: {WEIGHTS.near_3d})
-            </small>
           </article>
         )}
       </section>
@@ -314,7 +336,9 @@ function OptionButton({
 function RecommendedCard({ event }: { event: EventModel }) {
   return (
     <article className="qm-rec">
-      {event.imageUrl && <img className="qm-rec__img" src={event.imageUrl} alt={event.name} />}
+      {event.imageUrl && (
+        <img className="qm-rec__img" src={event.imageUrl} alt={event.name} />
+      )}
       <h4 className="qm-rec__title">{event.name}</h4>
       {event.description && <p className="qm-rec__desc">{event.description}</p>}
       <p className="qm-rec__meta">
