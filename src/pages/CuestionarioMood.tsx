@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+// src/pages/CuestionarioMood.tsx
+import { useCallback, useEffect, useState } from "react";
 import PrimaryButton from "../components/UI/PrimaryButton";
 import PromoBanner from "../components/dashboard/right/PromoBanner";
 
@@ -6,7 +7,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { supabase } from "../services/supabaseClient";
 import {
   fetchEventsFromDb,
-  subscribeUserToEventInDb, // 👈 para insertar en event_members
+  subscribeUserToEventInDb, // inserta en event_members
 } from "../services/supaevents";
 import {
   saveEvents,
@@ -14,11 +15,12 @@ import {
   type EventRow,
 } from "../redux/slices/EventsSlice";
 import type { EventModel } from "../types/Event";
+
 import {
-  recommendEvent,
-  type EnergyId,
-  type EnvId,
-  type PlanId,
+  pickRecommendedEvent,
+  type EnergyChoice,
+  type EnvironmentChoice,
+  type PlanChoice,
 } from "../utils/scoring";
 
 import "./CuestionarioMood.css";
@@ -30,7 +32,7 @@ const ENERGY = [
   { id: "high", label: "Alta", emoji: "🔥" },
 ] as const;
 
-const ENV = [
+const ENVIRONMENT = [
   { id: "quiet", label: "Tranquilo / poco ruido", emoji: "🤫🌿" },
   { id: "balanced", label: "Balanceado", emoji: "🟣😊" },
   { id: "loud", label: "Animado / ruidoso", emoji: "🎶🎉" },
@@ -42,25 +44,20 @@ const PLAN = [
   { id: "move", label: "Moverse (karaoke, baile, deporte)", emoji: "🎤🕺" },
 ] as const;
 
-type EnergyIdUI = (typeof ENERGY)[number]["id"];
-type EnvIdUI = (typeof ENV)[number]["id"];
-type PlanIdUI = (typeof PLAN)[number]["id"];
+type EnergyIdUI = (typeof ENERGY)[number]["id"]; // compatible con EnergyChoice
+type EnvIdUI = (typeof ENVIRONMENT)[number]["id"]; // compatible con EnvironmentChoice
+type PlanIdUI = (typeof PLAN)[number]["id"]; // compatible con PlanChoice
 
 /* -------------------- Helpers -------------------- */
-const isFutureOrToday = (d?: string | null) => {
+function isTodayOrFutureDate(d?: string | null) {
   if (!d) return false;
   const event = new Date(d);
   const today = new Date();
-  const startOfToday = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  );
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   return event.getTime() >= startOfToday.getTime();
-};
+}
 
-// BD -> UI
-function mapRowToModel(row: EventRow): EventModel {
+function toEventModel(row: EventRow): EventModel {
   return {
     id: row.id,
     name: row.name,
@@ -79,7 +76,7 @@ function mapRowToModel(row: EventRow): EventModel {
 /* -------------------- Componente -------------------- */
 export default function CuestionarioMood() {
   const dispatch = useAppDispatch();
-  const eventsRows = useAppSelector((s) => s.events.events);
+  const eventRows = useAppSelector((s) => s.events.events);
 
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -87,92 +84,74 @@ export default function CuestionarioMood() {
 
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [energy, setEnergy] = useState<EnergyIdUI | null>(null);
-  const [env, setEnv] = useState<EnvIdUI | null>(null);
+  const [environment, setEnvironment] = useState<EnvIdUI | null>(null);
   const [plan, setPlan] = useState<PlanIdUI | null>(null);
 
-  const [join, setJoin] = useState<boolean>(false);
+  const [joinedOk, setJoinedOk] = useState(false);
 
-  // user de sesión
+  // 1) Cargar usuario y, si el store está vacío, traer eventos
   useEffect(() => {
-    async function loadUser() {
+    async function bootstrap() {
       const { data } = await supabase.auth.getUser();
-      if (data.user) setUserId(data.user.id);
+      const uid = data.user?.id ?? null;
+      setUserId(uid);
+
+      if (!eventRows || eventRows.length === 0) {
+        await refreshEvents(uid);
+      }
     }
-    loadUser();
+    void bootstrap();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // refrescar desde Supabase si el store está vacío
-  const refreshFromDb = useCallback(async () => {
-    setLoading(true);
-    setErrorMsg(null);
-    try {
-      const rows = await fetchEventsFromDb();
-      const enriched: EventRow[] = rows.map((ev) => ({
-        ...ev,
-        isOwner: userId ? ev.created_by === userId : false,
-        // 👇 marcar joined si viene en subscribers
-        isJoined: userId ? (ev.subscribers || []).includes(userId) : false,
-      }));
-      dispatch(saveEvents(enriched));
-    } catch {
-      setErrorMsg("No se pudieron cargar los eventos.");
-    } finally {
-      setLoading(false);
-    }
-  }, [dispatch, userId]);
+  // Traer eventos de Supabase y guardarlos en Redux
+  const refreshEvents = useCallback(
+    async (currentUserId: string | null = userId) => {
+      setLoading(true);
+      setErrorMsg(null);
+      try {
+        const rows = await fetchEventsFromDb();
+        const withFlags: EventRow[] = rows.map((ev) => ({
+          ...ev,
+          isOwner: !!currentUserId && ev.created_by === currentUserId,
+          isJoined: !!currentUserId && (ev.subscribers || []).includes(currentUserId),
+        }));
+        dispatch(saveEvents(withFlags));
+      } catch {
+        setErrorMsg("No se pudieron cargar los eventos.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch, userId]
+  );
 
-  useEffect(() => {
-    if (!eventsRows || eventsRows.length === 0) {
-      void refreshFromDb();
-    }
-  }, [eventsRows, refreshFromDb]);
+  // 2) Convertir filas a EventModel y filtrar futuros (sin useMemo)
+  const futureEvents: EventModel[] = (() => {
+    if (!eventRows?.length) return [];
+    return eventRows.map(toEventModel).filter((e) => isTodayOrFutureDate(e.date));
+  })();
 
-  // Redux -> EventModel (solo futuros)
-  const events: EventModel[] = useMemo(() => {
-    const mapped = eventsRows.map((r) => {
-      const isOwner = r.isOwner ?? (userId ? r.created_by === userId : false);
-      const isJoined =
-        r.isJoined ?? (userId ? (r.subscribers || []).includes(userId) : false);
-      return mapRowToModel({ ...r, isOwner, isJoined });
+  // 3) Calcular recomendación simple con pickRecommendedEvent (sin useMemo)
+  const recommended: EventModel | null = (() => {
+    if (!energy || !environment || !plan || futureEvents.length === 0) return null;
+    return pickRecommendedEvent(futureEvents, {
+      energy: energy as EnergyChoice,
+      environment: environment as EnvironmentChoice,
+      plan: plan as PlanChoice,
     });
-    return mapped.filter((e) => isFutureOrToday(e.date));
-  }, [eventsRows, userId]);
+  })();
 
-  // Recomendación
-  const recommended = useMemo(() => {
-    if (!energy || !env || !plan || events.length === 0) return null;
-    return recommendEvent(
-      events,
-      energy as EnergyId,
-      env as EnvId,
-      plan as PlanId
-    );
-  }, [energy, env, plan, events]);
-
-  // 👇 unirse al evento recomendado usando la misma lógica del dashboard
+  // 4) Unirse al recomendado (sin validaciones extra solicitadas)
   const handleJoinRecommended = async () => {
-    if (!recommended) return;
-    if (!userId) {
-      setErrorMsg("Debes iniciar sesión para unirte a un evento.");
-      return;
-    }
-
-    // 1. Supabase: insert en event_members
+    if (!recommended || !userId) return; // asumes rutas protegidas ⇒ userId existe
     await subscribeUserToEventInDb(recommended.id, userId);
-    // 2. Redux: marcar como suscrito en el store
-    dispatch(
-      subscribeToEvent({
-        eventId: recommended.id,
-        userId,
-      })
-    );
-    setJoin(true)
-    console.log("se guardo exitosamente");
-    
+    dispatch(subscribeToEvent({ eventId: recommended.id, userId }));
+    setJoinedOk(true);
   };
 
   const canNext1 = energy !== null;
-  const canNext2 = env !== null;
+  const canNext2 = environment !== null;
   const canNext3 = plan !== null;
 
   return (
@@ -182,12 +161,9 @@ export default function CuestionarioMood() {
         <header className="qm-header">
           <h1 className="qm-title">Cuestionario 3Q</h1>
           {step === 1 && (
-            <>
-              <p className="qm-sub">
-                Responde 3 preguntas y te recomendamos un evento que encaje con
-                tu mood.
-              </p>
-            </>
+            <p className="qm-sub">
+              Responde 3 preguntas y te recomendamos un evento que encaje con tu mood.
+            </p>
           )}
         </header>
 
@@ -195,7 +171,7 @@ export default function CuestionarioMood() {
         {errorMsg && (
           <div className="qm-error">
             <p>{errorMsg}</p>
-            <PrimaryButton onClick={refreshFromDb}>Reintentar</PrimaryButton>
+            <PrimaryButton onClick={() => refreshEvents(userId)}>Reintentar</PrimaryButton>
           </div>
         )}
 
@@ -226,11 +202,11 @@ export default function CuestionarioMood() {
           <article className="qm-card">
             <h3 className="qm-question">2. ¿Qué tipo de ambiente prefieres?</h3>
             <div className="qm-options">
-              {ENV.map((opt) => (
+              {ENVIRONMENT.map((opt) => (
                 <OptionButton
                   key={opt.id}
-                  selected={env === opt.id}
-                  onClick={() => setEnv(opt.id)}
+                  selected={environment === opt.id}
+                  onClick={() => setEnvironment(opt.id)}
                   label={`${opt.emoji} ${opt.label}`}
                 />
               ))}
@@ -272,26 +248,28 @@ export default function CuestionarioMood() {
           <article className="qm-card">
             <h3 className="qm-question">Tu recomendación</h3>
 
-            {!recommended && (
-              <p className="qm-hint">
-                No hubo match perfecto. Te mostramos el más próximo.
-              </p>
-            )}
-
+            {!recommended && <p className="qm-hint">No hubo match perfecto.</p>}
             {recommended && <RecommendedCard event={recommended} />}
 
             <div className="qm-actions qm-actions--split">
-              <PrimaryButton onClick={() => setStep(1)}>Reiniciar</PrimaryButton>
-             {
-              join ? <span>¡Te has unido al evento!</span> : (<PrimaryButton
-                onClick={handleJoinRecommended}
-                disabled={!recommended || !userId}
-              >
-                Unirse al evento
-              </PrimaryButton>)
-             } 
-            </div>
+              <PrimaryButton onClick={() => {
+                setStep(1);
+                setEnergy(null);
+                setEnvironment(null);
+                setPlan(null);
+                setJoinedOk(false);
+              }}>
+                Reiniciar
+              </PrimaryButton>
 
+              {joinedOk ? (
+                <span>¡Te has unido al evento!</span>
+              ) : (
+                <PrimaryButton onClick={handleJoinRecommended} disabled={!recommended || !userId}>
+                  Unirse al evento
+                </PrimaryButton>
+              )}
+            </div>
           </article>
         )}
       </section>
