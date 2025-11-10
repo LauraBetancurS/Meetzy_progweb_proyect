@@ -6,19 +6,15 @@ import {
 import type {
   CommunityModel,
   NewCommunityInput,
-  UpdateCommunityInput,
 } from "../../types/Community";
 import {
   fetchAllCommunities,
   fetchCommunityById,
   fetchMyCommunities,
   createCommunity as createCommunityService,
-  updateCommunity as updateCommunityService,
-  deleteCommunity,
   addMemberToCommunity as addMemberService,
   removeMemberFromCommunity as removeMemberService,
   selectEventForCommunity as selectEventService,
-  deselectEventFromCommunity as deselectEventService,
 } from "../../services/communitiesServices";
 
 import { subscribeToEvent } from "./EventsSlice";
@@ -75,29 +71,6 @@ export const createNewCommunity = createAsyncThunk(
   }
 );
 
-// Update community
-export const updateExistingCommunity = createAsyncThunk(
-  "communities/updateExistingCommunity",
-  async (
-    { id, patch }: { id: string; patch: UpdateCommunityInput },
-    { rejectWithValue }
-  ) => {
-    const { data, error } = await updateCommunityService(id, patch);
-    if (error || !data)
-      return rejectWithValue(error || "Error al actualizar comunidad");
-    return data;
-  }
-);
-
-// Delete community
-export const deleteExistingCommunity = createAsyncThunk(
-  "communities/deleteExistingCommunity",
-  async (id: string, { rejectWithValue }) => {
-    const { ok, error } = await deleteCommunity(id);
-    if (!ok) return rejectWithValue(error || "Error al eliminar comunidad");
-    return id;
-  }
-);
 
 // Add member to community
 export const addMemberThunk = createAsyncThunk(
@@ -145,20 +118,6 @@ export const selectEventThunk = createAsyncThunk(
   }
 );
 
-// Deselect event from community
-export const deselectEventThunk = createAsyncThunk(
-  "communities/deselectEvent",
-  async (
-    { communityId, eventId }: { communityId: string; eventId: string },
-    { rejectWithValue }
-  ) => {
-    const { ok, error } = await deselectEventService(communityId, eventId);
-    if (!ok) return rejectWithValue(error || "Error al deseleccionar evento");
-    // Reload community to get updated event list
-    const { data } = await fetchCommunityById(communityId);
-    return data;
-  }
-);
 
 const communitiesSlice = createSlice({
   name: "communities",
@@ -238,32 +197,7 @@ const communitiesSlice = createSlice({
         }
       )
 
-      // Update community
-      .addCase(
-        updateExistingCommunity.fulfilled,
-        (state, action: PayloadAction<CommunityModel>) => {
-          const idx = state.communities.findIndex(
-            (c) => c.id === action.payload.id
-          );
-          if (idx >= 0) state.communities[idx] = action.payload;
-          if (state.currentCommunity?.id === action.payload.id) {
-            state.currentCommunity = action.payload;
-          }
-        }
-      )
-
-      // Delete community
-      .addCase(
-        deleteExistingCommunity.fulfilled,
-        (state, action: PayloadAction<string>) => {
-          state.communities = state.communities.filter(
-            (c) => c.id !== action.payload
-          );
-          if (state.currentCommunity?.id === action.payload) {
-            state.currentCommunity = null;
-          }
-        }
-      )
+  
 
       // Add/Remove member (updates current community)
       .addCase(
@@ -310,20 +244,6 @@ const communitiesSlice = createSlice({
           }
         }
       )
-      .addCase(
-        deselectEventThunk.fulfilled,
-        (state, action: PayloadAction<CommunityModel | null>) => {
-          if (action.payload) {
-            const idx = state.communities.findIndex(
-              (c) => c.id === action.payload!.id
-            );
-            if (idx >= 0) state.communities[idx] = action.payload;
-            if (state.currentCommunity?.id === action.payload.id) {
-              state.currentCommunity = action.payload;
-            }
-          }
-        }
-      );
   },
 });
 
