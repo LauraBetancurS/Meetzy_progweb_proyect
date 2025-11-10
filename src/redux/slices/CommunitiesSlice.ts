@@ -86,6 +86,7 @@ export const addMemberThunk = createAsyncThunk(
     subscribeToEvent({ eventId: communityId, userId });
     return data;
   }
+  //redux update in reducer extraReducers
 );
 
 // Remove member from community
@@ -199,7 +200,7 @@ const communitiesSlice = createSlice({
 
   
 
-      // Add/Remove member (updates current community)
+      // Add/Remove member (updates current community) (Actualiza redux)
       .addCase(
         addMemberThunk.fulfilled,
         (state, action: PayloadAction<CommunityModel | null>) => {

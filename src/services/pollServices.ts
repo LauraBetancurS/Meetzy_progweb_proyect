@@ -13,7 +13,7 @@ const createPollChannel = (communityId: string): RealtimeChannel => {
 };
 
 let activeChannel: RealtimeChannel | null = null;
-
+// funcion para suscribirse a actualizaciones de votos en encuestas usaremos esto en le redux 
 export const subscribeToPollUpdates = (
   communityId: string,
   onVoteUpdate: (pollId: string, optionId: string, newVoteCount: number) => void
@@ -81,7 +81,7 @@ export async function createPoll(input: NewPollInput): Promise<{ data: PollModel
     return { data: null, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
-
+//registra el voto en la base de datos , register
 export async function votePoll(
   pollId: string,
   optionId: string
@@ -105,15 +105,13 @@ export async function votePoll(
     }
 
     // Mark user as voted for this option first
+    //Registrar el voto del usuario,  Se crea una copia del objeto de votantes anterior y se agrega el nuevo vot
     const updatedVoters = {
-      ...voters,
-      [user.id]: {
-        optionId,
-        votedAt: new Date().toISOString()
+      ...voters,[user.id]: {optionId,votedAt: new Date().toISOString()
       }
     };
 
-    // Calculate vote count based on voters map (source of truth)
+    // Calculate vote count based on voters map (source of truth) //calcular votos
     const voteCounts: Record<string, number> = {};
     Object.entries(updatedVoters).forEach(([_, vote]) => {
       if (typeof vote === 'object' && vote && 'optionId' in vote) {

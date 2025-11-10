@@ -169,6 +169,7 @@ export async function createCommunity(
 }
 
 /** Agrega un usuario al array de miembros de una comunidad */
+//Revisar si el usuario que queremos agregar ya está ahí. y Si no está, lo mete en esa lista y actualiza la comunidad en la base de datos.
 export async function addMemberToCommunity(
   communityId: string,
   userId: string
