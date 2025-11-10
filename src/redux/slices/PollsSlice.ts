@@ -85,7 +85,7 @@ const pollsSlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Failed to fetch polls";
       })
-      // Vote in poll
+      // Vote in poll  help to refresh when new votes come in
       .addCase(voteInPollThunk.fulfilled, (state, action) => {
         const { pollId, optionId, voteCount } = action.payload as { pollId: string; optionId: string; voteCount: number | null };
         const poll = state.items.find((p) => p.id === pollId);
