@@ -4,7 +4,7 @@ import PrimaryButton from "../../UI/PrimaryButton";
 import DashboardItem from "../items/DashboardItem";
 import EventosItem from "../items/EventosItem";
 import ComunidadesItem from "../items/ComunidadesItem";
-import NotificacionesItem from "../items/NotificacionesItem";
+
 import PerfilItem from "../items/PerfilItem";
 import "./sidebar.css";
 
@@ -23,7 +23,7 @@ function Sidebar() {
         <DashboardItem />
         <EventosItem />
         <ComunidadesItem />
-        <NotificacionesItem />
+      
         <PerfilItem />
       </nav>
 
