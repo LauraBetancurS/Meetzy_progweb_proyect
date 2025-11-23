@@ -85,7 +85,7 @@ export default function CreateEvent() {
               {imageUrl ? (
                 <img src={imageUrl} alt="Vista previa del evento" />
               ) : (
-                <span>Imagen<br />aquí</span>
+                <span>La Imagen de tu evento  <br /> se mostrara aquí</span>
               )}
             </div>
           </div>
