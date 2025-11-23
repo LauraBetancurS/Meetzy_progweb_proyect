@@ -44,6 +44,7 @@ export default function EventAbout() {
     };
   }
 
+  // Load user
   useEffect(() => {
     async function loadUser() {
       const { data } = await supabase.auth.getUser();
@@ -52,6 +53,7 @@ export default function EventAbout() {
     loadUser();
   }, []);
 
+  // Load event (store → DB fallback)
   useEffect(() => {
     if (!id) {
       setError("No se encontró el evento.");
@@ -88,6 +90,7 @@ export default function EventAbout() {
     fetchEvent();
   }, [id, eventsFromStore]);
 
+  // Join
   async function handleJoin() {
     if (!event || !userId) return;
     setLoadingJoin(true);
@@ -97,6 +100,7 @@ export default function EventAbout() {
     setLoadingJoin(false);
   }
 
+  // Unjoin
   async function handleUnjoin() {
     if (!event || !userId) return;
     setLoadingJoin(true);
@@ -106,6 +110,7 @@ export default function EventAbout() {
     setLoadingJoin(false);
   }
 
+  // Delete
   async function handleDelete() {
     if (!event || !userId) return;
     if (event.createdBy !== userId) return;
@@ -114,74 +119,99 @@ export default function EventAbout() {
     navigate(-1);
   }
 
+  /* LOADING / ERROR */
   if (loading) return <p className="eventAbout__loading">Cargando evento...</p>;
   if (error || !event)
     return (
-      <div className="eventAbout__error">
-        <p>{error || "Evento no encontrado."}</p>
-        <button onClick={() => navigate(-1)}>Volver</button>
-      </div>
+      <>
+        <div className="page-bg"></div>
+        <div className="animation-wrapper">
+          <div className="particle particle-1"></div>
+          <div className="particle particle-2"></div>
+          <div className="particle particle-3"></div>
+          <div className="particle particle-4"></div>
+        </div>
+
+        <div className="eventAbout">
+          <div className="eventAbout__card eventAbout__error">
+            <p>{error || "Evento no encontrado."}</p>
+            <button onClick={() => navigate(-1)}>Volver</button>
+          </div>
+        </div>
+      </>
     );
 
   const isOwner = event.createdBy === userId || event.isOwner;
   const showJoin = !isOwner && !event.isJoined;
 
+  /* ==========================================================
+     FINAL UI WITH PARTICLES + GLASS CARD + CENTERED LAYOUT
+     ========================================================== */
+
   return (
-    <div className="eventAbout">
-      <div className="eventAbout__image">
-        <img
-          src={event.imageUrl || "/img/default-event.jpg"}
-          alt={event.name}
-        />
+    <>
+      {/* PARTICLE BACKGROUND */}
+      <div className="page-bg"></div>
+      <div className="animation-wrapper">
+        <div className="particle particle-1"></div>
+        <div className="particle particle-2"></div>
+        <div className="particle particle-3"></div>
+        <div className="particle particle-4"></div>
       </div>
 
-      <h1 className="eventAbout__title">{event.name}</h1>
-      <p className="eventAbout__description">
-        {event.description || "Sin descripción"}
-      </p>
+      {/* MAIN WRAPPER */}
+      <div className="eventAbout">
+        <div className="eventAbout__card">
+          
+          <div className="eventAbout__image">
+            <img
+              src={event.imageUrl || "/img/default-event.jpg"}
+              alt={event.name}
+            />
+          </div>
 
-      <div className="eventAbout__details">
-        <p>
-          <strong>Creador:</strong> {event.createdBy}
-        </p>
-        <p>
-          <strong>Lugar:</strong> {event.place || "—"}
-        </p>
-        <p>
-          <strong>Fecha:</strong> {event.date || "—"}
-        </p>
-        <p>
-          <strong>Hora:</strong> {event.startTime || "—"}
-        </p>
+          <h1 className="eventAbout__title">{event.name}</h1>
+          <p className="eventAbout__description">
+            {event.description || "Sin descripción"}
+          </p>
+
+          <div className="eventAbout__details">
+            <p><strong>Creador:</strong> {event.createdBy}</p>
+            <p><strong>Lugar:</strong> {event.place || "—"}</p>
+            <p><strong>Fecha:</strong> {event.date || "—"}</p>
+            <p><strong>Hora:</strong> {event.startTime || "—"}</p>
+          </div>
+
+          <div className="eventAbout__buttons">
+            {isOwner ? (
+              <button className="eventAbout__joinBtn" onClick={handleDelete}>
+                Eliminar evento
+              </button>
+            ) : showJoin ? (
+              <button
+                className="eventAbout__joinBtn"
+                onClick={handleJoin}
+                disabled={loadingJoin}
+              >
+                {loadingJoin ? "Uniendo..." : "Unirse al evento"}
+              </button>
+            ) : (
+              <button
+                className="eventAbout__joinBtn"
+                onClick={handleUnjoin}
+                disabled={loadingJoin}
+              >
+                {loadingJoin ? "Saliendo..." : "Salir del evento"}
+              </button>
+            )}
+
+            <button className="eventAbout__backBtn" onClick={() => navigate(-1)}>
+              Volver
+            </button>
+          </div>
+
+        </div>
       </div>
-
-      <div className="eventAbout__buttons">
-        {isOwner ? (
-          <button className="eventAbout__joinBtn" onClick={handleDelete}>
-            Eliminar evento
-          </button>
-        ) : showJoin ? (
-          <button
-            className="eventAbout__joinBtn"
-            onClick={handleJoin}
-            disabled={loadingJoin}
-          >
-            {loadingJoin ? "Uniendo..." : "Unirse al evento"}
-          </button>
-        ) : (
-          <button
-            className="eventAbout__joinBtn"
-            onClick={handleUnjoin}
-            disabled={loadingJoin}
-          >
-            {loadingJoin ? "Saliendo..." : "Salir del evento"}
-          </button>
-        )}
-
-        <button className="eventAbout__backBtn" onClick={() => navigate(-1)}>
-          Volver
-        </button>
-      </div>
-    </div>
+    </>
   );
 }
