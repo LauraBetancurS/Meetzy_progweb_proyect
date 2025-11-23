@@ -1,39 +1,92 @@
-/* Grid INTERNO del Dashboard
-   Total de la página = 3 columnas:
-   - Izquierda: la Sidebar del Layout
-   - Centro + Derecha: este grid de abajo
-*/
-.dash-grid{
+/* =======================================================
+   GRID INTERNO DEL DASHBOARD
+   ======================================================= */
+
+/* Pantalla total = Sidebar izquierda + Dashboard grid (centro + derecha) */
+.dash-grid {
   display: grid;
-  grid-template-columns: 1fr var(--right-w); /* centro | derecha */
+  grid-template-columns: minmax(0, 1fr) 300px; /* centro | derecha más delgada */
   gap: 24px;
   min-width: 0;
 }
 
-/* Centro */
-.dash-center{
+/* =======================================================
+   COLUMNA CENTRAL
+   ======================================================= */
+
+.dash-center {
   display: flex;
   flex-direction: column;
   gap: 20px;
   min-width: 0;
 }
 
-.dash-hero{ display:flex; flex-direction:column; gap:6px; }
-.dash-title{ font-size: 32px; font-weight: 800; margin: 0; }
-.dash-title span{ color:#fff; }
-.dash-sub{ color:#bdbdbd; margin: 0; }
+/* Hero (texto principal arriba) */
+.dash-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-/* Derecha (stickiness bajo el header) */
-.dash-right{
+.dash-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.dash-title span {
+  color: #fff;
+}
+
+.dash-sub {
+  color: #bdbdbd;
+  margin: 0;
+}
+
+/* =======================================================
+   COLUMNA DERECHA (Calendar + PromoBanner)
+   ======================================================= */
+
+.dash-right {
   position: sticky;
   top: var(--gap);
   align-self: start;
+
+  /* para que el contenido sea más estrecho */
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* mantiene el calendario centrado */
+  gap: 16px;
 }
 
-/* En pantallas medianas, colapsa a una sola columna (oculta derecha) */
-@media (max-width: 1200px){
-  .dash-grid{
-    grid-template-columns: 1fr;
+/* TODOS los elementos dentro de la columna derecha */
+.dash-right > * {
+  width: 100%;
+  max-width: 280px; /* 🎯 Este es el ancho que pediste */
+}
+
+/* =======================================================
+   OCULTAR DESCRIPCIÓN DE CARDS SOLO EN DASHBOARD
+   ======================================================= */
+
+.dash-center .eventCard__description {
+  display: none;
+}
+
+/* =======================================================
+   RESPONSIVE
+   ======================================================= */
+
+@media (max-width: 1200px) {
+  .dash-grid {
+    grid-template-columns: 1fr; /* colapsa derecha */
   }
-  .dash-right{ display:none; }
+
+  .dash-right {
+    display: none;
+  }
+}
+
+.dash-center .eventCard__editBtn[aria-label="Eliminar evento"] {
+  display: none !important;
 }
