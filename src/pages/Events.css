@@ -1,16 +1,17 @@
-/* ===== Página ===== */
+/* ===== LAYOUT GENERAL DE LA PÁGINA ===== */
+
 .eventsPage {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: auto 1fr;
+  background: none;
+  color: #ffffff;
+  padding-top: var(--header-h, 64px); /* por si tienes header fijo */
+  box-sizing: border-box;
 }
 
-/* Contenido centrado */
 .eventsPage__content {
   display: flex;
   justify-content: center;
-  padding: clamp(20px, 3vw, 32px);
-  box-sizing: border-box;
+  padding: clamp(16px, 3vw, 32px);
 }
 
 .eventsPage__wrap {
@@ -20,104 +21,110 @@
   padding-inline: clamp(8px, 2vw, 16px);
 }
 
-/* Títulos */
-.eventsPage__title {
-  color: #fff;
-  font-size: clamp(1.6rem, 2.2vw, 2rem);
-  font-weight: 800;
-  margin: 10px 0 14px 6px;
+/* ===== HEADER PRINCIPAL ===== */
+
+.eventsPage__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-/* GRID responsive:
-   - min 320px para caber bien en móviles
-   - auto-fit para llenar el ancho disponible */
+.eventsPage__title {
+  font-size: clamp(1.8rem, 2.5vw, 2.2rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  margin: 0 0 4px 0;
+  text-shadow: 0 4px 14px rgba(0, 0, 0, 0.7);
+}
+
+.eventsPage__subtitle {
+  margin: 0;
+  font-size: 0.92rem;
+  opacity: 0.85;
+}
+
+/* ===== SECCIONES ===== */
+
+.eventsSection {
+  margin-top: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 18px;
+}
+
+.eventsSection__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.eventsSection__title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.eventsSection__badge {
+  font-size: 0.75rem;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-weight: 600;
+}
+
+.eventsSection__empty {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+/* ===== GRID DE CARDS ===== */
+
 .eventsGrid {
   display: grid;
   gap: clamp(16px, 2.4vw, 24px);
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   align-items: start;
+  padding: 4px 0 10px;
 }
 
-.eventsGrid > * {
-  width: 100%;
-  min-width: 0;
+.eventsGrid__item {
+  list-style: none;
 }
 
-/* ===== Barra superior solo móvil (título + botón crear) ===== */
+/* ===== BARRA MÓVIL (SI LA NECESITAS DESPUÉS) ===== */
+/* Puedes activarla luego si quieres un título sticky en mobile */
+
 .eventsPage__mobileBar {
-  display: none; /* oculta en desktop */
+  display: none;
 }
 
-.eventsPage__createBtnMobile {
-  text-decoration: none;
-  border: none;
-  outline: none;
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-weight: 800;
-  font-size: 0.95rem;
-  background: linear-gradient(180deg, #ff7a8d 0%, #ff6b81 100%);
-  color: #ffffff;
-  box-shadow: 0 6px 18px rgba(255, 107, 129, 0.35);
-}
-
-.eventsPage__createBtnMobile:active {
-  transform: translateY(0);
-}
-
-@media (max-width: 1400px) {
-  .eventsPage__wrap { max-width: 1100px; }
-}
+/* ===== RESPONSIVE ===== */
 
 @media (max-width: 900px) {
-  .eventsPage__title { font-size: 1.6rem; }
-  .eventsPage__content { padding: 18px; }
-  .eventsPage__wrap { padding-inline: 10px; }
-}
-
-/* ===== Ajustes fuertes para móvil <=768px ===== */
-@media (max-width: 768px) {
-  /* Activa la barra superior móvil */
-  .eventsPage__mobileBar {
-    position: sticky;
-    top: calc(var(--header-h)); /* queda justo bajo tu header fijo */
-    z-index: 5;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 10px 6px 6px 6px;
-    background: var(--bg);
-    border-bottom: 1px solid #2a2a2a;
-    margin-bottom: 10px;
-  }
-  .eventsPage__mobileBar h1 {
-    margin: 0 0 0 6px;
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #fff;
+  .eventsPage__content {
+    padding: 16px;
   }
 
-  /* Grid más compacto en móviles pequeños */
-  .eventsGrid {
-    grid-template-columns: 1fr;            /* una columna segura */
+  .eventsPage__wrap {
+    padding-inline: 8px;
   }
 
-  /* Si tienes móviles medianos (≥380px), deja 2 columnas si cabe: */
-  @media (min-width: 380px) {
-    .eventsGrid {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
+  .eventsPage__header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
-/* ===== Micro-ajustes para pantallas muy pequeñas (≤360px) ===== */
-@media (max-width: 360px) {
-  .eventsGrid {
-    gap: 12px;
+@media (max-width: 600px) {
+  .eventsSection {
+    margin-top: 22px;
   }
-  .eventsPage__createBtnMobile {
-    padding: 8px 12px;
-    font-size: 0.9rem;
+
+  .eventsPage__title {
+    font-size: 1.7rem;
   }
 }
