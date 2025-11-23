@@ -4,4 +4,14 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  /* 👇 truco: los hijos se alinean al centro / derecha si quieres */
+  align-items: center; /* o "flex-end" si los quieres pegados al borde derecho */
+}
+
+/* 🎯 TODOS los bloques dentro de la columna derecha
+   (Calendar, PromoBanner, etc.) serán más angostos */
+.right-col > * {
+  width: 100%;
+  max-width: 280px;    /* <- aquí controlas qué tan estrechos quieres el calendario y el banner */
 }
