@@ -1,200 +1,226 @@
-:root{
-  --card-bg: #1f1f1f;
-  --card-body: #2a2a2a;
-  --txt: #f2f2f2;
-  --muted: #bdbdbd;
-  --meta: #cfcfcf;
-  --border: rgba(255,255,255,0.08);
-  --border-strong: rgba(255,255,255,0.12);
-  --accent: #ff6b81;
-  --shadow: 0 8px 24px rgba(0,0,0,0.35);
-  --radius: 22px;
-}
+/* ==========================================================
+   ================   CARD COMPLETA ESTILO AAA   ============
+   ========================================================== */
 
-/* ====== CARD WRAPPER ====== */
+/* ===== CARD BASE ===== */
 .eventCard {
-  background: var(--card-bg);
-  color: var(--txt);
-  border-radius: var(--radius);
+  position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  transition: box-shadow .25s ease, border-color .25s ease;
+  border-radius: 18px;
+  background: #000;
+  height: 360px; /* puedes ajustar, 360px funciona hermoso */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  transition: transform .25s ease, box-shadow .25s ease;
+  cursor: pointer;
 }
 
 .eventCard:hover {
-  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
-  border-color: rgba(255,255,255,0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(255, 107, 129, 0.25);
 }
 
-/* ====== MEDIA (IMAGEN) ====== */
+/* ==========================================================
+   ================   IMAGEN FULL-COVER   ===================
+   ========================================================== */
+
 .eventCard__media {
-  position: relative;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  aspect-ratio: 21 / 7; /* desktop más panorámico */
-  background: #0f0f0f;
-  overflow: hidden;
+  height: 100%;
 }
 
 .eventCard__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  transition: transform .4s ease;
 }
 
-/* ====== DELETE FLOAT BTN ====== */
-.eventCard__delete {
+.eventCard:hover .eventCard__img {
+  transform: scale(1.08);
+}
+
+/* ==========================================================
+   ================   DIFUMINADO NEGRO   ====================
+   ========================================================== */
+
+.eventCard__media::after {
+  content: "";
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background: #0e0e0e;
-  color: #ffffff;
-  border: 1px solid var(--border-strong);
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
-  user-select: none;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.55) 60%,
+    rgba(0, 0, 0, 0.15) 65%,
+    rgba(0, 0, 0, 0.0) 100%
+  );
+  pointer-events: none;
 }
 
-.eventCard__delete:hover { transform: translateY(-1px); background:#141414; }
-.eventCard__delete:active { transform: translateY(0); }
-.eventCard__delete:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
+/* ==========================================================
+   ================   BODY (TEXTO SOBRE IMAGEN)   ===========
+   ========================================================== */
 
-/* ====== BODY ====== */
 .eventCard__body {
-  padding: 14px 16px;
-  background: var(--card-body);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 22px;
+  width: 100%;
+  box-sizing: border-box;
+  color: #fff;
+  z-index: 5;
 }
 
 .eventCard__title {
-  margin: 2px 0 6px 0;
-  font-size: 1.45rem;
+  font-size: 1.25rem;
   font-weight: 800;
-  letter-spacing: .2px;
-  color: #fff;
+  margin: 0 0 6px 0;
+  text-shadow: 0px 3px 12px rgba(0,0,0,0.85);
 }
 
 .eventCard__description {
-  margin: 0 0 10px 0;
-  font-size: .97rem;
-  line-height: 1.45;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  max-height: 3em;
-  color: var(--muted);
+  font-size: 0.9rem;
+  opacity: 0.95;
+  margin-bottom: 10px;
+  line-height: 1.3;
+  text-shadow: 0px 3px 10px rgba(0,0,0,0.8);
 }
 
 .eventCard__meta {
-  margin: 0 0 10px 0;
-  font-size: .94rem;
-  color: var(--meta);
+  opacity: 0.9;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+  text-shadow: 0px 2px 8px rgba(0,0,0,0.65);
 }
-.eventCard__meta strong { color: #e5e5e5; }
 
-/* ====== FOOTER / ACCIONES ====== */
+/* ==========================================================
+   =======================   FOOTER   ========================
+   ========================================================== */
+
 .eventCard__footer {
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
   gap: 10px;
-  padding-top: 2px;
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 
-/* Botón principal (rosa) */
-.eventCard__editBtn {
-  border: none;
-  outline: none;
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: .95rem;
-  cursor: pointer;
-  background: linear-gradient(180deg, #ff7a8d 0%, var(--accent) 100%);
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(255, 107, 129, 0.35);
-  transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
-}
-.eventCard__editBtn:hover { transform: translateY(-1px); filter: brightness(1.03); }
-.eventCard__editBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* ==========================================================
+   =====================   BOTONES   =========================
+   ========================================================== */
 
-/* Botón secundario (cancel / about) */
+/* Base */
+.eventCard__editBtn,
 .eventCard__cancelBtn {
-  border: 1px solid var(--border-strong);
-  background: #0e0e0e;
-  color: #fff;
-  padding: 10px 16px;
+  position: relative;
+  border: none;
+  padding: 8px 18px;
   border-radius: 999px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
-}
-.eventCard__cancelBtn:hover { background:#141414; transform: translateY(-1px); }
-.eventCard__cancelBtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-/* ====== EDIT GRID (inputs) ====== */
-.eventCard__editGrid { display: grid; gap: 12px; }
-
-.eventCard__row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  transition: all .2s ease;
 }
 
-.eventCard input,
-.eventCard textarea {
+/* Primario (Unirse / Salir / Editar) */
+.eventCard__editBtn {
+  background: linear-gradient(180deg, #ff7a8d 0%, #ff6b81 100%);
+  color: white;
+  box-shadow: 0 4px 14px rgba(255, 107, 129, 0.35);
+}
+
+.eventCard__editBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(255, 107, 129, 0.5);
+}
+
+/* Secundario (About, cancelar, etc.) */
+.eventCard__cancelBtn {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: white;
+}
+
+.eventCard__cancelBtn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Desactivado */
+.eventCard__editBtn:disabled {
+  opacity: 0.7;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* ==========================================================
+   ==========   EFECTO “RAYO DIAGONAL” EN UNIRSE   ==========
+   ========================================================== */
+
+.eventCard__editBtn[aria-label="Unirse"] {
+  overflow: hidden;
+}
+
+/* Luz diagonal */
+.eventCard__editBtn[aria-label="Unirse"]::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -120%;
+  width: 70%;
+  height: 220%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.55),
+    transparent
+  );
+  opacity: 0.9;
+  pointer-events: none;
+  animation: diagonalShine 3.5s infinite ease-in-out;
+}
+
+@keyframes diagonalShine {
+  0% { left: -120%; }
+  45% { left: 120%; }
+  100% { left: 120%; }
+}
+
+
+/* =======================================================
+   VARIANTE HORIZONTAL SOLO PARA LA DASHBOARD
+   (cuando las cards están dentro de .dash-events)
+   ======================================================= */
+
+.dash-events .eventCard {
+  /* Forma más horizontal tipo banner */
+  aspect-ratio: 16 / 9;      /* ancho > alto */
+  max-height: 230px;         /* evita que se vuelvan muy altas */
+}
+
+.dash-events .eventCard__body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   width: 100%;
-  background: #141414;
-  color: #e8e8e8;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 12px;
-  outline: none;
-}
-.eventCard input:focus,
-.eventCard textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(255, 107, 129, .25);
+  padding: 18px 20px 20px;
+  box-sizing: border-box;
+  z-index: 2;
 }
 
-.eventCard textarea { min-height: 80px; resize: vertical; }
-
-/* ====== RESPONSIVE ====== */
-@media (max-width: 900px) {
-  .eventCard__media { aspect-ratio: 16 / 9; } /* en tablets/móvil se ve mejor */
+.dash-events .eventCard__title {
+  font-size: 1.05rem;
+  margin-bottom: 4px;
 }
 
-@media (max-width: 520px) {
-  .eventCard__title { font-size: 1.3rem; }
-  .eventCard__description { font-size: .94rem; }
-  .eventCard__meta { font-size: .9rem; }
-  .eventCard__delete { padding: 8px 14px; font-size: .9rem; }
-  .eventCard__row { grid-template-columns: 1fr; }
-  .eventCard__footer { gap: 8px; }
-  .eventCard__editBtn, .eventCard__cancelBtn { padding: 10px 14px; font-size: .92rem; }
+.dash-events .eventCard__meta {
+  font-size: 0.8rem;
+  margin-bottom: 8px;
 }
 
-@media (max-width: 360px) {
-  .eventCard__body { padding: 12px 12px; }
-  .eventCard__title { font-size: 1.15rem; }
-  .eventCard__editBtn, .eventCard__cancelBtn { padding: 9px 12px; font-size: .88rem; }
+/* Por si quieres aún más “limpio” en la dash:
+   (ya tienes algo parecido en Dashboard.css, pero esto asegura) */
+.dash-events .eventCard__description {
+  display: none;
 }
 
-/* Accesibilidad: respetar reduce motion */
-@media (prefers-reduced-motion: reduce) {
-  .eventCard, .eventCard__delete, .eventCard__editBtn, .eventCard__cancelBtn {
-    transition: none !important;
-  }
-}
