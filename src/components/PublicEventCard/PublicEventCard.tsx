@@ -7,6 +7,8 @@ type PublicEventCardProps = {
   onUnjoin?: (ev: EventModel) => void;
   onAbout?: (ev: EventModel) => void;
   onDelete?: (ev: EventModel) => void;
+  /** Si es true, aunque el usuario sea dueño del evento NO se muestra el botón de eliminar */
+  hideOwnerActions?: boolean;
 };
 
 export default function PublicEventCard({
@@ -15,6 +17,7 @@ export default function PublicEventCard({
   onUnjoin,
   onAbout,
   onDelete,
+  hideOwnerActions = false,
 }: PublicEventCardProps) {
   const handleJoin = () => onJoin && onJoin(event);
   const handleUnjoin = () => onUnjoin && onUnjoin(event);
@@ -23,6 +26,8 @@ export default function PublicEventCard({
 
   const isOwner = !!event.isOwner;
   const isJoined = !!event.isJoined;
+
+  const showDeleteButton = isOwner && !!onDelete && !hideOwnerActions;
 
   return (
     <div className="eventCard">
@@ -55,7 +60,7 @@ export default function PublicEventCard({
             </button>
           )}
 
-          {isOwner && onDelete ? (
+          {showDeleteButton ? (
             <button
               className="eventCard__editBtn"
               onClick={handleDelete}
@@ -86,6 +91,7 @@ export default function PublicEventCard({
               )
             )
           ) : (
+            /* Si es tu evento, se muestra solo este chip (no afecta hideOwnerActions) */
             <button className="eventCard__editBtn" disabled>
               Tu evento
             </button>
