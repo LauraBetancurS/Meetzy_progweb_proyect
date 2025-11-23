@@ -24,26 +24,32 @@
 /* Botón "Create event" (usa tu TertiaryButton) */
 .dash-events__createBtn {
   padding: 8px 12px;
-  border-radius: 999px; /* look pill como en la referencia */
+  border-radius: 999px; /* look pill */
 }
 
-/* Grid de tarjetas */
+/* =========================
+   GRID DE TARJETAS
+   ========================= */
+
+/* En desktop: cards tipo banners, pocas filas */
 .dash-events__grid {
   display: grid;
-  gap: 14px;
-  /* 2 col en pantallas medias, 1 col en chicas, 3 col en amplio */
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  /* 380px hace que normalmente tengas 2 columnas grandes;
+     si la pantalla es muy ancha puede entrar una 3ª. */
 }
 
-/* Amplio como tu ref (3 col) */
-@media (min-width: 1200px) {
+/* Muy ancho (opcional): puedes forzar solo 2 columnas si quieres
+@media (min-width: 1400px) {
   .dash-events__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+*/
 
-/* Muy chico: 1 col */
-@media (max-width: 768px) {
+/* Pantallas medianas y pequeñas: apilar */
+@media (max-width: 900px) {
   .dash-events__grid {
     grid-template-columns: 1fr;
   }
