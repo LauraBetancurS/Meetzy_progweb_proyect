@@ -218,11 +218,12 @@ export default function Dashboard() {
 
         <div className="dash-hero">
           <h1 className="dash-title">
-            Dive in! <span>{username}</span>
+            Explora en Meetzy, <span>{username}</span>
           </h1>
           <p className="dash-sub">
-            Turn plans into moments. Subtitle: Set the details, vote in real
-            time, and keep every memory in one place.
+            Convierte tus planes en momentos.
+            <br />
+            <b>Define los detalles, vota en tiempo real y guarda todos tus recuerdos en un solo lugar.</b>
           </p>
         </div>
 
