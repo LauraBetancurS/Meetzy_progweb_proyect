@@ -114,34 +114,68 @@
 
 /* ========= EVENTOS SELECCIONADOS ========= */
 
+/* ===== Card del próximo evento de la comunidad ===== */
+
 .communityDetail__eventCard {
-  background: linear-gradient(135deg, #1f1f1f, #151515);
+  position: relative;
   border-radius: 18px;
-  padding: 1rem;
+  overflow: hidden;
+  height: 190px;   
+  width: 70%;           /* controla el alto de la card */
+  background: #000;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  justify-content: flex-end;  /* baja el texto hacia abajo */
 }
 
+/* Imagen de fondo ocupando toda la card */
 .communityDetail__eventCard img {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  border-radius: 14px;
+  height: 100%;
   object-fit: cover;
-  max-height: 220px;
 }
 
+/* Degradado oscuro abajo tipo overlay */
+.communityDetail__eventCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.8),
+    rgba(0, 0, 0, 0.35),
+    transparent 55%
+  );
+}
+
+/* Contenido (texto) encima del degradado */
+.communityDetail__eventCard h2,
+.communityDetail__eventCard p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding-inline: 1.1rem;
+}
+
+/* Título del evento */
 .communityDetail__eventCard h2 {
   font-size: 1.05rem;
-  margin: 0.75rem 0 0.25rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.3rem;
 }
 
+/* Detalle (lugar, fecha, etc. si lo agregas luego) */
 .communityDetail__eventCard p {
-  color: #d4d4d4;
-  font-size: 0.9rem;
-  margin: 0;
+  color: #f3f3f3;
+  font-size: 0.85rem;
+  padding-bottom: 0.9rem;
   line-height: 1.4;
 }
+
 
 /* Contenedor de publicaciones dentro de la sección */
 .communityDetail__eventList {
@@ -162,12 +196,15 @@
 }
 
 .imageavatarpost {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center;
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 999px !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  overflow: hidden !important;
+  display: block !important;
 }
+
 
 .headerpostcard p {
   margin: 0;

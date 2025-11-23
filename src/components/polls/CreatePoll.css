@@ -1,48 +1,71 @@
+/* ===== CONTENEDOR GENERAL ===== */
+
 .createPoll {
-  background: #626262;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  padding: 1.5rem;
+  background: #171717;
+  border-radius: 20px;
+  padding: 1.6rem 1.8rem;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 1.5rem;
+  color: #f5f5f5;
 }
+
+/* ===== TITULO ===== */
+
+.createPoll__form h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 0.8rem 0;
+  color: #ffffff;
+}
+
+/* ===== CAMPOS ===== */
 
 .createPoll__form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-}
-
-.createPoll__form h3 {
-  margin: 0 0 0.5rem 0;
+  gap: 1.4rem;
 }
 
 .createPoll__field {
   display: flex;
-  color: white;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .createPoll__field label {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.9rem;
+  color: #e4e4e7;
 }
 
-.createPoll__field input[type="text"] {
-   color: white;
-  border-radius: 8px;
-  font-size: 1rem;
-  padding: 0.75rem;
-}
-
+/* Inputs principales */
+.createPoll__field input[type="text"],
 .createPoll__field input[type="datetime-local"] {
-  border-radius: 8px;
-  font-size: 1rem;
-  padding: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border-radius: 14px;
+  background: #202022;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #f9fafb;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border 0.15s ease, background 0.15s ease;
 }
+
+.createPoll__field input::placeholder {
+  color: #9ca3af;
+}
+
+.createPoll__field input:focus {
+  border-color: #ff4b7d;
+}
+
+/* ===== OPCIONES ===== */
 
 .createPoll__optionRow {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.6rem;
   align-items: center;
 }
 
@@ -50,35 +73,47 @@
   flex: 1;
 }
 
+/* Botón eliminar opción */
 .createPoll__removeBtn {
-  background: #dc3545;
+  background: #3b3b3b;
   border: none;
   border-radius: 50%;
-  color: white;
+  color: #ffffff;
   cursor: pointer;
-  font-size: 1.5rem;
-  height: 32px;
-  line-height: 1;
+  font-size: 1.2rem;
   width: 32px;
+  height: 32px;
+  line-height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.15s ease;
 }
 
 .createPoll__removeBtn:hover {
-  background: #c82333;
+  background: #ff4b7d;
 }
 
+/* Botón agregar opción */
 .createPoll__addOptionBtn {
-  background: #a9a9a9;
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
   cursor: pointer;
+  padding: 0.45rem 0.9rem;
   font-size: 0.9rem;
   margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  width: fit-content;
+  color: #ff4b7d;
+  font-weight: 500;
+  transition: all 0.15s ease;
 }
 
 .createPoll__addOptionBtn:hover {
-  background: #e0e0e0;
+  background: rgba(255, 75, 125, 0.15);
+  border-color: #ff4b7d;
 }
+
+/* ===== ACCIONES ===== */
 
 .createPoll__actions {
   display: flex;
@@ -86,14 +121,18 @@
 }
 
 .createPoll__cancelBtn {
-  background: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: 0.55rem 1.2rem;
+  color: #e5e5e5;
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
+  margin-left: 0.8rem;
 }
 
 .createPoll__cancelBtn:hover {
-  background: #e0e0e0;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
 }
-

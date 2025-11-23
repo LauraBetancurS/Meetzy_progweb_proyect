@@ -29,8 +29,10 @@ export default function CommunityDetail() {
   const { currentCommunity, loading, communities } = useAppSelector(
     (s) => s.communities
   );
+
   const community =
     currentCommunity || communities.find((c) => c.id === id);
+
   const events = useAppSelector((s) => s.events.events);
   const [showcreatepoll, setShowCreatePoll] = useState(false);
 
@@ -43,7 +45,6 @@ export default function CommunityDetail() {
 
     (async () => {
       try {
-        // ensure the community is loaded before fetching dependent data
         await dispatch(loadCommunityById(id));
         await dispatch(fetchPostsByCommunity(id));
         await dispatch(fetchPollsThunk(id));
@@ -51,7 +52,6 @@ export default function CommunityDetail() {
         console.error("Failed to load community/posts/polls:", err);
       }
 
-      // subscribe to realtime poll updates
       unsubscribe = subscribeToPollUpdates(
         id,
         (pollId: string, optionId: string, voteCount: number) => {
@@ -90,7 +90,6 @@ export default function CommunityDetail() {
 
   const isMember = user?.id && (community.memberIds || []).includes(user.id);
   const isCreator = !!user && !!community && user.id === community.owner_id;
-  console.log(community.owner_id);
 
   const selectedEvents = events.filter((e) =>
     (community.selectedEventIds || []).includes(e.id)
@@ -168,7 +167,6 @@ export default function CommunityDetail() {
       dispatch(loadCommunityById(id));
       dispatch(fetchPostsByCommunity(id));
     }
-    console.log(payload);
   }
 
   return (
@@ -186,8 +184,10 @@ export default function CommunityDetail() {
               {community.description}
             </p>
           )}
+
           <div className="communityDetail__meta">
             <span>{community.members} miembros</span>
+
             <PrimaryButton
               onClick={() => {
                 isCreator
@@ -198,29 +198,18 @@ export default function CommunityDetail() {
             >
               Agregar miembro
             </PrimaryButton>
-            {isMember && (
-              <TertiaryButton
-                onClick={() =>
-                  dispatch(
-                    removeMemberThunk({
-                      communityId: community.id,
-                      userId: user?.id || "",
-                    })
-                  )
-                }
-                className="communityDetail__addBtn"
-              >
-                Abandonar comunidad
-              </TertiaryButton>
-            )}
 
             {!isMember && user && (
               <PrimaryButton onClick={handleJoinCommunity}>
                 Unirse a la comunidad
               </PrimaryButton>
             )}
+
             {isMember && !isCreator && (
-              <TertiaryButton onClick={handleLeaveCommunity}>
+              <TertiaryButton
+                onClick={handleLeaveCommunity}
+                className="communityDetail__addBtn"
+              >
                 Salir de la comunidad
               </TertiaryButton>
             )}
@@ -228,6 +217,13 @@ export default function CommunityDetail() {
         </div>
 
         <div className="communityDetail__content">
+          {/* ---- TÍTULO DEL EVENTO ---- */}
+          {selectedEvents.length > 0 && (
+            <h2 className="communityDetail__sectionTitle">
+              Próximo evento de la comunidad
+            </h2>
+          )}
+
           {selectedEvents.map((event) => (
             <div key={event.id} className="communityDetail__eventCard">
               <img src={event.image_url ?? ""} alt="" />
@@ -236,39 +232,33 @@ export default function CommunityDetail() {
             </div>
           ))}
 
+          {/* ---- COMPOSER ---- */}
           <section className="communityDetail__section">
-            <h2>Publicaciones</h2>
+            <h2 className="communityDetail__miniTitle">
+              Comparte algo con tu comunidad 💬
+            </h2>
 
-            {/* Composer ARRIBA */}
             <Composer
-              showpoll={() => {
-                showcreatepoll
-                  ? setShowCreatePoll(false)
-                  : setShowCreatePoll(true);
-              }}
+              showpoll={() => setShowCreatePoll((prev) => !prev)}
               defaultCommunityId={community.id}
               hideCommunitySelector={true}
               onPost={handlePost}
             />
 
-            {/* Bloque para crear encuesta (si es miembro y activó el toggle) */}
-            {isMember && showcreatepoll === true && (
+            {isMember && showcreatepoll && (
               <section className="communityDetail__section">
                 <h2>Crea tu encuesta</h2>
                 <Poll communityId={community.id} />
               </section>
             )}
 
-            {/* Encuestas existentes */}
+            {/* ---- PUBLICACIONES ---- */}
+            <h2 className="communityDetail__sectionTitle">Publicaciones</h2>
+
             {polls.map((poll) => (
-              <Poll
-                key={poll.id}
-                poll={poll}
-                communityId={community.id}
-              />
+              <Poll key={poll.id} poll={poll} communityId={community.id} />
             ))}
 
-            {/* Publicaciones al final */}
             <div className="communityDetail__eventList">
               <Posts />
             </div>
@@ -278,7 +268,7 @@ export default function CommunityDetail() {
 
       <div className="rigthsection">
         <div className="communityDetail__related">
-          <h2>comunidades relacionadas</h2>
+          <h2>Comunidades relacionadas</h2>
           <hr />
           <div className="related__container">
             {communities ? (
