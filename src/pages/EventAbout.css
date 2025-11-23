@@ -1,70 +1,198 @@
+/* ==========================================================
+   GLOBAL WRAPPER WITH PARTICLE BACKGROUND
+   ========================================================== */
+
 .eventAbout {
+  position: relative;
   max-width: 900px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 2rem;
+  color: #fff;
+  z-index: 2;
 }
+
+/* PARTICLE BACKGROUND */
+.eventAbout::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,255,255,0.08), transparent 40%),
+    radial-gradient(circle at 20% 80%, rgba(255,107,129,0.15), transparent 40%),
+    radial-gradient(circle at 80% 60%, rgba(255,255,255,0.06), transparent 40%);
+  backdrop-filter: blur(4px);
+  z-index: -2;
+}
+
+.eventAbout::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity: 0.10;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* PARTICLE ANIMATION */
+@keyframes floatParticles {
+  0% { transform: translateY(0px) translateX(0px); }
+  50% { transform: translateY(-20px) translateX(10px); }
+  100% { transform: translateY(0px) translateX(0px); }
+}
+
+.eventAbout::before {
+  animation: floatParticles 8s ease-in-out infinite;
+}
+
+
+/* ==========================================================
+   HERO IMAGE
+   ========================================================== */
 
 .eventAbout__image {
   width: 100%;
-  height: 280px;
+  height: 360px;
   overflow: hidden;
-  border-radius: 1rem;
-  margin-bottom: 1.5rem;
-  background: #eee;
+  border-radius: 20px;
+  margin-bottom: 1.8rem;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
 }
 
 .eventAbout__image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform .4s ease;
 }
 
+.eventAbout__image:hover img {
+  transform: scale(1.08);
+}
+
+/* BLACK GRADIENT OVERLAY */
+.eventAbout__image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.65) 70%
+  );
+}
+
+
+/* ==========================================================
+   TEXT
+   ========================================================== */
+
 .eventAbout__title {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+  font-size: 2.4rem;
+  font-weight: 900;
+  margin-bottom: 0.6rem;
+  text-shadow: 0px 4px 14px rgba(0,0,0,0.6);
 }
 
 .eventAbout__description {
-  color: #555;
+  color: #dcdcdc;
   margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  opacity: 0.9;
 }
 
 .eventAbout__details {
-  margin-bottom: 1.2rem;
-  line-height: 1.6;
+  margin-bottom: 1.6rem;
+  line-height: 1.8;
+  font-size: 1rem;
+  opacity: 0.95;
 }
+
+
+/* ==========================================================
+   BUTTONS
+   ========================================================== */
 
 .eventAbout__buttons {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.85rem;
+  margin-top: 1.4rem;
 }
 
-.eventAbout__joinBtn {
-  padding: 0.6rem 1.2rem;
-  background: #4f46e5;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
-.eventAbout__joinedBtn {
-  padding: 0.6rem 1.2rem;
-  background: #ddd;
-  border: none;
-  border-radius: 0.5rem;
-}
-
+/* BASE BUTTON */
+.eventAbout__joinBtn,
 .eventAbout__backBtn {
-  padding: 0.6rem 1.2rem;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 999px;
+  border: none;
+  font-weight: 700;
   cursor: pointer;
+  font-size: 1rem;
+  transition: 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
 }
+
+/* PINK GLOW BUTTON (JOIN / DELETE) */
+.eventAbout__joinBtn {
+  background: linear-gradient(180deg, #ff7a8d 0%, #ff6b81 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(255, 107, 129, 0.35);
+}
+
+.eventAbout__joinBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(255, 107, 129, 0.5);
+}
+
+/* GLOW SWIPE EFFECT */
+.eventAbout__joinBtn::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -120%;
+  width: 70%;
+  height: 220%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.45),
+    transparent
+  );
+  pointer-events: none;
+  animation: joinSwipe 3.2s infinite ease-in-out;
+}
+
+@keyframes joinSwipe {
+  0%   { left: -120%; }
+  45%  { left: 120%; }
+  100% { left: 120%; }
+}
+
+/* SECONDARY BUTTON */
+.eventAbout__backBtn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #ffffff;
+}
+
+.eventAbout__backBtn:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-3px);
+}
+
+
+/* ==========================================================
+   ERROR / LOADING STATE
+   ========================================================== */
 
 .eventAbout__loading,
 .eventAbout__error {
   padding: 1rem;
   text-align: center;
+  font-size: 1.1rem;
+  color: #fff;
 }
