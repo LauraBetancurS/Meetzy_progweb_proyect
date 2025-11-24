@@ -49,40 +49,40 @@ Navigation is fully client-side (React Router), and all state/data is handled by
 Meetzy follows a modular, domain-driven structure with separation between UI components, data management, global state, and Supabase services.
 
 ## 3.1 Folder Structure
-
 src/
-├─ components/ # Reusable UI components
-├─ pages/ # Full pages/screens
+├─ components/                  Reusable UI components
+├─ pages/                       Full pages/screens
 ├─ providers/
-│ └─ AuthProvider.tsx # Supabase Auth + global session
+│   └─ AuthProvider.tsx         Supabase Auth + global session
 ├─ redux/
-│ ├─ slices/ # Feature-based slices
-│ │ ├─ a11ySlice.ts
-│ │ ├─ AuthSlice.ts
-│ │ ├─ CommunitiesSlice.ts
-│ │ ├─ EventsSlice.ts
-│ │ ├─ PollsSlice.ts
-│ │ ├─ PostsSlices.ts
-│ │ ├─ ProfileSlice.ts
-│ │ └─ SubscriptionsSlice.ts
-│ ├─ hooks.ts # Typed useAppSelector/useAppDispatch
-│ └─ store.ts # Root Redux store
+│   ├─ slices/                  Feature-based slices
+│   │   ├─ a11ySlice.ts
+│   │   ├─ AuthSlice.ts
+│   │   ├─ CommunitiesSlice.ts
+│   │   ├─ EventsSlice.ts
+│   │   ├─ PollsSlice.ts
+│   │   ├─ PostsSlices.ts
+│   │   ├─ ProfileSlice.ts
+│   │   └─ SubscriptionsSlice.ts
+│   ├─ hooks.ts                 Typed useAppSelector/useAppDispatch
+│   └─ store.ts                 Root Redux store
 ├─ routes/
-│ └─ ProtectedRoute.tsx # Route guard for authenticated users
+│   └─ ProtectedRoute.tsx       Route guard for authenticated users
 ├─ services/
-│ ├─ communitiesServices.ts
-│ ├─ pollServices.ts
-│ ├─ postsServices.ts
-│ ├─ supaavatar.ts
-│ ├─ supabaseClient.ts
-│ ├─ supaevents.ts
-│ └─ usersService.ts
-├─ types/ # Shared TypeScript interfaces
+│   ├─ communitiesServices.ts
+│   ├─ pollServices.ts
+│   ├─ postsServices.ts
+│   ├─ supaavatar.ts
+│   ├─ supabaseClient.ts
+│   ├─ supaevents.ts
+│   └─ usersService.ts
+├─ types/                       Shared TypeScript interfaces
 ├─ utils/
-│ └─ scoring.ts # Quiz scoring logic
-├─ App.tsx # Route layout
-├─ main.tsx # SPA entry point
+│   └─ scoring.ts               Quiz scoring logic
+├─ App.tsx                      Route layout
+├─ main.tsx                     SPA entry point
 └─ index.css
+
 
 
 
