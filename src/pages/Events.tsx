@@ -15,7 +15,7 @@ import {
 } from "../services/supaevents";
 import type { EventModel } from "../types/Event";
 import PublicEventCard from "../components/PublicEventCard/PublicEventCard";
-import "./events.css";
+import "./Events.css";
 
 export default function Events() {
   const dispatch = useAppDispatch();
