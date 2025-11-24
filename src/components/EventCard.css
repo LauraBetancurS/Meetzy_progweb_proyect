@@ -1,8 +1,3 @@
-/* ==========================================================
-   ================   CARD COMPLETA ESTILO AAA   ============
-   ========================================================== */
-
-/* ===== CARD BASE ===== */
 .eventCard {
   position: relative;
   overflow: hidden;
@@ -18,10 +13,6 @@
   transform: translateY(-6px);
   box-shadow: 0 16px 40px rgba(255, 107, 129, 0.25);
 }
-
-/* ==========================================================
-   ================   IMAGEN FULL-COVER   ===================
-   ========================================================== */
 
 .eventCard__media {
   position: absolute;
@@ -41,10 +32,6 @@
   transform: scale(1.08);
 }
 
-/* ==========================================================
-   ================   DIFUMINADO NEGRO   ====================
-   ========================================================== */
-
 .eventCard__media::after {
   content: "";
   position: absolute;
@@ -58,10 +45,6 @@
   );
   pointer-events: none;
 }
-
-/* ==========================================================
-   ================   BODY (TEXTO SOBRE IMAGEN)   ===========
-   ========================================================== */
 
 .eventCard__body {
   position: absolute;
@@ -96,10 +79,6 @@
   text-shadow: 0px 2px 8px rgba(0,0,0,0.65);
 }
 
-/* ==========================================================
-   =======================   FOOTER   ========================
-   ========================================================== */
-
 .eventCard__footer {
   display: flex;
   gap: 10px;
@@ -107,11 +86,6 @@
   margin-top: 12px;
 }
 
-/* ==========================================================
-   =====================   BOTONES   =========================
-   ========================================================== */
-
-/* Base */
 .eventCard__editBtn,
 .eventCard__cancelBtn {
   position: relative;
@@ -122,8 +96,7 @@
   cursor: pointer;
   transition: all .2s ease;
 }
-
-/* Primario (Unirse / Salir / Editar) */
+  
 .eventCard__editBtn {
   background: linear-gradient(180deg, #ff7a8d 0%, #ff6b81 100%);
   color: white;
@@ -152,10 +125,6 @@
   cursor: default;
   box-shadow: none;
 }
-
-/* ==========================================================
-   ==========   EFECTO “RAYO DIAGONAL” EN UNIRSE   ==========
-   ========================================================== */
 
 .eventCard__editBtn[aria-label="Unirse"] {
   overflow: hidden;
@@ -186,12 +155,6 @@
   100% { left: 120%; }
 }
 
-
-/* =======================================================
-   VARIANTE HORIZONTAL SOLO PARA LA DASHBOARD
-   (cuando las cards están dentro de .dash-events)
-   ======================================================= */
-
 .dash-events .eventCard {
   /* Forma más horizontal tipo banner */
   aspect-ratio: 16 / 9;      /* ancho > alto */
@@ -218,9 +181,22 @@
   margin-bottom: 8px;
 }
 
-/* Por si quieres aún más “limpio” en la dash:
-   (ya tienes algo parecido en Dashboard.css, pero esto asegura) */
 .dash-events .eventCard__description {
   display: none;
+}
+
+@media (max-width: 430px) {
+  /* Footer de las cards dentro de la sección de eventos de la dash */
+  .dash-events .eventCard__footer {
+    flex-wrap: wrap;          /* permite que los botones bajen a otra línea */
+    justify-content: center;  /* centra los botones dentro de la card */
+    gap: 8px;
+  }
+
+  .eventCard__footer {
+    justify-content: flex-end !important; /* 🔥 Los botones se alinean a la derecha */
+    flex-wrap: wrap;                      /* Permite que bajen si no caben */
+    gap: 10px;
+  }
 }
 
