@@ -1,12 +1,14 @@
-/* Grid principal */
+/* ===== Layout principal ===== */
+
 .qm-wrap {
   display: grid;
   grid-template-columns: minmax(0, 680px) 360px;
-  gap: 24px;
-  align-items: start;
+  gap: 32px;
+  align-items: flex-start;
 }
 
 /* Columna izquierda */
+
 .qm-left {
   width: 100%;
 }
@@ -17,138 +19,200 @@
 }
 
 .qm-title {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
-  margin: 0 0 8px;
+  color: #ffffff;
+  margin: 0 0 4px;
 }
 
 .qm-sub {
-  opacity: 0.8;
-  margin: 0 0 14px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 8px;
 }
 
 .qm-cta {
   margin-top: 6px;
 }
 
-/* Tarjeta de paso */
+/* ===== Tarjeta de cada paso ===== */
+
 .qm-card {
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 14px;
-  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 20px 22px 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
 }
 
 .qm-question {
   margin: 0 0 12px;
   font-weight: 600;
+  font-size: 17px;
+  color: #ffffff;
 }
 
+.qm-hint {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.68);
+  margin: 2px 0 14px;
+}
+
+/* ===== Opciones ===== */
+
 .qm-options {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
 }
 
 /* Botón de opción */
+
 .qm-option {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   width: 100%;
-  text-align: left;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  padding: 12px 14px;
+  padding: 10px 16px;
   cursor: pointer;
-  transition: transform 0.05s ease, border-color 0.15s ease, background 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.08s ease,
+    box-shadow 0.12s ease;
+  color: #ffffff;
 }
 
 .qm-option:hover {
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.10);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
 .qm-option.is-selected {
-  border-color: rgba(255, 99, 132, 0.6);
-  background: rgba(255, 99, 132, 0.16);
+  border-color: rgba(255, 99, 132, 0.85);
+  background: rgba(255, 99, 132, 0.18);
+  box-shadow: 0 12px 28px rgba(255, 99, 132, 0.35);
 }
 
+/* Texto de la opción (label) */
+
 .qm-option__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 14px;
+  font-weight: 500;
+  color: #ffffff; /* ← label en blanco */
 }
+
+/* Check de opción seleccionada */
 
 .qm-option__check {
   font-size: 14px;
+  color: #ffffff;
   opacity: 0.9;
 }
 
-/* Acciones */
+/* ===== Acciones de navegación (botones) ===== */
+
 .qm-actions {
   display: flex;
   justify-content: center;
   gap: 12px;
+  margin-top: 6px;
 }
 
 .qm-actions--split {
   justify-content: space-between;
+  align-items: center;
 }
 
-/* Estados */
+/* ===== Estados de carga / error ===== */
+
 .qm-loading {
   margin: 8px 0 14px;
-  opacity: 0.85;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .qm-error {
   margin: 12px 0 16px;
-  color: #ff6b6b;
+  font-size: 13px;
+  color: #ff8a9c;
 }
 
-/* Recomendación */
+/* ===== Recomendación final (card vertical) ===== */
+
 .qm-rec {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 12px;
-  display: grid;
-  gap: 8px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  max-width: 580px;
 }
+
+/* Imagen ocupa todo el ancho del contenedor */
 
 .qm-rec__img {
   width: 100%;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 10px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: block;
 }
 
+.qm-rec__img img {
+width: 100%;
+  height: 300px;        /* ← ALTURA RECORTADA */
+  object-fit: cover;    /* ← Recorta sin deformarse */
+  object-position: center; /* Centrado estético */
+  display: block;
+  border-radius: 14px;
+}
+
+.qm-rec .qm-rec__img img {
+    width: 100% !important;
+    height: 300px !important;      /* <-- Cambia la altura aquí */
+    object-fit: cover !important;
+    object-position: center !important;
+    border-radius: 14px !important;
+    display: block !important;
+}
+
+/* Título debajo de la foto */
+
 .qm-rec__title {
-  margin: 0;
+  font-size: 20px;
   font-weight: 600;
+  color: #ffffff;
+  margin: 0;
 }
 
 .qm-rec__desc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.78);
   margin: 0;
-  opacity: 0.9;
 }
 
 .qm-rec__meta {
-  margin: 0;
-  opacity: 0.8;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 2px 0 0;
 }
 
-.qm-hint {
-  opacity: 0.85;
-  margin: 0 0 10px;
-}
+/* ===== Columna derecha (banner promo) ===== */
 
-.qm-weights {
-  display: block;
-  opacity: 0.65;
-  margin-top: 10px;
-}
-
-/* Columna derecha (banner) */
 .qm-right {
   width: 100%;
 }
@@ -158,13 +222,36 @@
   top: 16px;
 }
 
-/* Responsive */
+/* ===== Responsive ===== */
+
 @media (max-width: 980px) {
   .qm-wrap {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
+
+  .qm-right {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
   .qm-promo {
     position: static;
     margin-top: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .qm-card {
+    padding: 18px 16px 16px;
+  }
+
+  .qm-actions {
+    flex-direction: column;
+  }
+
+  .qm-rec {
+    max-width: 100%;
+    gap: 12px;
   }
 }
