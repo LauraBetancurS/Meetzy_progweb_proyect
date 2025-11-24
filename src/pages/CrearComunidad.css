@@ -87,17 +87,27 @@
   background: #e0e0e0;
 }
 
-@media (max-width: 768px) {
-  .crearComunidad {
-    padding: 1rem;
-  }
-
-  .crearComunidad__form {
-    padding: 1.5rem;
-  }
-
-  .crearComunidad__actions {
+@media (max-width: 430px) {
+  .crearComunidad__container {
     flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Formulario ocupa todo el ancho pero respetando el padding */
+  .crearComunidad__form {
+    width: 90%;
+    padding: 4rem;
+
+  }
+
+  /* Imagen centrada y con espacio */
+  .crearComunidad__image {
+    width: 100%;
+    max-width: 330px;
+  }
+
+  .crearComunidad__image img {
+    width: 100%;
   }
 }
-
