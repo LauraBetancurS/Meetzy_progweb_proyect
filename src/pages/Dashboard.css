@@ -1,18 +1,9 @@
-/* =======================================================
-   GRID INTERNO DEL DASHBOARD
-   ======================================================= */
-
-/* Pantalla total = Sidebar izquierda + Dashboard grid (centro + derecha) */
 .dash-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px; /* centro | derecha más delgada */
   gap: 24px;
   min-width: 0;
 }
-
-/* =======================================================
-   COLUMNA CENTRAL
-   ======================================================= */
 
 .dash-center {
   display: flex;
@@ -43,43 +34,29 @@
   margin: 0;
 }
 
-/* =======================================================
-   COLUMNA DERECHA (Calendar + PromoBanner)
-   ======================================================= */
-
 .dash-right {
   position: sticky;
   top: var(--gap);
   align-self: start;
 
-  /* para que el contenido sea más estrecho */
   display: flex;
   flex-direction: column;
-  align-items: center;  /* mantiene el calendario centrado */
+  align-items: center; 
   gap: 16px;
 }
 
-/* TODOS los elementos dentro de la columna derecha */
 .dash-right > * {
   width: 100%;
-  max-width: 280px; /* 🎯 Este es el ancho que pediste */
+  max-width: 280px; 
 }
-
-/* =======================================================
-   OCULTAR DESCRIPCIÓN DE CARDS SOLO EN DASHBOARD
-   ======================================================= */
 
 .dash-center .eventCard__description {
   display: none;
 }
 
-/* =======================================================
-   RESPONSIVE
-   ======================================================= */
-
 @media (max-width: 1200px) {
   .dash-grid {
-    grid-template-columns: 1fr; /* colapsa derecha */
+    grid-template-columns: 1fr;
   }
 
   .dash-right {
