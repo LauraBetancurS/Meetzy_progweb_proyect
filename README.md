@@ -26,18 +26,7 @@ The system is built as a **client-side SPA**, with architecture focused on modul
 
 ## 2.1 User Journey
 
-Unauthenticated User
-↓
-Login / Register (Supabase Auth)
-↓
-Authenticated Session
-↓
-Dashboard (Sidebar + Navbar)
-↓ ──────────────────────────────────────┐
-│ │
-Events Communities Polls Posts Profile
-│
-└──→ Event Recommendation Quiz → Personalized Results
+![User Journey ](https://daqupzktljfqadeqbujj.supabase.co/storage/v1/object/sign/read.me/user%20journey.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xZDAzZTgxYy1hMzBhLTQxYzctOGU0Ni1jOTY3ZjIwM2Q0MjkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJyZWFkLm1lL3VzZXIgam91cm5leS5wbmciLCJpYXQiOjE3NjM5OTk1MTUsImV4cCI6MTc5NTUzNTUxNX0.8IERL8UC81c4yxAFMH92aF8qPI0X1zz5cLQZQAQ9BrM)
 
 
 Navigation is fully client-side (React Router), and all state/data is handled by Redux Toolkit slices + Supabase service modules.
