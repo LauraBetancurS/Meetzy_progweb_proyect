@@ -1,3 +1,9 @@
+![Meetzy  ](https://daqupzktljfqadeqbujj.supabase.co/storage/v1/object/sign/read.me/metzzy%20logo.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xZDAzZTgxYy1hMzBhLTQxYzctOGU0Ni1jOTY3ZjIwM2Q0MjkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJyZWFkLm1lL21ldHp6eSBsb2dvLnBuZyIsImlhdCI6MTc2NDAwMDEzMiwiZXhwIjoxNzk1NTM2MTMyfQ.IeeWU2l6yNU2uLf_2KpkttHhxwlTqHki3RtIcyNcQ80)
+
+
+
+
+
 # Meetzy — Technical Documentation  
 ### Single Page Application built with React, TypeScript, Redux Toolkit & Supabase
 
@@ -38,40 +44,8 @@ Navigation is fully client-side (React Router), and all state/data is handled by
 Meetzy follows a modular, domain-driven structure with separation between UI components, data management, global state, and Supabase services.
 
 ## 3.1 Folder Structure
-src/
-├─ components/                  Reusable UI components
-├─ pages/                       Full pages/screens
-├─ providers/
-│   └─ AuthProvider.tsx         Supabase Auth + global session
-├─ redux/
-│   ├─ slices/                  Feature-based slices
-│   │   ├─ a11ySlice.ts
-│   │   ├─ AuthSlice.ts
-│   │   ├─ CommunitiesSlice.ts
-│   │   ├─ EventsSlice.ts
-│   │   ├─ PollsSlice.ts
-│   │   ├─ PostsSlices.ts
-│   │   ├─ ProfileSlice.ts
-│   │   └─ SubscriptionsSlice.ts
-│   ├─ hooks.ts                 Typed useAppSelector/useAppDispatch
-│   └─ store.ts                 Root Redux store
-├─ routes/
-│   └─ ProtectedRoute.tsx       Route guard for authenticated users
-├─ services/
-│   ├─ communitiesServices.ts
-│   ├─ pollServices.ts
-│   ├─ postsServices.ts
-│   ├─ supaavatar.ts
-│   ├─ supabaseClient.ts
-│   ├─ supaevents.ts
-│   └─ usersService.ts
-├─ types/                       Shared TypeScript interfaces
-├─ utils/
-│   └─ scoring.ts               Quiz scoring logic
-├─ App.tsx                      Route layout
-├─ main.tsx                     SPA entry point
-└─ index.css
 
+![Folder structure  ](https://daqupzktljfqadeqbujj.supabase.co/storage/v1/object/sign/read.me/folder%20structure.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xZDAzZTgxYy1hMzBhLTQxYzctOGU0Ni1jOTY3ZjIwM2Q0MjkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJyZWFkLm1lL2ZvbGRlciBzdHJ1Y3R1cmUucG5nIiwiaWF0IjoxNzYzOTk5OTEwLCJleHAiOjE3OTU1MzU5MTB9.rA6v9U7_oB0qvqmZjXzV9DSHfJqfUvZdiFASM3aTL-4)
 
 
 
@@ -88,25 +62,9 @@ Meetzy uses **Supabase as its backend**, handling:
 - Auto-generated API
 
 ## 4.1 Architecture Flow (Supabase)
+![FArchitecture Flow  ](https://daqupzktljfqadeqbujj.supabase.co/storage/v1/object/sign/read.me/Architecture%20Flow%20(Supabase).png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xZDAzZTgxYy1hMzBhLTQxYzctOGU0Ni1jOTY3ZjIwM2Q0MjkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJyZWFkLm1lL0FyY2hpdGVjdHVyZSBGbG93IChTdXBhYmFzZSkucG5nIiwiaWF0IjoxNzYzOTk5OTM3LCJleHAiOjE3OTU1MzU5Mzd9.3I_2Fbc4GTXGlyf6WolP1bb82cKhybG0HZR9lDAY0Fc)
 
-React Component (Page)
-│
-dispatch(action) or call(service)
-│
-Redux Thunk / Service Module
-│
-Supabase Client (supabaseClient.ts)
-│
-Supabase Backend (Auth + DB + Storage)
-│
-Response
-│
-Redux Slice Reducer updates store
-│
-UI re-renders with updated state
 
-markdown
-Copiar código
 
 ## 4.2 Service Modules
 
@@ -262,19 +220,7 @@ These values modify UI behavior globally.
 - If not authenticated → redirect to login
 - If authenticated → render children components
 
-### Example Route Structure
 
-/
-├─ /dashboard
-│ ├─ /events
-│ ├─ /communities
-│ ├─ /polls
-│ ├─ /posts
-│ └─ /profile
-└─ /quiz
-
-yaml
-Copiar código
 
 ---
 
@@ -293,18 +239,8 @@ One of the main features of the final delivery.
 ---
 
 ## 7.2 Quiz Flow Diagram
+![Quiz Flow Diagram  ](https://daqupzktljfqadeqbujj.supabase.co/storage/v1/object/sign/read.me/Quiz%20Flow%20Diagram.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV8xZDAzZTgxYy1hMzBhLTQxYzctOGU0Ni1jOTY3ZjIwM2Q0MjkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJyZWFkLm1lL1F1aXogRmxvdyBEaWFncmFtLnBuZyIsImlhdCI6MTc2Mzk5OTk4NywiZXhwIjoxNzk1NTM1OTg3fQ.3OzvztHaPsykafdY-Jnz4hU5oXm-qFqEj-_877zMw3w)
 
-User Answers Quiz
-↓
-Score Calculation (scoring.ts)
-↓
-Dominant Categories Determined
-↓
-Supabase Event Query (supaevents.ts)
-↓
-EventsSlice / local state
-↓
-Recommended Events Screen
 
 
 ---
