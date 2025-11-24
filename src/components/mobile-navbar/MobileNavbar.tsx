@@ -4,9 +4,8 @@ import "./MobileNavbar.css";
 const NAV = [
   { to: "/", label: "Dashboard", icon: "dashboard" },
   { to: "/events", label: "Eventos", icon: "events" },
-  { to: "/communities", label: "Comunidades", icon: "communities" },
-  { to: "/notifications", label: "Notificaciones", icon: "bell" },
-  { to: "/profile", label: "Perfil", icon: "user" },
+  { to: "/comunidades", label: "Comunidades", icon: "communities" },
+  { to: "/perfil", label: "Perfil", icon: "user" },
 ] as const;
 
 function Icon({ name }: { name: typeof NAV[number]["icon"] }) {
@@ -34,13 +33,6 @@ function Icon({ name }: { name: typeof NAV[number]["icon"] }) {
           <circle cx="16" cy="8" r="3" />
           <path d="M4 20c0-3 2.5-5 4-5s4 2 4 5" />
           <path d="M12 20c0-3 2.5-5 4-5s4 2 4 5" />
-        </svg>
-      );
-    case "bell":
-      return (
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M6 8a6 6 0 1 1 12 0c0 7 2 7 2 7H4s2 0 2-7" />
-          <path d="M9.5 20a2.5 2.5 0 0 0 5 0" />
         </svg>
       );
     case "user":
