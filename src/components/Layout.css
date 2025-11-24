@@ -27,6 +27,7 @@ body { margin: 0; background: var(--bg); color: #fff; }
   padding: 0 var(--gap);
   background: var(--bg);
   border-bottom: 1px solid #2a2a2a;
+  padding-top: env(safe-area-inset-top);
 }
 .app-header__logo{ height: 28px; }
 .app-header__right{
@@ -181,5 +182,64 @@ body { margin: 0; background: var(--bg); color: #fff; }
   }
   .a11y-scale {
     font-size: 0.8rem;
+  }
+
+  /* Ocultar el logo SOLO en responsive */
+  .app-header__logo {
+    display: none;
+  }
+}
+
+/* ===== Responsive específico (≤430px: iPhone 14 Pro Max) ===== */
+@media (max-width: 430px) {
+
+  /* Header se acomoda en columna */
+  .app-header {
+    height: auto;
+    padding: 12px;
+    padding-top: calc(12px + env(safe-area-inset-top));
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* 🔵 Logo visible y ocupa la primera fila */
+  .app-header__logo {
+    display: block !important;
+    width: auto;
+    height: 26px;
+    margin-bottom: 2px;
+  }
+
+  /* 🔵 BLOQUE DE PERFIL va en SEGUNDO lugar */
+  .app-header__right {
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .app-header__profile {
+    order: 1;
+  }
+
+  .app-header__logout {
+    order: 2;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  .app-header__greet {
+    font-size: 0.9rem;
+  }
+
+  /* 🟡 Barra de accesibilidad baja a la tercera fila */
+  .app-header__a11y {
+    order: 3;
+    flex-basis: 100%;
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
   }
 }
