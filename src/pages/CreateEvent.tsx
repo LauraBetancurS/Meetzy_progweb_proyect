@@ -76,26 +76,36 @@ export default function CreateEvent() {
   }
 
   return (
-    <div className="createEventPage">
-      <div className="createEventPage__content">
+  <div className="createEventPage">
+    <div className="createEventPage__content">
+      <div className="createEventPage__inner">
+        {/* Título fuera del formulario, igual que en CrearComunidad */}
+        <h1 className="createEventPage__title">Crear evento</h1>
+
         <div className="createEvent__wrap">
           {/* === Imagen del evento === */}
-          <div className="createEvent__imageCard">
+          <section
+            className="createEvent__imageCard"
+            aria-label="Vista previa del evento"
+          >
             <div className="mockImage__frame">
-              {imageUrl ? (
-                <img src={imageUrl} alt="Vista previa del evento" />
-              ) : (
-                <span>La Imagen de tu evento  <br /> se mostrara aquí</span>
-              )}
+              <img
+                src={
+                  imageUrl && imageUrl.startsWith("https")
+                    ? imageUrl
+                    : "https://i.pinimg.com/736x/c9/06/bb/c906bbea85c5370a3ea2e056c4bae277.jpg"
+                }
+                alt="Vista previa del evento"
+              />
             </div>
-          </div>
+          </section>
 
           {/* === Formulario === */}
           <div className="createEvent__formCard">
-            <h1 className="createEvent__title">Crear evento</h1>
-
             <form className="createEvent__form" onSubmit={handleSubmit}>
-              {errorMsg && <p className="createEvent__error">{errorMsg}</p>}
+              {errorMsg && (
+                <p className="createEvent__error">{errorMsg}</p>
+              )}
 
               <label className="createEvent__label">
                 Nombre *
@@ -129,7 +139,6 @@ export default function CreateEvent() {
                 />
               </label>
 
-              <div className="createEvent__dateRowTitle">Fecha y hora</div>
               <div className="createEvent__dateRow">
                 <label className="createEvent__label">
                   Fecha *
@@ -175,5 +184,6 @@ export default function CreateEvent() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }
